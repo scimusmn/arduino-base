@@ -88,7 +88,7 @@ long timeout = 0;
 
 #include "Button.h" //this library is used to provide debounce control for pushbuttons
 Button button1; //this creates an instance of "Button" class called button1.  Add more buttons as needed.
-
+//Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
 
 //This function reads incoming string data, and stores the characters bound by the start/end markers into an array
 
