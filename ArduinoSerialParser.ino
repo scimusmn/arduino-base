@@ -13,7 +13,7 @@
 
   Digital write:
 
-      To turn on digital pin 2 , the string data received should be in the following format:
+      To turn on digital pin 2, the string data received should be in the following format:
 
              {digitalPin:2, state:1, pwm:0, getVal:0}
 
@@ -32,7 +32,7 @@
  
   Analog Read:
 
-       To retrieve an analog value from analog A0 that is reading a full 5 volts, the string data should be in the following format:
+       To retrieve an analog value from analog A0 that is reading 5 volts, the string data should be in the following format:
 
              {analogPin:0, state:0, pwm:0, getVal:0}
 
