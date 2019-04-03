@@ -45,7 +45,7 @@
 
      {:2:1:0:0}
 
-  IMPOTANT: The order of the number series in the string matters!
+  IMPORTANT: The order of the number series in the string matters!
 
   In the example above, the curley brackets are used to inidcate where to start parsing the data that has come into the receive buffer on the
   Arduino, and where to stop.  The colons serve as parsing delimiters. The number after each colon delimiter is stored into an array, then
