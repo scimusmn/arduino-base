@@ -17,7 +17,7 @@
 
              {digitalPin:2, state:1, pwm:0, getVal:0}
 
-      pwm should always be set to "0", state can either be 1(on) or 0(off)
+      pwm should be set to "0", state can either be 1(on) or 0(off)
 
  
   Analog write:
@@ -36,7 +36,8 @@
 
              {analogPin:0, state:0, pwm:0, getVal:1}
 
-       getVal should be set to 1.  A value of 0-1023 will be returned in a message to the computer (see outgoing serial data section below. 
+       getVal should be set to 1, state and pwm should be set to 0.  
+       A value of 0-1023 will be returned in a message to the computer (see outgoing serial data section below. 
        valid Arduino pins, A0-A5
 
 
