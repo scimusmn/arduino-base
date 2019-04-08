@@ -17,31 +17,32 @@
 
              {digitalPin:2, state:1, pwm:0, getVal:0}
 
-      pwm should always be set to "0". State can either be 1(on) or 0(off)
+      pwm should always be set to "0", state can either be 1(on) or 0(off)
 
  
   Analog write:
 
-      To write an analog value of 150 to PWM pin 3, the string data received should be in the following format:
+      To write an pwm value of 150 to pin 3, the string data received should be in the following format:
 
              {digitalPin:3, state:0, pwm:150, getVal:0}
 
-      State and getVal should always be set to "0". PWM range is 0(full off) to 255(full on).
-      Use on Arduino pins D3,D5,D6,D9,D10,D111
+      state and getVal should always be set to "0".  PWM range is 0(full-off) to 255(full-on).
+      use on Arduino pins D3,D5,D6,D9,D10,D11
 
  
   Analog Read:
 
-       To retrieve an analog value from analog A0 that is reading 5 volts, the string data should be in the following format:
+       To retrieve an analog value from analog A0, the string data should be in the following format:
 
-             {analogPin:0, state:0, pwm:0, getVal:0}
+             {analogPin:0, state:0, pwm:0, getVal:1}
 
-       To be used with Arduino pins A0-A5
+       getVal should be set to 1.  A value of 0-1023 will be returned in a message to the computer (see outgoing serial data section below. 
+       valid Arduino pins, A0-A5
 
 
-  The examples above demonstrate sending string data in a highly verbose way, so that it is easier to follow during the front-end
-  coding process.  However, the data that the Arduino is actually storing and acting upon is much shorter. For example, to turn
-  on digital pin 2, the minimun string data that needs to be sent out is:
+  The examples above demonstrate sending string data in a highly verbose way, for easier readability.  
+  However, the data that the Arduino is actually storing and acting upon is much shorter. 
+  For example, to turn on digital pin 2, the minimun string data that needs to be sent out is:
 
      {:2:1:0:0}
 
@@ -60,7 +61,7 @@
 
   Outgoing data format to the computer may be determined on a case by case basis
 
-  Examples of typical format:
+  Examples of a typical format:
 
      When a button is pressed on the Arduino, send string data out to the computer in the following format:
         {message:vrs-button-press, value:true} value can either be true or false
@@ -89,6 +90,7 @@ long timeout = 0;
 #include "Button.h" //this library is used to provide debounce control for pushbuttons
 Button button1; //this creates an instance of "Button" class called button1.  Add more buttons as needed.
 //Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
+
 
 //This function reads incoming string data, and stores the characters bound by the start/end markers into an array
 
@@ -156,27 +158,28 @@ void writePinState() {
 
 //initialize serial, setup digital outputs, and setup buttons
 
-void setup() {
+void setup() { //Setup Arduino I/O pins here
 
   // Configure digital output pins here.  Analog inputs are already configured by default.
-  pinMode(2, OUTPUT);
+  pinMode(2, INPUT_PULLUP);
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
+  
 
 
   // Setup button inputs here
-  button1.setup(7, [](int state) {  //number after the "(" refers to the pin number the button is attached to
+  button1.setup(2, [](int state) {  //number after the "(" refers to the pin number the button is attached to
     if (state) Serial.println("{message:vrs-button-press, value:true}");  //put string data message between quotes;
   });
   //button2.setup(10, [](int state){  //number after the "(" refers to the pin number the button is attached to
   //  if (state) Serial.println("{message:anyname, value:true}");  //put string data message between quotes;
   //});
 
-  Serial.begin(9600); //set serial baud rate to 9600
+  Serial.begin(115200); //set serial baud rate to 9600
   timeout = millis(); //get current time
   while (!Serial); //wait for serial port to open
   while (!handshake) { //loop here until valid handshake data has been sent by computer
-    if (Serial.available() > 0 && Serial.read() == '{') { //if data is available, and first character is a "{", send message to computer
+    if (Serial.available() > 0 && Serial.read() == '{') { //if data is available, and first character is a {, send message to computer
       Serial.println("{message:Arduino-ready, value:true}");
       handshake = true;
     }
