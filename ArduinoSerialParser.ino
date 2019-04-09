@@ -88,7 +88,7 @@ int pin = 0; //physical I/O pin on Arduino
 int State = 0; //1=high, 0=low
 int pwmval = 0; //pwm value, range 0-255
 int getVal = 0; //1 = true, return value, 0 = false, do not return value
-boolean newData = false;
+bool newData = false;
 bool handshake = false;
 long timeout = 0;
 
