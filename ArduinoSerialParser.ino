@@ -53,12 +53,14 @@
 
   IMPORTANT: The order of the number series in the string matters!
 
-  In the example above, the curley brackets are used to indicate when to start storing data into an array, and when to stop.  
-  The colons serve as parsing delimiters. The number after each colon delimiter is converted to an integer.
+  In the example above, the curley brackets are used to indicate when to start storing data into an 
+  array, and when to stop.  The colons serve as parsing delimiters. The number after each colon delimiter 
+  is converted to an integer.
 
-  The first number in the series is used to specify the Arduino I/O pin.  The second number is used to set the state of a specified
-  digital pin (1 = high or 0 = low).  The third number is used to write a pmw value (0-255) to the specifed pwm pin. The fourth number is used
-  to direct the Arduino to send a message about the current value of a specified analog input, (1 = read analog input and send message with the value,
+  The first number in the series is used to specify the Arduino I/O pin.  The second number is used to set the 
+  state of the specified digital pin (1 = high or 0 = low).  The third number is used to write a pmw value (0-255) 
+  to the specifed pwm pin. The fourth number is used to direct the Arduino to send a message about the current 
+  value of a specified analog input, (1 = read analog input and send message with the value, 
   0 = dont read an analog input and don't send a message).
 
 
@@ -70,11 +72,11 @@
 
      When a button is pressed on the Arduino, send a message out to the computer in the following format:
         
-        {message:vrs-button-press, value:true} value can either be true or false
+          {message:vrs-button-press, value:true} value can either be true or false
 
-     When reading analog values from a potentiometer or sensor, send a message out to the computer in the following format:
+     When reading analog values from an analog pin, send a message out to the computer in the following format:
         
-        {message:anythinghere, value:458} analog value returned can range from 0-1023
+          {message:anythinghere, value:458} analog value returned can range from 0-1023
 */
 
 //global variables
