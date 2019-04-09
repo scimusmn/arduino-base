@@ -8,7 +8,7 @@
 ********Incoming serial data***************
 
   Valid string data received by the Arduino is parsed into four parts:
-  pin number, state of pin (1=high, 0=low), pwm value (range 0-255), current analog input value 
+  pin number, state of pin (1 = high, 0 = low), pwm value (range 0-255), current analog input value 
   of specified pin (1 = read input and send message with value, 0 = dont read input and don't send message). 
   
   Examples:
