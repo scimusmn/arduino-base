@@ -35,7 +35,7 @@
  
   analog read:
 
-       To read an analog input value from analog A0 and to send a message back to the computer with the
+       To read an analog input value from analog A0 and send a message back to the computer with the
        value, the string data received by the Arduino should be in the following format:
 
              {analogPin:0, state:0, pwm:0, getVal:1}
