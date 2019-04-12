@@ -53,8 +53,8 @@
 
   IMPORTANT: The order of the number series in the string matters!
 
-  In the example above, the curley brackets are used to indicate when to start storing data into an 
-  array, and when to stop.  The colons serve as parsing delimiters. The number after each colon delimiter 
+  In the example above, the curley brackets are used to indicate when to start parsing data stored in the array, 
+  and when to stop.  The colons serve as parsing delimiters. The number after each colon delimiter 
   is converted to an integer.
 
   The first number in the series is used to specify the Arduino I/O pin.  The second number is used to set the 
