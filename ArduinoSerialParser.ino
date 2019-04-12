@@ -45,8 +45,8 @@
        valid Arduino pins, A0-A5  See "Outgoing serial data" section below for more info 
 
 
-  The examples above demonstrate sending string data in a highly verbose way, for easier readability.  
-  However, the data that the Arduino is actually storing and acting upon is much shorter. 
+  The examples above demonstrates sending string data in a highly verbose way, for easier readability.  
+  However, the data that the Arduino is actually acting upon is much simpler. 
   For example, to turn on digital pin 2, the minimun string data that needs to be sent out is:
 
      {:2:1:0:0}
@@ -81,7 +81,7 @@
 
 //global variables
 
-const byte numChars = 32; // max number of characters the array can hold
+const byte numChars = 64; // max number of characters the array can hold
 char receivedChars[numChars];
 char tempChars[numChars];
 int pin = 0; //physical I/O pin on Arduino
@@ -98,7 +98,7 @@ long timeout = 0;
 
 #include "Button.h" //this library is used to provide debounce control for pushbuttons
 Button button1; //this creates an instance of "Button" class called button1.  Add more buttons as needed.
-//Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
+Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
 
 
 //this function reads incoming string data, and stores the characters bound by the start/end markers into an array
@@ -141,13 +141,13 @@ void parseData() {    // split the string data into three parts
   pin = atoi(strtokIndx);     // convert to a integer
 
   strtokIndx = strtok(NULL, ":"); // second part
-  State = atoi(strtokIndx);     // convert to a integer
+  State = atoi(strtokIndx);     // convert to an integer
 
   strtokIndx = strtok(NULL, ":"); //third part
-  pwmval = atoi(strtokIndx);     // convert to a integer
+  pwmval = atoi(strtokIndx);     // convert to an integer
 
   strtokIndx = strtok(NULL, ":"); //forth part
-  getVal = atoi(strtokIndx);     // convert to a integer
+  getVal = atoi(strtokIndx);     // convert to an integer
 
 }
 
@@ -157,9 +157,8 @@ void writePinState() {
   if (State == 1) digitalWrite(pin, State);
   else if (State == 0 && getVal != 1) (analogWrite(pin, pwmval));
   else if (State == 0 && pwmval == 0 && getVal == 1) {
-    Serial.print("{message:analog:");
-    Serial.print(pin);
-    Serial.print(", value:");
+    Serial.print("{\"message\":\"pot-rotation\"");
+    Serial.print(", \"value\":");
     Serial.print(analogRead(pin));
     Serial.println("}");
   }
@@ -171,18 +170,22 @@ void writePinState() {
 void setup() { //setup Arduino I/O pins here
 
   // Configure digital output pins here.  Analog inputs are already configured by default.
-  pinMode(2, INPUT_PULLUP); //use INPUT_PULLUP) for buttons
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
   
+  pinMode(3, OUTPUT);//button enable/disable
+  pinMode(5, OUTPUT);//linear actuator
+  pinMode(6, OUTPUT);//door latch
+  pinMode(7, OUTPUT);//blower
+  digitalWrite(3, HIGH);//disable visitor button by default
+
   
-  //setup buttons here
+  //setup button inputs here, and associated actions when buttons are pressed
+  
   button1.setup(2, [](int state) {  //number after the "(" refers to the pin number the button is attached to
-    if (state) Serial.println("{message:vrs-button-press, value:true}");  //put string data message between quotes;
+    if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":true}");  //put string data message between quotes;
   });
-  //button2.setup(10, [](int state){  //number after the "(" refers to the pin number the button is attached to
-  //  if (state) Serial.println("{message:anyname, value:true}");  //put string data message between quotes;
-  //});
+  button2.setup(4, [](int state){  //number after the "(" refers to the pin number the button is attached to
+    if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}");  //put string data message between quotes;
+  });
   
 
   //setup serial
@@ -192,7 +195,7 @@ void setup() { //setup Arduino I/O pins here
   while (!Serial); //wait for serial port to open
   while (!handshake) { //loop here until valid handshake data has been sent by computer
     if (Serial.available() > 0 && Serial.read() == '{') { //if data is available, and first character is a {, send message to computer
-      Serial.println("{message:Arduino-ready, value:true}");
+      Serial.println("{\"message\":\"Arduino-ready\", \"value\":true}");
       handshake = true;
     }
     if (millis() > timeout + 50) {  //time-out and clear input buffer if no valid data sent
@@ -208,7 +211,7 @@ void setup() { //setup Arduino I/O pins here
 
 void loop() {
   button1.idle(); //watch for a button press
-  //button2.idle(); //watch for a button press
+  button2.idle(); //watch for a button press
   recvWithStartEndMarkers();
   if (newData == true) {
     strcpy(tempChars, receivedChars); // this temporary copy is necessary to protect the original data
