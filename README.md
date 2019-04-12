@@ -43,7 +43,7 @@ Simple method for controlling Arduino I/O pins by sending and receiving string d
   valid Arduino pins, A0-A5  See "Outgoing serial data" section below for more info 
   
   The examples above demonstrate sending string data in a highly verbose way, for easier readability.  
-  However, the data that the Arduino is actually storing and acting upon is much shorter. 
+  However, the data that the Arduino is actually acting is much simpler. 
   For example, to turn on digital pin 2, the minimun string data that needs to be sent out is:
       
       {:2:1:0:0}
