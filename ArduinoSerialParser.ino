@@ -1,196 +1,94 @@
-/* SMM Serial data parser and COM protocol for Arduino I/O pin control, v1
+
+/* SMM Serial data parser and COM protocol for Arduino I/O pin control, v2
    modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
-   4/8/2019
+   4/22/2019
    by D. Bailey, Science Museum of Minnesota
 
    Tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud
 
-********Incoming serial data***************
+   In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format:  
+   
+   To start communication with the Arduino, send a { character.
 
-  Valid string data received by the Arduino is parsed into four parts:
-  pin number, state of pin (1 = high, 0 = low), pwm value (range 0-255), current analog input value 
-  of specified pin (1 = read input and send message with value, 0 = dont read input and don't send message). 
+   DigitalWrite example: 
   
-  Examples:
+    To turn-on a digital output pin on the Arduino, send from the computer:
+   
+      {"message":"LED", "value":1}
 
-  digital write:
+    To turn it off:
 
-      To turn on digital pin 2, the string data received by the Arduino should be in the following format:
+      {"message":"LED", "value":0}
 
-             {digitalPin:2, state:1, pwm:0, getVal:0}
+   AnalogRead example:
 
-      pwm should be set to "0", state can either be 1(on) or 0(off)
+    To read an analog pin on the Arduino, send from the computer:
+   
+      {"message":"pot-rotation", "value":1}
 
- 
-  analog write:
+    The following message will be sent out to the computer, with a value ranging from 0-1023:
+      
+      {"message":"pot-rotation", "value":566}
 
-      To write a pwm value of 150 to pin 3, the string data received by the Arduino 
-      should be in the following format:
+  AnalogWrite example:
 
-             {digitalPin:3, state:0, pwm:150, getVal:0}
-
-      state and getVal should be set to "0".  PWM range is 0(full-off) to 255(full-on).
-      use on Arduino pins D3,D5,D6,D9,D10,D11
-
- 
-  analog read:
-
-       To read an analog input value from analog A0 and send a message back to the computer with the
-       value, the string data received by the Arduino should be in the following format:
-
-             {analogPin:0, state:0, pwm:0, getVal:1}
-
-       getVal should be set to 1, state and pwm should be set to 0.  
-       A value of 0-1023 will be returned in a message back to the computer 
-       valid Arduino pins, A0-A5  See "Outgoing serial data" section below for more info 
-
-
-  The examples above demonstrates sending string data in a highly verbose way, for easier readability.  
-  However, the data that the Arduino is actually acting upon is much simpler. 
-  For example, to turn on digital pin 2, the minimun string data that needs to be sent out is:
-
-     {:2:1:0:0}
-
-  IMPORTANT: The order of the number series in the string matters!
-
-  In the example above, the curley brackets are used to indicate when to start parsing data stored in the array, 
-  and when to stop.  The colons serve as parsing delimiters. The number after each colon delimiter 
-  is converted to an integer.
-
-  The first number in the series is used to specify the Arduino I/O pin.  The second number is used to set the 
-  state of the specified digital pin (1 = high or 0 = low).  The third number is used to write a pmw value (0-255) 
-  to the specifed pwm pin. The fourth number is used to direct the Arduino to send a message about the current 
-  value of a specified analog input, (1 = read analog input and send message with the value, 
-  0 = dont read an analog input and don't send a message).
-
-
-*********Outgoing serial data***************
-
-  Outgoing data format to the computer may be determined on a case by case basis
-
-  Examples of a typical format:
-
-     When a button is pressed on the Arduino, send a message out to the computer in the following format:
-        
-          {message:vrs-button-press, value:true} value can either be true or false
-
-     When reading analog values from an analog pin, send a message out to the computer in the following format:
-        
-          {message:anythinghere, value:458} analog value returned can range from 0-1023
+    To write a pwm value to a pwn pin on the Arduino, send the following from the computer with a
+    value ranging from 0-255:
+   
+       {"message":"motor", "value":130}  
+       
 */
 
-//global variables
+// Arduino digital output pin assignments
 
-const byte numChars = 64; // max number of characters the array can hold
+int LED = 3;
+int motor = 11;
+
+// Arduino analog input pin assignments
+
+int pot = 0;
+
+const byte numChars = 64;// buffer array size
 char receivedChars[numChars];
-char tempChars[numChars];
-int pin = 0; //physical I/O pin on Arduino
-int State = 0; //1=high, 0=low
-int pwmval = 0; //pwm value, range 0-255
-int getVal = 0; //1 = true, return value, 0 = false, do not return value
-bool newData = false;
+char tempChars[numChars];  // temporary array for use when parsing
+
+// variables to hold the parsed data
+char messageIn[numChars] = {0};
+char functionIn[numChars] = {0};
+char valueIn[numChars] = {0};
+int val = 0;
+boolean newData = false;
 bool handshake = false;
 long timeout = 0;
 
-
-
-//attach Button.h library and create an new instance of "Button" class for each button
+// attach Button.h library and create an new instance of "Button" class for each button
 
 #include "Button.h" //this library is used to provide debounce control for pushbuttons
+
 Button button1; //this creates an instance of "Button" class called button1.  Add more buttons as needed.
 Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
 
 
-//this function reads incoming string data, and stores the characters bound by the start/end markers into an array
+// setup digital outputs and button inputs, attach pins to button functions, and initialize serial
 
-void recvWithStartEndMarkers() {
-  static boolean recvInProgress = false;
-  static byte index = 0;
-  char startMarker = ':'; // starting marker, any characters before the first ":" are ignored
-  char endMarker = '}'; //end of data string marker
-  char rc;
-  while (Serial.available() > 0 && newData == false) {
-    rc = Serial.read();
-    if (recvInProgress == true) {
-      if (rc != endMarker) {
-        receivedChars[index] = rc;
-        index++;
-        if (index >= numChars) {
-          index = numChars - 1;
-        }
-      }
-      else {
-        receivedChars[index] = '\0'; // terminate the string
-        recvInProgress = false;
-        index = 0;
-        newData = true;
-      }
-    }
-    else if (rc == startMarker) {
-      recvInProgress = true;
-    }
-  }
-}
+void setup() {
 
+  pinMode(LED, OUTPUT);
+  pinMode(motor, OUTPUT);
 
-//this function tokenizes string data and parses it into the four parts, then converts the number characters into integers
+  // setup button inputs here, and associated actions when buttons are pressed
 
-void parseData() {    // split the string data into three parts
-  char * strtokIndx; // this is used by strtok() as an index
-  strtokIndx = strtok(tempChars, ":"); // first part
-  pin = atoi(strtokIndx);     // convert to a integer
-
-  strtokIndx = strtok(NULL, ":"); // second part
-  State = atoi(strtokIndx);     // convert to an integer
-
-  strtokIndx = strtok(NULL, ":"); //third part
-  pwmval = atoi(strtokIndx);     // convert to an integer
-
-  strtokIndx = strtok(NULL, ":"); //forth part
-  getVal = atoi(strtokIndx);     // convert to an integer
-
-}
-
-//this function writes digital pin states, pwm values to pwm pins, or returns analog input values
-
-void writePinState() {
-  if (State == 1) digitalWrite(pin, State);
-  else if (State == 0 && getVal != 1) (analogWrite(pin, pwmval));
-  else if (State == 0 && pwmval == 0 && getVal == 1) {
-    Serial.print("{\"message\":\"pot-rotation\"");
-    Serial.print(", \"value\":");
-    Serial.print(analogRead(pin));
-    Serial.println("}");
-  }
-}
-
-
-//setup digital outputs and button inputs, attach pins to button functions, and initialize serial
-
-void setup() { //setup Arduino I/O pins here
-
-  // Configure digital output pins here.  Analog inputs are already configured by default.
-  
-  pinMode(3, OUTPUT);//button enable/disable
-  pinMode(5, OUTPUT);//linear actuator
-  pinMode(6, OUTPUT);//door latch
-  pinMode(7, OUTPUT);//blower
-  digitalWrite(3, HIGH);//disable visitor button by default
-
-  
-  //setup button inputs here, and associated actions when buttons are pressed
-  
   button1.setup(2, [](int state) {  //number after the "(" refers to the pin number the button is attached to
     if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":true}");  //put string data message between quotes;
   });
-  button2.setup(4, [](int state){  //number after the "(" refers to the pin number the button is attached to
+  button2.setup(4, [](int state) { //number after the "(" refers to the pin number the button is attached to
     if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}");  //put string data message between quotes;
   });
-  
 
-  //setup serial
+
+  // setup serial and wait for handshake with computer
+
   Serial.begin(115200); //set serial baud rate
-  //Serial.begin (9600); //set serial baud rate
   timeout = millis(); //get current time
   while (!Serial); //wait for serial port to open
   while (!handshake) { //loop here until valid handshake data has been sent by computer
@@ -205,34 +103,112 @@ void setup() { //setup Arduino I/O pins here
   }
 }
 
+// read serial data when available
 
+void recvWithStartEndMarkers() {
+  static boolean recvInProgress = false;
+  static byte ndx = 0;
+  char startMarker = '{'; //start of data string marker
+  char endMarker = '}';  //end of data string marker
+  char rc;
 
-//main Loop
+  while (Serial.available() > 0 && newData == false) {
+    rc = Serial.read();
+
+    if (recvInProgress == true) {
+      if (rc != endMarker) {
+        receivedChars[ndx] = rc;
+        ndx++;
+        if (ndx >= numChars) { 
+          ndx = numChars - 1;
+        }
+      }
+      else {
+        receivedChars[ndx] = '\0'; // terminate the string
+        recvInProgress = false;
+        ndx = 0;
+        newData = true;
+      }
+    }
+    else if (rc == startMarker) {
+      recvInProgress = true;
+    }
+  }
+}
+
+// parse incoming serial data
+
+void parseData() {      // split the string data into four parts
+
+  char * strtokIndx; // this is used by strtok() as an index
+
+  strtokIndx = strtok(tempChars, ":"); // get the first part - the string
+  strcpy(messageIn, strtokIndx);       // copy it to messageIn
+
+  strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
+  strcpy(functionIn, strtokIndx); // get the second string and copy it to functionIn
+
+  strtokIndx = strtok(NULL, ":"); // this continues where the previous call left off
+  strcpy(valueIn, strtokIndx);    // get the third string, and copy it to valueIn
+
+  strtokIndx = strtok(NULL, ":"); // this continues where the previous call left off
+  val = atoi(strtokIndx);         // convert string "val" to an integer
+
+}
+
+// write pin states and send out confirmation and analog values over serial
+
+void writePins() {
+
+  messageIn[20] = '\0';
+  String message = messageIn; //convert char array to string
+  functionIn[40] = '\0';
+  String function = functionIn; //convert char array to string
+  valueIn[20] = '\0';
+  String value = valueIn; //convert char array to string
+
+  // Setup messages to be recieved and acted upon here
+
+  if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 1) {
+    Serial.println("{\"message\":\"LED\", \"value\":true}");
+    digitalWrite(LED, val);
+  }
+  else if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 0) {
+    Serial.println ("{\"message\":\"LED\", \"value\":false}");
+    digitalWrite(LED, val);
+  }
+  else if (message == "\"message\"" && function == "\"motot\"" && value == " \"value\"" && val >= 0) {
+    Serial.print("{\"message\":\"motor\", \"value\":");
+    Serial.print(val);
+    Serial.println("}");
+    analogWrite(motor, val);
+  }
+  else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && val == 1) {
+    Serial.print("{\"message\":\"pot-rotation\", \"value\":");
+    Serial.print(analogRead(pot));
+    Serial.println("}");
+  }
+  else {
+    Serial.println("Unknown command");
+  }
+}
+
+// main loop
 
 void loop() {
-  button1.idle(); //watch for a button press
-  button2.idle(); //watch for a button press
+  button1.idle();
+  button2.idle();
   recvWithStartEndMarkers();
   if (newData == true) {
-    strcpy(tempChars, receivedChars); // this temporary copy is necessary to protect the original data
-    // because strtok() used in parseData() replaces the colons with \0
+    strcpy(tempChars, receivedChars);
+    // this temporary copy is necessary to protect the original data
+    //   because strtok() used in parseData() replaces the commas with \0
     parseData();
-    writePinState();
+    writePins();
     newData = false;
   }
-
-  /*
-
-    For future use
-
-   *******analog reads into Arduino, analog read values sent out in constant stream*******
-
-    int A0val = analogRead(A0); //read analog value from pin A0, store into variable A0val
-    Serial.print("{message:anythinghere, value:");
-    Serial.print(A0val);
-    Serial.println("}");
-  */
 }
+
 
 
 
