@@ -12,29 +12,32 @@ To start communication with the Arduino, send a "{" character, less the quotes
 All messages sent to the Arduino from the computer will be echoed back to the computer as verification that the
 message was correctly received
  
+
 DigitalWrite example: 
   
-To turn-on a digital output pin on the Arduino, send from the computer:
+   To turn-on a digital output pin on the Arduino, send from the computer:
    
-    {"message":"led", "value":1}
+      {"message":"led", "value":1}
     
-To turn it off:
+   To turn it off:
       
-    {"message":"led", "value":0}
+       {"message":"led", "value":0}
   
+
 AnalogRead example:
   
-To read an analog pin on the Arduino, send from the computer:
+   To read an analog pin on the Arduino, send from the computer:
    
-    {"message":"pot-rotation", "value":1}
+      {"message":"pot-rotation", "value":1}
     
 The following message will be sent back to the computer, with a value ranging from 0-1023:
       
-    {"message":"pot-rotation", "value":566}
+      {"message":"pot-rotation", "value":566}
   
+
 AnalogWrite example:
     
-To write a PWM value to a PWM pin on the Arduino, send the following from the computer with a
-value ranging from 0-255:
+   To write a PWM value to a PWM pin on the Arduino, send the following from the computer with a
+   value ranging from 0-255:
    
-    {"message":"pwm-output", "value":130}  
+      {"message":"pwm-output", "value":130}  
