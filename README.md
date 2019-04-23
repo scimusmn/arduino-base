@@ -3,10 +3,6 @@ Simple method for controlling and reading Arduino I/O pins by sending and receiv
 
 SMM Serial data parser and COM protocol for Arduino I/O pin control.  Modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
 
-4/22/2019
-
-D. Bailey, Science Museum of Minnesota
-
 Tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud
 
 In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format:  
@@ -32,13 +28,13 @@ To read an analog pin on the Arduino, send from the computer:
    
     {"message":"pot-rotation", "value":1}
     
-The following message will be sent out to the computer, with a value ranging from 0-1023:
+The following message will be sent back to the computer, with a value ranging from 0-1023:
       
     {"message":"pot-rotation", "value":566}
   
 AnalogWrite example:
     
-To write a pwm value to a pwn pin on the Arduino, send the following from the computer with a
+To write a PWM value to a PWM pin on the Arduino, send the following from the computer with a
 value ranging from 0-255:
    
     {"message":"motor", "value":130}  
