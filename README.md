@@ -12,7 +12,7 @@ To start communication with the Arduino, send a "{" character, less the quotes
 All messages sent to the Arduino from the computer will be echoed back to the computer as verification that the
 message was correctly received
  
-
+      
 DigitalWrite example: 
   
    To turn-on a digital output pin on the Arduino, send from the computer:
