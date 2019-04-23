@@ -5,12 +5,12 @@ SMM Serial data parser and COM protocol for Arduino I/O pin control.  Modified a
 
 Tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud
 
-In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format:  
+In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format  
    
-To start communication with the Arduino, send a { character. 
+To start communication with the Arduino, send a "{" character, less the quotes
 
 All messages sent to the Arduino from the computer will be echoed back to the computer as verification that the
-message was correctly received.
+message was correctly received
  
 DigitalWrite example: 
   
