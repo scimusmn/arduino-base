@@ -79,7 +79,7 @@ void setup() {
   // setup button inputs here, and associated actions when buttons are pressed
 
   button1.setup(2, [](int state) {  //number after the "(" refers to the pin number the button is attached to
-    if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":true}");  //put string data message between quotes;
+    if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":1}");  //put string data message between quotes;
   });
   button2.setup(4, [](int state) { //number after the "(" refers to the pin number the button is attached to
     if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}");  //put string data message between quotes;
@@ -93,7 +93,7 @@ void setup() {
   while (!Serial); //wait for serial port to open
   while (!handshake) { //loop here until valid handshake data has been sent by computer
     if (Serial.available() > 0 && Serial.read() == '{') { //if data is available, and first character is a {, send message to computer
-      Serial.println("{\"message\":\"Arduino-ready\", \"value\":true}");
+      Serial.println("{\"message\":\"Arduino-ready\", \"value\":1}");
       handshake = true;
     }
     if (millis() > timeout + 50) {  //time-out and clear input buffer if no valid data sent
