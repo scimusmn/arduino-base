@@ -42,7 +42,7 @@
 // Arduino digital output pin assignments
 
 int led = 3;
-int pwm_output = 11;
+int pwm_output = 5;
 
 // Arduino analog input pin assignments
 
