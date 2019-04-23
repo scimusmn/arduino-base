@@ -14,11 +14,11 @@
   
     To turn-on a digital output pin on the Arduino, send from the computer:
    
-      {"message":"LED", "value":1}
+      {"message":"led", "value":1}
 
     To turn it off:
 
-      {"message":"LED", "value":0}
+      {"message":"led", "value":0}
 
    AnalogRead example:
 
@@ -35,7 +35,7 @@
     To write a pwm value to a pwn pin on the Arduino, send the following from the computer with a
     value ranging from 0-255:
    
-       {"message":"motor", "value":130}  
+       {"message":"pwm-output", "value":130}  
        
 */
 
