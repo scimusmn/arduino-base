@@ -1,10 +1,12 @@
 # ArduinoSerialParser
 Simple method for controlling and reading Arduino I/O pins by sending and receiving string data via a computer COM port
 
-SMM Serial data parser and COM protocol for Arduino I/O pin control, v2
-modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
+SMM Serial data parser and COM protocol for Arduino I/O pin control.  Modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
+
 4/22/2019
-by D. Bailey, Science Museum of Minnesota
+
+D. Bailey, Science Museum of Minnesota
+
 Tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud
 
 In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format:  
