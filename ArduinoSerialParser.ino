@@ -41,8 +41,8 @@
 
 // Arduino digital output pin assignments
 
-int LED = 3;
-int motor = 11;
+int led = 3;
+int pwm_output = 11;
 
 // Arduino analog input pin assignments
 
@@ -73,8 +73,8 @@ Button button2; //this creates an instance of "Button" class called button2.  Ad
 
 void setup() {
 
-  pinMode(LED, OUTPUT);
-  pinMode(motor, OUTPUT);
+  pinMode(led, OUTPUT);
+  pinMode(pwm_output, OUTPUT);
 
   // setup button inputs here, and associated actions when buttons are pressed
 
@@ -170,18 +170,18 @@ void writePins() {
   // Setup messages to be recieved and acted upon here
 
   if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 1) {
-    Serial.println("{\"message\":\"LED\", \"value\":true}");
-    digitalWrite(LED, val);
+    Serial.println("{\"message\":\"led\", \"value\":true}");
+    digitalWrite(led, val);
   }
   else if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 0) {
-    Serial.println ("{\"message\":\"LED\", \"value\":false}");
-    digitalWrite(LED, val);
+    Serial.println ("{\"message\":\"led\", \"value\":false}");
+    digitalWrite(led, val);
   }
-  else if (message == "\"message\"" && function == "\"motot\"" && value == " \"value\"" && val >= 0) {
-    Serial.print("{\"message\":\"motor\", \"value\":");
+  else if (message == "\"message\"" && function == "\"pwm-output\"" && value == " \"value\"" && val >= 0) {
+    Serial.print("{\"message\":\"pwm-output\", \"value\":");
     Serial.print(val);
     Serial.println("}");
-    analogWrite(motor, val);
+    analogWrite(pwm_output, val);
   }
   else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && val == 1) {
     Serial.print("{\"message\":\"pot-rotation\", \"value\":");
