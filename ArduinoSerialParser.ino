@@ -169,11 +169,11 @@ void writePins() {
 
   // Setup messages to be recieved and acted upon here
 
-  if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 1) {
+  if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && val == 1) {
     Serial.println("{\"message\":\"led\", \"value\":true}");
     digitalWrite(led, val);
   }
-  else if (message == "\"message\"" && function == "\"LED\"" && value == " \"value\""  && val == 0) {
+  else if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && val == 0) {
     Serial.println ("{\"message\":\"led\", \"value\":false}");
     digitalWrite(led, val);
   }
