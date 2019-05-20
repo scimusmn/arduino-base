@@ -62,7 +62,6 @@
 
 //other variables
   bool handshake = false;
-  long timeout = 0;
 
 //Attached libraries
   #include "Button.h" //this library is used to provide debounce control for 
@@ -77,11 +76,12 @@ void setup() {
 
 //setup button inputs here, and associated actions when buttons are pressed
 
-  button1.setup(2, [](int state) {  //"2" refers to the pin number the button is attached to, can be any pin
-    if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":1}");  //put string data message between quotes;
+
+  button1.setup(2, [](int state) { //button attached to pin 2
+    if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":1}");  
   });
-  button2.setup(4, [](int state) { //"4" refers to the pin number the button is attached to, can be any pin
-    if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}");  //put string data message between quotes;
+  button2.setup(4, [](int state) { //button attached to pin 4
+    if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}"); 
   });
 
 
@@ -92,16 +92,14 @@ void setup() {
 
 // setup serial and wait for handshake with computer
   Serial.begin(115200); //set serial baud rate
-  timeout = millis(); //get current time
   while (!Serial); //wait for serial port to open
   while (!handshake) { //wait here until { character is received
     if (Serial.available() > 0 && Serial.read() == '{') { 
       Serial.println("{\"message\":\"Arduino-ready\", \"value\":1}"); //send confirmation message to computer
       handshake = true;
     }
-    if (millis() > timeout + 50) { //time-out and clear serial input buffer if no valid data sent
+    if (Serial.read()!='{') { //clear serial input buffer if character is not valid
       while (Serial.available()) Serial.read();
-      timeout = millis(); //get current time
     }
   }
 }
