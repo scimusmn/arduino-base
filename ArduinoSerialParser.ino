@@ -6,105 +6,107 @@
 
    Tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud
 
-   In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format:  
-   
+   In this example code, data sent and recieved by the Arduino is formatted in a JSON-style format used by media
+   developers at SMM
+
    To start communication with the Arduino, send a { character.
 
-   DigitalWrite example: 
-  
-    To turn-on a digital output pin on the Arduino, send from the computer:
-   
-      {"message":"led", "value":1}
+      DigitalWrite example:
 
-    To turn it off:
+        To turn-on a digital output pin on the Arduino, send from the computer:
 
-      {"message":"led", "value":0}
+            {"message":"led", "value":1}
 
-   AnalogRead example:
+        To turn it off:
 
-    To read an analog pin on the Arduino, send from the computer:
-   
-      {"message":"pot-rotation", "value":1}
+            {"message":"led", "value":0}
 
-    The following message will be sent out to the computer, with a value ranging from 0-1023:
-      
-      {"message":"pot-rotation", "value":566}
+      AnalogRead example:
 
-  AnalogWrite example:
+        To read an analog pin on the Arduino, send from the computer:
 
-    To write a pwm value to a pwn pin on the Arduino, send the following from the computer with a
-    value ranging from 0-255:
-   
-       {"message":"pwm-output", "value":130}  
-       
+            {"message":"pot-rotation", "value":1}
+
+        The following message will be sent out to the computer, with a value ranging from 0-1023:
+
+            {"message":"pot-rotation", "value":566}
+
+      AnalogWrite example:
+
+        To write a pwm value to a pwn pin on the Arduino, send the following from the computer with a
+        value ranging from 0-255:
+
+            {"message":"pwm-output", "value":130}
+
 */
 
 // Arduino digital output pin assignments
-
-int led = 3;
-int pwm_output = 5;
+  int led = 11;
+  int pwm_output = 5;
 
 // Arduino analog input pin assignments
+  int potentiometer = 0;
 
-int pot = 0;
+// variables used by parser
+  const byte numChars = 64;// buffer array size
+  char receivedChars[numChars];
+  char tempChars[numChars];  // temporary array for use when parsing
+  char messageIn[numChars] = {0};
+  char functionIn[numChars] = {0};
+  char valueIn[numChars] = {0};
+  int intval = 0;
+  String message;
+  String function;
+  String value;
+  boolean newData = false;
 
-const byte numChars = 64;// buffer array size
-char receivedChars[numChars];
-char tempChars[numChars];  // temporary array for use when parsing
+//other variables
+  bool handshake = false;
+  long timeout = 0;
 
-// variables to hold the parsed data
-char messageIn[numChars] = {0};
-char functionIn[numChars] = {0};
-char valueIn[numChars] = {0};
-int val = 0;
-boolean newData = false;
-bool handshake = false;
-long timeout = 0;
+//Attached libraries
+  #include "Button.h" //this library is used to provide debounce control for 
+                      //pushbuttons and to capture button state
 
-// attach Button.h library and create an new instance of "Button" class for each button
+// Add buttons here, set associated actions for these buttons in void setup() below
+  Button button1; //creates an instance of "Button" class called button1 (or any name). Add more buttons as needed.
+  Button button2; //creates an instance of "Button" class called button2 (or any name). Add more buttons as needed.
 
-#include "Button.h" //this library is used to provide debounce control for pushbuttons
-
-Button button1; //this creates an instance of "Button" class called button1.  Add more buttons as needed.
-Button button2; //this creates an instance of "Button" class called button2.  Add more buttons as needed.
-
-
-// setup digital outputs and button inputs, attach pins to button functions, and initialize serial
 
 void setup() {
 
-  pinMode(led, OUTPUT);
-  pinMode(pwm_output, OUTPUT);
+//setup button inputs here, and associated actions when buttons are pressed
 
-  // setup button inputs here, and associated actions when buttons are pressed
-
-  button1.setup(2, [](int state) {  //number after the "(" refers to the pin number the button is attached to
+  button1.setup(2, [](int state) {  //"2" refers to the pin number the button is attached to, can be any pin
     if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":1}");  //put string data message between quotes;
   });
-  button2.setup(4, [](int state) { //number after the "(" refers to the pin number the button is attached to
+  button2.setup(4, [](int state) { //"4" refers to the pin number the button is attached to, can be any pin
     if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}");  //put string data message between quotes;
   });
 
 
-  // setup serial and wait for handshake with computer
+//setup digital pins as needed, analog inputs are setup by default
+  pinMode(led, OUTPUT);
+  pinMode(pwm_output, OUTPUT);
 
+
+// setup serial and wait for handshake with computer
   Serial.begin(115200); //set serial baud rate
   timeout = millis(); //get current time
   while (!Serial); //wait for serial port to open
-  while (!handshake) { //loop here until valid handshake data has been sent by computer
-    if (Serial.available() > 0 && Serial.read() == '{') { //if data is available, and first character is a {, send message to computer
-      Serial.println("{\"message\":\"Arduino-ready\", \"value\":1}");
+  while (!handshake) { //wait here until { character is received
+    if (Serial.available() > 0 && Serial.read() == '{') { 
+      Serial.println("{\"message\":\"Arduino-ready\", \"value\":1}"); //send confirmation message to computer
       handshake = true;
     }
-    if (millis() > timeout + 50) {  //time-out and clear input buffer if no valid data sent
+    if (millis() > timeout + 50) { //time-out and clear serial input buffer if no valid data sent
       while (Serial.available()) Serial.read();
       timeout = millis(); //get current time
     }
   }
 }
 
-// read serial data when available
-
+// setup data starting and ending markers
 void recvWithStartEndMarkers() {
   static boolean recvInProgress = false;
   static byte ndx = 0;
@@ -112,6 +114,7 @@ void recvWithStartEndMarkers() {
   char endMarker = '}';  //end of data string marker
   char rc;
 
+//when serial data is available, read characters in until the end marker is reached
   while (Serial.available() > 0 && newData == false) {
     rc = Serial.read();
 
@@ -119,7 +122,7 @@ void recvWithStartEndMarkers() {
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
         ndx++;
-        if (ndx >= numChars) { 
+        if (ndx >= numChars) {
           ndx = numChars - 1;
         }
       }
@@ -136,65 +139,63 @@ void recvWithStartEndMarkers() {
   }
 }
 
-// parse incoming serial data
-
+// parse the received data
 void parseData() {      // split the string data into four parts
 
   char * strtokIndx; // this is used by strtok() as an index
 
-  strtokIndx = strtok(tempChars, ":"); // get the first part - the string
-  strcpy(messageIn, strtokIndx);       // copy it to messageIn
+  strtokIndx = strtok(tempChars, ":"); // parse the "message" keyword in the json data
+  strcpy(messageIn, strtokIndx);       // copy the characters to messageIn
 
-  strtokIndx = strtok(NULL, ","); // this continues where the previous call left off
-  strcpy(functionIn, strtokIndx); // get the second string and copy it to functionIn
+  strtokIndx = strtok(NULL, ","); // parse the "function" keyword in the json data, (i.e. "led")
+  strcpy(functionIn, strtokIndx); // copy the characters functionIn array
 
-  strtokIndx = strtok(NULL, ":"); // this continues where the previous call left off
-  strcpy(valueIn, strtokIndx);    // get the third string, and copy it to valueIn
+  strtokIndx = strtok(NULL, ":"); // parse the "value" keyword in the json data
+  strcpy(valueIn, strtokIndx);    // copy it to valueIn array
 
-  strtokIndx = strtok(NULL, ":"); // this continues where the previous call left off
-  val = atoi(strtokIndx);         // convert string "val" to an integer
+  strtokIndx = strtok(NULL, ":"); // parse the number character in the json data
+  intval = atoi(strtokIndx);         // convert the number character to an integer, store it in val
 
+  messageIn[10] = '\0'; //max number of characters set to 10
+  message = messageIn; //convert characters in messageIn array to a string
+
+  functionIn[40] = '\0'; //max number of characters set to 40
+  function = functionIn; //convert characters in functionIn array to a string
+
+  valueIn[10] = '\0'; //max number of characters set to 10
+  value = valueIn; //convert characters in valueIn array to a string
 }
 
 // write pin states and send out confirmation and analog values over serial
-
 void writePins() {
 
-  messageIn[20] = '\0';
-  String message = messageIn; //convert char array to string
-  functionIn[40] = '\0';
-  String function = functionIn; //convert char array to string
-  valueIn[20] = '\0';
-  String value = valueIn; //convert char array to string
-
-  // Setup messages to be recieved and acted upon here
-
-  if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && val == 1) {
-    Serial.println("{\"message\":\"led\", \"value\":1}");
-    digitalWrite(led, val);
+  //turn-on led
+  if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && intval == 1) {
+    digitalWrite(led, intval);
   }
-  else if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && val == 0) {
-    Serial.println ("{\"message\":\"led\", \"value\":0}");
-    digitalWrite(led, val);
+  //turn-off led
+  else if (message == "\"message\"" && function == "\"led\"" && value == " \"value\""  && intval == 0) {
+    digitalWrite(led, intval);
   }
-  else if (message == "\"message\"" && function == "\"pwm-output\"" && value == " \"value\"" && val >= 0) {
-    Serial.print("{\"message\":\"pwm-output\", \"value\":");
-    Serial.print(val);
+  //set pwm value to pwm pin
+  else if (message == "\"message\"" && function == "\"pwm-output\"" && value == " \"value\"" && intval >= 0) {
+    Serial.print(intval);
     Serial.println("}");
-    analogWrite(pwm_output, val);
+    analogWrite(pwm_output, intval);
   }
-  else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && val == 1) {
+  //read current value on analog channel A0
+  else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && intval == 1) {
     Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-    Serial.print(analogRead(pot));
+    Serial.print(analogRead(potentiometer));
     Serial.println("}");
   }
+  //nothing matched
   else {
     Serial.println("Unknown command");
   }
 }
 
 // main loop
-
 void loop() {
   button1.idle();
   button2.idle();
@@ -202,13 +203,10 @@ void loop() {
   if (newData == true) {
     strcpy(tempChars, receivedChars);
     // this temporary copy is necessary to protect the original data
-    //   because strtok() used in parseData() replaces the commas with \0
+    // because strtok() used in parseData() replaces the colons and commas with a null character
     parseData();
     writePins();
     newData = false;
   }
 }
-
-
-
 
