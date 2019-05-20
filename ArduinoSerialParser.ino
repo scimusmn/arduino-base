@@ -40,14 +40,14 @@
 
 */
 
-// Arduino digital output pin assignments
+//Arduino digital output pin assignments
   int led = 11;
   int pwm_output = 5;
 
-// Arduino analog input pin assignments
+//Arduino analog input pin assignments
   int potentiometer = 0;
 
-// variables used by parser
+//variables used by parser
   const byte numChars = 64;// buffer array size
   char receivedChars[numChars];
   char tempChars[numChars];  // temporary array for use when parsing
@@ -63,11 +63,11 @@
 //other variables
   bool handshake = false;
 
-//Attached libraries
+//attached libraries
   #include "Button.h" //this library is used to provide debounce control for 
                       //pushbuttons and to capture button state
 
-// Add buttons here, set associated actions for these buttons in void setup() below
+//add buttons here, set associated actions for these buttons in void setup() below
   Button button1; //creates an instance of "Button" class called button1 (or any name). Add more buttons as needed.
   Button button2; //creates an instance of "Button" class called button2 (or any name). Add more buttons as needed.
 
@@ -85,12 +85,12 @@ void setup() {
   });
 
 
-//setup digital pins as needed, analog inputs are setup by default
+//setup digital pins and default modes as needed, analog inputs are setup by default
   pinMode(led, OUTPUT);
   pinMode(pwm_output, OUTPUT);
 
 
-// setup serial and wait for handshake with computer
+//setup serial and wait for handshake with computer
   Serial.begin(115200); //set serial baud rate
   while (!Serial); //wait for serial port to open
   while (!handshake) { //wait here until { character is received
@@ -104,7 +104,7 @@ void setup() {
   }
 }
 
-// setup data starting and ending markers
+//setup data starting and ending markers
 void recvWithStartEndMarkers() {
   static boolean recvInProgress = false;
   static byte ndx = 0;
@@ -137,7 +137,7 @@ void recvWithStartEndMarkers() {
   }
 }
 
-// parse the received data
+//parse the received data
 void parseData() {      // split the string data into four parts
 
   char * strtokIndx; // this is used by strtok() as an index
@@ -152,7 +152,7 @@ void parseData() {      // split the string data into four parts
   strcpy(valueIn, strtokIndx);    // copy it to valueIn array
 
   strtokIndx = strtok(NULL, ":"); // parse the number character in the json data
-  intval = atoi(strtokIndx);         // convert the number character to an integer, store it in val
+  intval = atoi(strtokIndx);      // convert the number character to an integer, store it in intval
 
   messageIn[10] = '\0'; //max number of characters set to 10
   message = messageIn; //convert characters in messageIn array to a string
@@ -164,7 +164,7 @@ void parseData() {      // split the string data into four parts
   value = valueIn; //convert characters in valueIn array to a string
 }
 
-// write pin states and send out confirmation and analog values over serial
+//write pin states and send out confirmation and analog values over serial
 void writePins() {
 
   //turn-on led
@@ -193,7 +193,7 @@ void writePins() {
   }
 }
 
-// main loop
+//main loop
 void loop() {
   button1.idle();
   button2.idle();
