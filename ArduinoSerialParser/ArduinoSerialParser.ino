@@ -41,8 +41,8 @@
 */
 
 //Arduino digital output pin assignments
-  int led = 3;
-  int pwm_output = 5;
+  #define led 3
+  #define pwm_output 5
 
 //Arduino analog input pin assignments
   int potentiometer = 0;
@@ -69,7 +69,7 @@
 
 //add buttons here, set associated actions for these buttons in void setup() below
   Button button1; //creates an instance of "Button" class called button1 (or any name). Add more buttons as needed.
-  Button button2; //creates an instance of "Button" class called button2 (or any name). Add more buttons as needed.
+ 
 
 
 void setup() {
@@ -80,9 +80,7 @@ void setup() {
   button1.setup(2, [](int state) { //button attached to pin 2
     if (state) Serial.println("{\"message\":\"vrs-button-press\", \"value\":1}");  
   });
-  button2.setup(4, [](int state) { //button attached to pin 4
-    if (state) Serial.println("{\"message\":\"door-opened\", \"value\":true}"); 
-  });
+ 
 
 
 //setup digital pins and default modes as needed, analog inputs are setup by default
@@ -189,14 +187,13 @@ void writePins() {
   }
   //nothing matched
   else {
-    Serial.println("Unknown command");
+    Serial.print("{\"message\":\"unknown-command\", \"value\":");
   }
 }
 
 //main loop
 void loop() {
   button1.idle();
-  button2.idle();
   recvWithStartEndMarkers();
   if (newData == true) {
     strcpy(tempChars, receivedChars);
