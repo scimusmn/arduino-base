@@ -1,14 +1,12 @@
-/* SMM Serial data parser and COM protocol for Arduino I/O pin control, v2
-   modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
-   4/22/2019 by D. Bailey, Science Museum of Minnesota
-*/
+#include "Button.h"
+#include "Potentiometer.h"
 
 // Arduino digital output pin assignments
 #define led 3
 #define pwm_output 5
 
 // Arduino analog input pin assignments
-int potentiometer = 0;
+int potentiometerPin = A0;
 
 // Variables used by parser
 const byte numChars = 64; // Buffer array size
@@ -26,12 +24,11 @@ boolean newData = false;
 // Other variables
 boolean handshake = false;
 
-// Attached libraries
-// This library is used to provide debounce control for pushbuttons and to capture button state
-#include "Button.h"
+// Set to true, if you'd like to read the current value of the potentiometer in the main loop
+boolean readPotentiometerValue = false;
 
-// Add buttons here, set associated actions for these buttons in void setup() below
-Button button1; // Creates an instance of "Button" class called button1 (or any name)
+Button button1;
+Potentiometer potentiometer1;
 
 // Setup button inputs here, and associated actions when buttons are pressed
 void setup() {
@@ -41,13 +38,26 @@ void setup() {
     if (state) Serial.println("{\"message\":\"button-press\", \"value\":1}");
   });
 
+  if (readPotentiometerValue == true) {
+    // By default, we're attaching a potentiometer to Analog Input 0
+    potentiometer1.setup(potentiometerPin, [](int average) {
+        Serial.print("{\"message\":\"pot-rotation\", \"value\":");
+        Serial.print(average);
+        Serial.println("}");
+    });
+  }
+  
   // Setup digital pins and default modes as needed, analog inputs are setup by default
   pinMode(led, OUTPUT);
   pinMode(pwm_output, OUTPUT);
 
   // Setup serial and wait for handshake with computer
-  Serial.begin(115200); //set serial baud rate
-  while (!Serial); //wait for serial port to open
+
+  // Set serial baud rate
+  Serial.begin(115200);
+
+  // Wait for serial port to open
+  while (!Serial);
 
   // Wait here until { character is received
   while (!handshake) {
@@ -141,7 +151,7 @@ void writePins() {
   else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && intval == 1) {
     // Read current value on analog channel A0
     Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-    Serial.print(analogRead(potentiometer));
+    Serial.print(analogRead(potentiometerPin));
     Serial.println("}");
   }
   else {
@@ -153,13 +163,16 @@ void writePins() {
 // Main loop
 void loop() {
   button1.idle();
+  potentiometer1.idle();
   recvWithStartEndMarkers();
   if (newData == true) {
-    strcpy(tempChars, receivedChars);
     // This temporary copy is necessary to protect the original data
     // because strtok() used in parseData() replaces the colons and commas with a null character
+    strcpy(tempChars, receivedChars);
+
     parseData();
     writePins();
+
     newData = false;
   }
 }
