@@ -14,8 +14,7 @@ public:
   int pin;
   void (*callback)(int state);
 
-  Button(){
-  }
+  Button() {}
 
   void setup(int p, void (*CB)(int), unsigned long time = 20) {
     callback = CB;
@@ -25,15 +24,15 @@ public:
     debounce = time;
     lastFired = state = fired = true;
   }
-  
-  void idle(){
-    if(digitalRead(pin) != state){
+
+  void idle() {
+    if (digitalRead(pin) != state) {
       state = !state;
       fired = !state;
       debounceTimer = millis() + debounce;
     }
 
-    if(debounceTimer < millis() && state != fired && lastFired != state){
+    if (debounceTimer < millis() && state != fired && lastFired != state) {
       lastFired = fired = state;
       callback(!state);
     }
