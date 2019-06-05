@@ -2,64 +2,49 @@
 
 class Potentiometer {
 public:
-  unsigned long debounceTimer;
-  int debounce;
+  unsigned long debounceTimer = 0;
+  int debounce = 20;
   int pin;
-  void (*callback)(int );
+  void (*callback)(int);
 
   int potentiometerValue;
-  int numReadings;
-  int readings[10];
-  int readingIndex;
-  long total;
-  int average;
+  
+  int numReadings = 200;
+  int readings[200];
+  long averageTotal = 0;
+  int runningAverage = 0;
 
   Potentiometer() {}
 
-  void setup(int p, void (*CB)(int), unsigned long time = 20) {
+  void setup(int p, void (*CB)(int)) {
     callback = CB;
     pin = p;
-    debounceTimer = 0;
-    debounce = time;
     potentiometerValue = analogRead(pin);
 
-    numReadings = 10;
-
-    for (int thisReading = 0; thisReading < numReadings; thisReading++)
-      readings[thisReading] = 0;
-
-    total = 0;
-    average = 0;
+    for (int i = 0; i < numReadings; i++)
+      readings[i] = 0;
   }
 
   void idle() {
-    int currentPotentiometerValue = analogRead(pin);
-
-    // Subtract the last reading:
-    total = total - readings[readingIndex];
-
-    // Read from the sensor:
-    readings[readingIndex] = currentPotentiometerValue;
-
-    // Add the reading to the total:
-    total = total + readings[readingIndex];
-
-    // Advance to the next position in the array
-    readingIndex = readingIndex + 1;
-
-    // Reset index
-    if (readingIndex >= numReadings) readingIndex = 0;
-
-    // Calculate the average:
-    average = total / numReadings;
-
-    if (average != potentiometerValue) {
-      potentiometerValue = average;
-      debounceTimer = millis() + debounce;
-    }
+    boolean valueChanged = false;
 
     if (debounceTimer < millis()) {
-      callback(potentiometerValue);
+      for (int i = 0; i < numReadings; i++) {
+        int currentPotentiometerValue = (0.8 * analogRead(pin)) + ((1 - 0.8) * potentiometerValue);
+
+        // Update our averageTotal with the new measurment
+        averageTotal -= readings[i];
+        readings[i] = currentPotentiometerValue;
+        averageTotal += readings[i];
+      }
+
+      runningAverage = averageTotal / numReadings;
+
+      if (runningAverage != potentiometerValue) {
+        potentiometerValue = runningAverage;
+        callback(potentiometerValue);
+        debounceTimer = millis() + debounce;
+      }
     }
   }
 };

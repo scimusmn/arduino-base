@@ -25,7 +25,7 @@ boolean newData = false;
 boolean handshake = false;
 
 // Set to true, if you'd like to read the current value of the potentiometer in the main loop
-boolean readPotentiometerValue = false;
+boolean readPotentiometerValue = true;
 
 Button button1;
 Potentiometer potentiometer1;
@@ -40,13 +40,13 @@ void setup() {
 
   if (readPotentiometerValue == true) {
     // By default, we're attaching a potentiometer to Analog Input 0
-    potentiometer1.setup(potentiometerPin, [](int average) {
+    potentiometer1.setup(potentiometerPin, [](int potentiometerValue) {
         Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-        Serial.print(average);
+        Serial.print(potentiometerValue);
         Serial.println("}");
     });
   }
-  
+
   // Setup digital pins and default modes as needed, analog inputs are setup by default
   pinMode(led, OUTPUT);
   pinMode(pwm_output, OUTPUT);
