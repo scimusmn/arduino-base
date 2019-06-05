@@ -47,9 +47,9 @@ void setup() {
   if (readPotentiometerValue == true) {
     // By default, we're attaching a potentiometer to Analog Input 0
     potentiometer1.setup(potentiometerPin, [](int potentiometerValue) {
-        Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-        Serial.print(potentiometerValue);
-        Serial.println("}");
+      Serial.print("{\"message\":\"pot-rotation\", \"value\":");
+      Serial.print(potentiometerValue);
+      Serial.println("}");
     });
   }
 
@@ -169,7 +169,11 @@ void writePins() {
 // Main loop
 void loop() {
   button1.idle();
-  potentiometer1.idle();
+
+  if (readPotentiometerValue) {
+    potentiometer1.idle();
+  }
+
   recvWithStartEndMarkers();
   if (newData == true) {
     // This temporary copy is necessary to protect the original data
