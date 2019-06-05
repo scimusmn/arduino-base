@@ -8,7 +8,7 @@ public:
   void (*callback)(int);
 
   int potentiometerValue;
-  
+
   int numReadings = 200;
   int readings[200];
   long averageTotal = 0;
@@ -21,6 +21,7 @@ public:
     pin = p;
     potentiometerValue = analogRead(pin);
 
+    // Setup/populate our measurements array with values of 0
     for (int i = 0; i < numReadings; i++)
       readings[i] = 0;
   }
@@ -30,9 +31,10 @@ public:
 
     if (debounceTimer < millis()) {
       for (int i = 0; i < numReadings; i++) {
+        // Simple Low Pass filter to smooth out the jitter
         int currentPotentiometerValue = (0.8 * analogRead(pin)) + ((1 - 0.8) * potentiometerValue);
 
-        // Update our averageTotal with the new measurment
+        // Update our averageTotal with the new measurement
         averageTotal -= readings[i];
         readings[i] = currentPotentiometerValue;
         averageTotal += readings[i];

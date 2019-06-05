@@ -16,12 +16,12 @@ public:
 
   Button() {}
 
-  void setup(int p, void (*CB)(int), unsigned long time = 20) {
+  void setup(int p, void (*CB)(int)) {
     callback = CB;
     pin = p;
     pinMode(p, INPUT_PULLUP);
     debounceTimer = 0;
-    debounce = time;
+    debounce = 20;
     lastFired = state = fired = true;
   }
 
