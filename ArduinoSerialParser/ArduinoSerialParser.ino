@@ -1,3 +1,9 @@
+/*
+  SMM Serial data parser and COM protocol for Arduino I/O pin control, v2
+  modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
+  on 4/22/2019 by D. Bailey, Science Museum of Minnesota
+*/
+
 #include "Button.h"
 #include "Potentiometer.h"
 

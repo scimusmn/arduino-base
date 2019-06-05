@@ -1,6 +1,6 @@
-/* Pushbutton debouncer
-   created 2017
-   by A. Heidgerken-Greene, Science Museum of MN
+/*
+  Pushbutton debouncer
+  created 2017 by A. Heidgerken-Greene, Science Museum of MN
 */
 #include "arduino.h"
 
