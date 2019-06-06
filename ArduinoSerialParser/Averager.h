@@ -6,40 +6,40 @@
 
 class Averager {
 public:
-  int numSamps;
-  double * samps;
-  int pntr;
-  double tot;
-  double ave;
+  int numberOfSamples;
+  double * sampleTotal;
+  int pointer;
+  double total;
+  double average;
 
   Averager(int num = 10) {
   // init the averaging variables.
-    pntr = tot = ave = 0;
-    numSamps = num;
-    samps = new double[numSamps];
-    for(int i = 0; i < numSamps; i++) {
-      samps[i] = 0;
-      tot += samps[i];
+    pointer = total = average = 0;
+    numberOfSamples = num;
+    sampleTotal = new double[numberOfSamples];
+    for (int i = 0; i < numberOfSamples; i++) {
+      sampleTotal[i] = 0;
+      total += sampleTotal[i];
     }
   }
 
   double operator()() {
-    return ave;
+    return average;
   }
 
   void reset() {
-    for(int i = 0; i < numSamps; i++) {
-      samps[i] = 0;
+    for(int i = 0; i < numberOfSamples; i++) {
+      sampleTotal[i] = 0;
     }
 
-    tot = ave = 0;
+    total = average = 0;
   }
 
   void idle(double newRead) {
-    tot -= samps[pntr];
-    samps[pntr] = newRead;
-    tot += newRead;
-    ave = tot / numSamps;
-    pntr = (pntr + 1) % numSamps;
+    total -= sampleTotal[pointer];
+    sampleTotal[pointer] = newRead;
+    total += newRead;
+    average = total / numberOfSamples;
+    pointer = (pointer + 1) % numberOfSamples;
   }
 };
