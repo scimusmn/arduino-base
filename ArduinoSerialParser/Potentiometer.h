@@ -1,49 +1,33 @@
 #include "arduino.h"
+#include "Averager.h"
 
 class Potentiometer {
 public:
+  Averager averager;
   unsigned long debounceTimer = 0;
   int debounce = 20;
-  int pin;
-  void (*callback)(int);
-
   int potentiometerValue;
 
-  int numReadings = 200;
-  int readings[200];
-  long averageTotal = 0;
-  int runningAverage = 0;
+  void (*callback)(int);
+  int pin;
+
+  // Set this if you'd like the Averager to lowpass filter the analogRead
+  // aka a smoother value over a time with less jitter 
+  boolean useLowpassFilter = false;
 
   Potentiometer() {}
 
-  void setup(int p, void (*CB)(int)) {
+  void setup(int pinLocation, void (*CB)(int)) {
     callback = CB;
-    pin = p;
-    potentiometerValue = analogRead(pin);
-
-    // Setup/populate our measurements array with values of 0
-    for (int i = 0; i < numReadings; i++)
-      readings[i] = 0;
+    pin = pinLocation;
+    averager.setup(pin, 200, useLowpassFilter);
   }
 
   void idle() {
-    boolean valueChanged = false;
-
     if (debounceTimer < millis()) {
-      for (int i = 0; i < numReadings; i++) {
-        // Simple Low Pass filter to smooth out the jitter
-        int currentPotentiometerValue = (0.8 * analogRead(pin)) + ((1 - 0.8) * potentiometerValue);
-
-        // Update our averageTotal with the new measurement
-        averageTotal -= readings[i];
-        readings[i] = currentPotentiometerValue;
-        averageTotal += readings[i];
-      }
-
-      runningAverage = averageTotal / numReadings;
-
-      if (runningAverage != potentiometerValue) {
-        potentiometerValue = runningAverage;
+      int average = averager.calculateAverage();
+      if (average != potentiometerValue) {
+        potentiometerValue = average;
         callback(potentiometerValue);
         debounceTimer = millis() + debounce;
       }
