@@ -1,7 +1,6 @@
-/*
-  Averager
-  created 2015 by A. Heidgerken-Greene, Science Museum of MN
-*/
+// Averager
+// Originally authored in 2015 by A. Heidgerken-Greene, Science Museum of Minnesota
+
 #include "arduino.h"
 
 class Averager {

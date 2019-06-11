@@ -1,7 +1,6 @@
-/*
-  Pushbutton debouncer
-  created 2017 by A. Heidgerken-Greene, Science Museum of MN
-*/
+// Button class with debouncing
+// Originally authored in 2017 by A. Heidgerken-Greene, Science Museum of Minnesota
+
 #include "arduino.h"
 
 class Button {
