@@ -4,8 +4,8 @@
 
 #include "Constants/AppSketch.h"
 
-// #include "Libraries/AnalogInput.h"
-// #include "Libraries/Button.h"
+#include "Libraries/AnalogInput.h"
+#include "Libraries/Button.h"
 #include "Libraries/SerialMessenger.h"
 #include "Libraries/SerialParser.h"
 
