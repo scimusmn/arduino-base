@@ -1,18 +1,16 @@
-/*
-  SMM Serial data parser and COM protocol for Arduino I/O pin control, v2
-  modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
-  on 4/22/2019 by D. Bailey, Science Museum of Minnesota
-*/
+// Serial Data Parser and COM protocol for Arduino I/O pin control
+// Modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
+// Originally authored on 4/22/2019 by D. Bailey, Science Museum of Minnesota
 
-#include "Button.h"
-#include "Potentiometer.h"
+#include "Libraries/AnalogInput.h"
+#include "Libraries/Button.h"
 
 // Arduino digital output pin assignments
 #define led 3
 #define pwm_output 5
 
-// Arduino analog input pin assignments
-int potentiometerPin = A0;
+int analogInputPin1 = A0;
+int buttonPin = 2;
 
 // Variables used by parser
 const byte numChars = 64; // Buffer array size
@@ -27,37 +25,44 @@ String function;
 String value;
 boolean newData = false;
 
-// Other variables
+// Handshake initial state
 boolean handshake = false;
 
-// Set to true, if you'd like to read the current value of the potentiometer in the main loop
-boolean readPotentiometerValue = true;
-
 Button button1;
-Potentiometer potentiometer1;
+AnalogInput analogInput1;
 
-// Setup button inputs here, and associated actions when buttons are pressed
 void setup() {
 
-  // By default, we're attaching a push button to pin 2
-  button1.setup(2, [](int state) {
-    if (state) Serial.println("{\"message\":\"button-press\", \"value\":1}");
-  });
-
-  if (readPotentiometerValue == true) {
-    // By default, we're attaching a potentiometer to Analog Input 0
-    potentiometer1.setup(potentiometerPin, [](int potentiometerValue) {
-      Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-      Serial.print(potentiometerValue);
-      Serial.println("}");
-    });
-  }
+  // For every sketch, we need to set up our IO
+  // By default, we're setting up one digital input and one analog input
 
   // Setup digital pins and default modes as needed, analog inputs are setup by default
   pinMode(led, OUTPUT);
   pinMode(pwm_output, OUTPUT);
 
-  // Setup serial and wait for handshake with computer
+  // ANALOG INPUTS
+
+  // Parameter 1: pin location
+  // Parameter 2: enable averaging to get a less constant stream of data
+  boolean enableAverager = true;
+  // Parameter 3: enable lowpass filter for Averager to further smooth value
+  boolean enableLowPass = true;
+  // Parameter 4: callback
+
+  analogInput1.setup(analogInputPin1, enableAverager, enableLowPass, [](int analogInputValue) {
+    Serial.print("{\"message\":\"pot-rotation\", \"value\":");
+    Serial.print(analogInputValue);
+    Serial.println("}");
+  });
+
+  // DIGITAL INPUTS
+
+  // Parameter 1: pin location
+  // Parameter 2: callback
+
+  button1.setup(buttonPin, [](int state) {
+    if (state) Serial.println("{\"message\":\"button-press\", \"value\":1}");
+  });
 
   // Set serial baud rate
   Serial.begin(115200);
@@ -155,9 +160,8 @@ void writePins() {
     analogWrite(pwm_output, intval);
   }
   else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && intval == 1) {
-    // Read current value on analog channel A0
     Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-    Serial.print(analogRead(potentiometerPin));
+    Serial.print(analogInput1.readValue());
     Serial.println("}");
   }
   else {
@@ -168,11 +172,8 @@ void writePins() {
 
 // Main loop
 void loop() {
+  analogInput1.idle();
   button1.idle();
-
-  if (readPotentiometerValue) {
-    potentiometer1.idle();
-  }
 
   recvWithStartEndMarkers();
   if (newData == true) {
