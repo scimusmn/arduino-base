@@ -4,6 +4,7 @@
 
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
+#include "Libraries/SerialMessenger.h"
 
 // Arduino digital output pin assignments
 #define led 3
@@ -28,10 +29,15 @@ boolean newData = false;
 // Handshake initial state
 boolean handshake = false;
 
-Button button1;
 AnalogInput analogInput1;
+Button button1;
+
+SerialMessenger messenger;
 
 void setup() {
+
+  // We need to setup our SerialMessenger
+  messenger.setup();
 
   // For every sketch, we need to set up our IO
   // By default, we're setting up one digital input and one analog input
@@ -50,9 +56,7 @@ void setup() {
   // Parameter 4: callback
 
   analogInput1.setup(analogInputPin1, enableAverager, enableLowPass, [](int analogInputValue) {
-    Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-    Serial.print(analogInputValue);
-    Serial.println("}");
+    messenger.sendJsonMessage("analog-input1", analogInputValue);
   });
 
   // DIGITAL INPUTS
@@ -61,7 +65,7 @@ void setup() {
   // Parameter 2: callback
 
   button1.setup(buttonPin, [](int state) {
-    if (state) Serial.println("{\"message\":\"button-press\", \"value\":1}");
+    if (state) messenger.sendJsonMessage("button1-press", 1);
   });
 
   // Set serial baud rate
@@ -73,11 +77,14 @@ void setup() {
   // Wait here until { character is received
   while (!handshake) {
     if (Serial.available() > 0 && Serial.read() == '{') {
+
       // Send confirmation message to computer
-      Serial.println("{\"message\":\"Arduino-ready\", \"value\":1}");
+
       handshake = true;
+      messenger.sendJsonMessage("Arduino-ready", 1);
     }
-    if (Serial.read()!='{') {
+
+    if (Serial.read() != '{') {
       // Clear serial input buffer if character is not valid
       while (Serial.available()) Serial.read();
     }
@@ -160,13 +167,10 @@ void writePins() {
     analogWrite(pwm_output, intval);
   }
   else if (message == "\"message\"" && function == "\"pot-rotation\"" && value == " \"value\"" && intval == 1) {
-    Serial.print("{\"message\":\"pot-rotation\", \"value\":");
-    Serial.print(analogInput1.readValue());
-    Serial.println("}");
+    messenger.sendJsonMessage("pot-rotation", analogInput1.readValue());
   }
   else {
-    // Nothing matched
-    Serial.print("{\"message\":\"unknown-command\", \"value\":");
+    messenger.sendJsonMessage("unknown-command", 1);
   }
 }
 
