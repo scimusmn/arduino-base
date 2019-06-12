@@ -7,7 +7,7 @@
 #include "Libraries/SerialMessenger.h"
 #include "Libraries/SerialParser.h"
 
-#include "Constants/AppSketch.h"
+#include "App/AppSketch.h"
 
 // Handshake initial state
 boolean handshake = false;
