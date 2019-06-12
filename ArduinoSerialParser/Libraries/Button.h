@@ -11,7 +11,7 @@ public:
   unsigned long debounceTimer;
   int debounce;
   int pin;
-  void (*callback)(int state);
+  int (*callback)(int state);
 
   Button() {}
 
