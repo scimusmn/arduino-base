@@ -2,12 +2,12 @@
 // Modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
 // Originally authored on 4/22/2019 by D. Bailey, Science Museum of Minnesota
 
-#include "Constants/AppSketch.h"
-
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
 #include "Libraries/SerialMessenger.h"
 #include "Libraries/SerialParser.h"
+
+#include "Constants/AppSketch.h"
 
 // Digital Input pin assignments
 // int analogInputPin1 = A0;
