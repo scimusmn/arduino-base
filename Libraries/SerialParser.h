@@ -14,7 +14,7 @@ public:
   String value;
   boolean newData = false;
 
-  void (*callback)(String function, int intval);
+  void (*callback)(String message, int value);
 
   SerialParser() {}
 

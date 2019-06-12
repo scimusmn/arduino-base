@@ -1,56 +1,77 @@
-// Serial Data Parser and COM protocol for Arduino I/O pin control
-// Modified and adapted from example code written by Robin2 @ http://forum.arduino.cc/index.php?topic=396450
-// Originally authored on 4/22/2019 by D. Bailey, Science Museum of Minnesota
-
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
-#include "Libraries/SerialMessenger.h"
-#include "Libraries/SerialParser.h"
+#include "Libraries/SerialManager.h"
 
-#include "App/AppSketch.h"
+SerialManager manager;
 
-// Handshake initial state
-boolean handshake = false;
+int baudRate = 115200;
 
-AppSketch app;
-SerialMessenger messenger;
-SerialParser parser;
+AnalogInput analogInput1;
+Button button1;
+
+// Pin assignments
+int analogInputPin1 = A0;
+int buttonPin = 2;
+int ledPin = 3;
+int pwmOutputPin = 5;
 
 void setup() {
 
-  // We need to setup our SerialHelper classes
-  messenger.setup();
-
-  app.setup(messenger);
-
-  parser.setup([](String message, int intval) {
-    app.writePins(message, intval);
+  // Ensure Serial Port is open and ready to communicate
+  manager.setup(baudRate, [](String message, int value) {
+    onParse(message, value);
   });
 
-  // Set serial baud rate
-  Serial.begin(115200);
+  // For every sketch, we need to set up our IO
+  // Setup digital pins and default modes as needed, analog inputs are setup by default
+  pinMode(ledPin, OUTPUT);
+  pinMode(pwmOutputPin, OUTPUT);
 
-  // Wait for serial port to open
-  while (!Serial);
+  // ANALOG INPUTS
 
-  // Wait here until { character is received
-  while (!handshake) {
+  // Parameter 1: pin location
+  // Parameter 2: enable averaging to get a less constant stream of data
+  boolean enableAverager = true;
+  // Parameter 3: enable lowpass filter for Averager to further smooth value
+  boolean enableLowPass = true;
+  // Parameter 4: callback
 
-    // Send confirmation message to computer
-    if (Serial.available() > 0 && Serial.read() == '{') {
-      handshake = true;
-      messenger.sendJsonMessage("Arduino-ready", 1);
-    }
+  analogInput1.setup(analogInputPin1, enableAverager, enableLowPass, [](int analogInputValue) {
+    manager.sendJsonMessage("analog-input1", analogInputValue);
+  });
 
-    // Clear serial input buffer if character is not valid
-    if (Serial.read() != '{') {
-      while (Serial.available()) Serial.read();
-    }
-  }
+  // DIGITAL INPUTS
+
+  // Parameter 1: pin location
+  // Parameter 2: callback
+
+  button1.setup(buttonPin, [](int state) {
+    if (state) manager.sendJsonMessage("button1-press", 1);
+  });
 }
 
-// Main loop
 void loop() {
-  parser.idle();
-  app.idle();
+  manager.idle();
+}
+
+void onParse(String message, int value) {
+  if (message == "\"led\"" && value == 1) {
+    // Turn-on led
+    digitalWrite(ledPin, value);
+  }
+  else if (message == "\"led\"" && value == 0) {
+    // Turn-off led
+    digitalWrite(ledPin, value);
+  }
+  else if (message == "\"pwm-output\"" && value >= 0) {
+    // Set pwm value to pwm pin
+    analogWrite(pwmOutputPin, value);
+    manager.sendJsonMessage("pwm-set", value);
+  }
+  else if (message == "\"pot-rotation\"" && value == 1) {
+    manager.sendJsonMessage("pot-rotation", analogInput1.readValue());
+  }
+  else {
+    manager.sendJsonMessage("unknown-command", 1);
+  }
 }
