@@ -17,8 +17,8 @@
 // #define led 3
 // #define pwm_output 5
 //
-// // Handshake initial state
-// boolean handshake = false;
+// Handshake initial state
+boolean handshake = false;
 //
 // AnalogInput analogInput1;
 // Button button1;
