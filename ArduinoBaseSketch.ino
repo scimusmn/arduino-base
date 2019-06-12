@@ -4,7 +4,7 @@
 
 SerialManager manager;
 
-int baudRate = 115200;
+long baudRate = 115200;
 
 AnalogInput analogInput1;
 Button button1;
@@ -51,6 +51,8 @@ void setup() {
 }
 
 void loop() {
+  analogInput1.idle();
+  button1.idle();
   manager.idle();
 }
 

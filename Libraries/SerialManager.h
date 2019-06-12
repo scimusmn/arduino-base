@@ -5,12 +5,9 @@
 
 class SerialManager {
 private:
-  
   SerialMessenger messenger;
   SerialParser parser;
-
 public:
-
   // Handshake initial state
   boolean handshake = false;
 
@@ -18,7 +15,20 @@ public:
 
   SerialManager() {}
 
-  void setup(int baudRate, void (*CB)(String, int)) {
+  void setup(long baudRate, void (*CB)(String, int)) {
+
+    waitForSerial(baudRate);
+
+    messenger.setup();
+    parserCallback = CB;
+    parser.setup(parserCallback);
+  }
+
+  void sendJsonMessage(String message, int value) {
+    messenger.sendJsonMessage(message, value);
+  }
+
+  void waitForSerial(long baudRate) {
     // Set serial baud rate
     Serial.begin(baudRate);
 
@@ -39,14 +49,6 @@ public:
         while (Serial.available()) Serial.read();
       }
     }
-
-    parserCallback = CB;
-    parser.setup(parserCallback);
-
-  }
-
-  void sendJsonMessage(String message, int value) {
-    messenger.sendJsonMessage(message, value);
   }
 
   void idle() {
