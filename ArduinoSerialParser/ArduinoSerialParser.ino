@@ -21,7 +21,7 @@ void setup() {
   // We need to setup our SerialHelper classes
   messenger.setup();
 
-  app.setup(messenger);
+  app.setup(app, messenger);
 
   parser.setup([](String message, int intval) {
     app.writePins(message, intval);
