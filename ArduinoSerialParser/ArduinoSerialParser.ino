@@ -35,7 +35,7 @@ void setup() {
     writePins(message, intval);
   });
 
-  app.setup();
+  app.setup(messenger);
 
   // For every sketch, we need to set up our IO
   // By default, we're setting up one digital input and one analog input
