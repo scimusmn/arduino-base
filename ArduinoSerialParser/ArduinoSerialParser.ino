@@ -21,7 +21,11 @@ void setup() {
   // We need to setup our SerialHelper classes
   messenger.setup();
 
-  app.setup(messenger, parser);
+  app.setup(messenger);
+
+  parser.setup([](String message, int intval) {
+    app.writePins(message, intval);
+  });
 
   // Set serial baud rate
   Serial.begin(115200);
@@ -47,6 +51,6 @@ void setup() {
 
 // Main loop
 void loop() {
-  // parser.idle();
+  parser.idle();
   app.idle();
 }
