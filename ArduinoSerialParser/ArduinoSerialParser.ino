@@ -9,19 +9,8 @@
 
 #include "Constants/AppSketch.h"
 
-// Digital Input pin assignments
-// int analogInputPin1 = A0;
-// int buttonPin = 2;
-//
-// // Digital Output pin assignments
-// #define led 3
-// #define pwm_output 5
-//
 // Handshake initial state
 boolean handshake = false;
-//
-// AnalogInput analogInput1;
-// Button button1;
 
 AppSketch app;
 SerialMessenger messenger;
@@ -31,40 +20,8 @@ void setup() {
 
   // We need to setup our SerialHelper classes
   messenger.setup();
-  parser.setup([](String message, int intval) {
-    //writePins(message, intval);
-  });
 
-  app.setup(messenger);
-
-  // For every sketch, we need to set up our IO
-  // By default, we're setting up one digital input and one analog input
-
-  // Setup digital pins and default modes as needed, analog inputs are setup by default
-  // pinMode(led, OUTPUT);
-  // pinMode(pwm_output, OUTPUT);
-
-  // ANALOG INPUTS
-
-  // Parameter 1: pin location
-  // Parameter 2: enable averaging to get a less constant stream of data
-  // boolean enableAverager = true;
-  // // Parameter 3: enable lowpass filter for Averager to further smooth value
-  // boolean enableLowPass = true;
-  // // Parameter 4: callback
-  //
-  // analogInput1.setup(analogInputPin1, enableAverager, enableLowPass, [](int analogInputValue) {
-  //   messenger.sendJsonMessage("analog-input1", analogInputValue);
-  // });
-
-  // DIGITAL INPUTS
-
-  // Parameter 1: pin location
-  // Parameter 2: callback
-
-  // button1.setup(buttonPin, [](int state) {
-  //   if (state) messenger.sendJsonMessage("button1-press", 1);
-  // });
+  app.setup(messenger, parser);
 
   // Set serial baud rate
   Serial.begin(115200);
@@ -88,33 +45,8 @@ void setup() {
   }
 }
 
-// Write pin states and send out confirmation and analog values over serial
-// void writePins(String message, int intval) {
-//   if (message == "\"led\"" && intval == 1) {
-//     // Turn-on led
-//     digitalWrite(led, intval);
-//   }
-//   else if (message == "\"led\"" && intval == 0) {
-//     // Turn-off led
-//     digitalWrite(led, intval);
-//   }
-//   else if (message == "\"pwm-output\"" && intval >= 0) {
-//     // Set pwm value to pwm pin
-//     analogWrite(pwm_output, intval);
-//     messenger.sendJsonMessage("pwm-set", intval);
-//   }
-//   else if (message == "\"pot-rotation\"" && intval == 1) {
-//     messenger.sendJsonMessage("pot-rotation", analogInput1.readValue());
-//   }
-//   else {
-//     messenger.sendJsonMessage("unknown-command", 1);
-//   }
-// }
-
 // Main loop
 void loop() {
-  // analogInput1.idle();
-  // button1.idle();
   // parser.idle();
   app.idle();
 }
