@@ -10,10 +10,10 @@ AnalogInput analogInput1;
 Button button1;
 
 // Pin assignments
-int analogInputPin1 = A0;
-int buttonPin = 2;
-int ledPin = 3;
-int pwmOutputPin = 5;
+#define analogInput1Pin A0
+#define button1Pin 2
+#define ledPin 3
+#define pwmOutputPin 5
 
 void setup() {
 
@@ -36,7 +36,7 @@ void setup() {
   boolean enableLowPass = true;
   // Parameter 4: callback
 
-  analogInput1.setup(analogInputPin1, enableAverager, enableLowPass, [](int analogInputValue) {
+  analogInput1.setup(analogInput1Pin, enableAverager, enableLowPass, [](int analogInputValue) {
     manager.sendJsonMessage("analog-input1", analogInputValue);
   });
 
@@ -45,7 +45,7 @@ void setup() {
   // Parameter 1: pin location
   // Parameter 2: callback
 
-  button1.setup(buttonPin, [](int state) {
+  button1.setup(button1Pin, [](int state) {
     if (state) manager.sendJsonMessage("button1-press", 1);
   });
 }
