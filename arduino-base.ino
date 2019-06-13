@@ -2,7 +2,7 @@
 #include "Libraries/Button.h"
 #include "Libraries/SerialManager.h"
 
-SerialManager manager;
+SerialManager serialManager;
 
 long baudRate = 115200;
 
@@ -18,7 +18,7 @@ Button button1;
 void setup() {
 
   // Ensure Serial Port is open and ready to communicate
-  manager.setup(baudRate, [](String message, int value) {
+  serialManager.setup(baudRate, [](String message, int value) {
     onParse(message, value);
   });
 
@@ -31,13 +31,13 @@ void setup() {
 
   // Parameter 1: pin location
   // Parameter 2: enable averaging to get a less constant stream of data
-  boolean enableAverager = true;
+  boolean enableAverager = false;
   // Parameter 3: enable lowpass filter for Averager to further smooth value
-  boolean enableLowPass = true;
+  boolean enableLowPass = false;
   // Parameter 4: callback
 
   analogInput1.setup(analogInput1Pin, enableAverager, enableLowPass, [](int analogInputValue) {
-    manager.sendJsonMessage("analog-input1", analogInputValue);
+    serialManager.sendJsonMessage("analog-input1", analogInputValue);
   });
 
   // DIGITAL INPUTS
@@ -46,14 +46,14 @@ void setup() {
   // Parameter 2: callback
 
   button1.setup(button1Pin, [](int state) {
-    if (state) manager.sendJsonMessage("button1-press", 1);
+    if (state) serialManager.sendJsonMessage("button1-press", 1);
   });
 }
 
 void loop() {
   analogInput1.idle();
   button1.idle();
-  manager.idle();
+  serialManager.idle();
 }
 
 void onParse(String message, int value) {
@@ -68,12 +68,12 @@ void onParse(String message, int value) {
   else if (message == "\"pwm-output\"" && value >= 0) {
     // Set pwm value to pwm pin
     analogWrite(pwmOutputPin, value);
-    manager.sendJsonMessage("pwm-set", value);
+    serialManager.sendJsonMessage("pwm-set", value);
   }
   else if (message == "\"pot-rotation\"" && value == 1) {
-    manager.sendJsonMessage("pot-rotation", analogInput1.readValue());
+    serialManager.sendJsonMessage("pot-rotation", analogInput1.readValue());
   }
   else {
-    manager.sendJsonMessage("unknown-command", 1);
+    serialManager.sendJsonMessage("unknown-command", 1);
   }
 }
