@@ -1,19 +1,14 @@
 # Arduino Base
-#### Goals
-The goal of this repo is to serve as a go-to boilerplate for quick exhibit prototyping.  It holds SMM's most up-to-date Arduino-related libraries, and a boilerplate sketch for use to quickly build exhibit prototypes. The way you choose to use this repo is up to you, but two suggested ways are noted below.
+The goal of this repo is to serve as a go-to boilerplate for rapid Arduino prototyping. It holds SMM's most up-to-date Arduino-related libraries, and a boilerplate sketch for use to quickly build exhibit prototypes. The way you choose to use this repo is up to you, but two suggested ways are noted below.
 
-#### Compatibility
+### Compatibility
 This has been tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud.
 
 ### Please note:
 This repo is **NOT** a place to store exhibit-specific libraries or sketches. It is intended only to hold code that is designed to be general and used in a modular way. From time to time, as complexity grows, new libraries will be added and old libraries may be rewritten to run more efficiently or to extend new features. If you do make pull-requests, **please** be sure to keep backwards-compatibility at the forefront of your changes.
 
----
-
 ## Prerequisites
 In order to verify your sketch code compiles and to burn it to the Arduino, you'll first need to [download](https://www.arduino.cc/en/Main/Software) the official Arduino IDE and drivers. Instructions on the usage of the Arduino IDE can be found [here](https://www.arduino.cc/en/Guide/Environment).
-
----
 
 ## Suggested Usage
 There are two suggested way to incorporate this repo into projects. If you need do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
@@ -32,7 +27,7 @@ After cloning the repo to your computer, you can begin modifying the `arduino-ba
 ### Submodule Method
 When there is an app repo that will ultimately hold the Arduino sketch you'll be building, it is **strongly** recommended to use this method instead of cloning a copy to the App-specific repo to avoid duplicating non-maintained code. However, in using this method, it is **VERY** important to not modify your local submodule copy of `arduino-base`, because your app-specific repo will the conflict with `arduino-base` and not be able to pull fresh changes.
 
-To see what an app setup with this method looks like, [stel-duino-testbed](https://github.com/scimusmn/stel-duino-testbed) is a good example.
+To see what an app setup with this method looks like, [stel-duino](https://github.com/scimusmn/stel-duino) is a good example.
 
 #### App setup
 Generally, inside of your App-specific repo, there will be a directory named `src` located in the repo root directory. We need to create a directory to hold all of our Arduino-related code.
