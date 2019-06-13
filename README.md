@@ -1,20 +1,38 @@
 # Arduino Base
+#### Goals
 The goal of this repo is to serve as a go-to boilerplate for quick exhibit prototyping.  It holds SMM's most up-to-date Arduino-related libraries, and a boilerplate sketch for use to quickly build exhibit prototypes. The way you choose to use this repo is up to you, but two suggested ways are noted below.
 
 #### Compatibility
 This has been tested with Arduino UNO R3 @ 115200 baud, Adafruit Metro Mini @ 115200 baud, and Inland Pro-Mini @ 9600 baud.
 
-#### Please note:
+### Please note:
 This repo is **NOT** a place to store exhibit-specific libraries or sketches. It is intended only to hold code that is designed to be general and used in a modular way. From time to time, as complexity grows, new libraries will be added and old libraries may be rewritten to run more efficiently or to extend new features. If you do make pull-requests, **please** be sure to keep backwards-compatibility at the forefront of your changes.
 
 ---
 
+## Prerequisites
+In order to verify your sketch code compiles and to burn it to the Arduino, you'll first need to [download](https://www.arduino.cc/en/Main/Software) the official Arduino IDE and drivers. Instructions on the usage of the Arduino IDE can be found [here](https://www.arduino.cc/en/Guide/Environment).
+
+---
+
 ## Suggested Usage
+There are two suggested way to incorporate this repo into projects. If you need do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
+
+If an app-specific repo does exist and are familiar with SMM's repo management style, you're better off using the Submodule method. This method is a little bit more advanced, you should know about [`git submodules`](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before diving in, but the relevant commands are included to get you started.
+
 ### Checkout/Clone Method
-When you are in the beginning stages of exhibit prototyping, the project you're working on may or may not have an app repo to hold the relevant code, or the exhibit may have no other code. In this case, you can simply clone the repo to your computer and begin modifying the `arduino-base.ino` file to your needs. **DO NOT** commit this file back up this repo as that would be considered app-specific code. Instead, keep the sketch around until you're ready for it become permanent and push it to a new repo.
+When you are in the beginning stages of exhibit prototyping, the project you're working on may or may not have an app repo to hold the relevant code, or the exhibit may have no other code.
+
+```
+$ git clone https://github.com/scimusmn/arduino-base
+```
+
+After cloning the repo to your computer, you can begin modifying the `arduino-base.ino` file to suit your needs. **DO NOT** commit this file back up this repo as that would be considered app-specific code. Instead, keep the sketch around until you're ready for it become permanent and then incorporate it into an app-specific repo.
 
 ### Submodule Method
 When there is an app repo that will ultimately hold the Arduino sketch you'll be building, it is **strongly** recommended to use this method instead of cloning a copy to the App-specific repo to avoid duplicating non-maintained code. However, in using this method, it is **VERY** important to not modify your local submodule copy of `arduino-base`, because your app-specific repo will the conflict with `arduino-base` and not be able to pull fresh changes.
+
+To see what an app setup with this method looks like, [stel-duino-testbed](https://github.com/scimusmn/stel-duino-testbed) is a good example.
 
 #### App setup
 Generally, inside of your App-specific repo, there will be a directory named `src` located in the repo root directory. We need to create a directory to hold all of our Arduino-related code.
@@ -116,7 +134,7 @@ void loop() {
 ```
 
 ### SerialManager.h
-This library is used to handle sending outgoing serial data, via `SerialMessenger.h`, and parsing incoming serial data, via `SerialParser.h`. It serves as a link between [stele](https://github.com/scimusmn/stele) and exhibit-specific apps by sending and receiving JSON messages from [stele](https://github.com/scimusmn/stele).
+This library is used to handle sending outgoing serial data, via `SerialMessenger.h`, and parsing incoming serial data, via `SerialParser.h`. It serves as a link between [stele](https://github.com/scimusmn/stele) and exhibit-specific apps by sending and receiving [JSON](https://json.org/) messages from [stele](https://github.com/scimusmn/stele).
 
 If you need/choose to use this library in your app, make sure to run the `manager.setup()` function before any other setup function to ensure anything dependent on `SerialManager.h` is available.
 
@@ -142,6 +160,9 @@ void setup() {
 
 void onParse(String message, int value) {
   // This runs when the Arduino receives serial data
+  if (message == "specific-message" && value == 1)
+    // Do something
+  }
 }
 
 void loop() {
@@ -163,7 +184,7 @@ manager.sendJsonMessage("some-message-type", 99);
 ```
 
 #### Serial Parsing
-In this example code, data sent and received by the Arduino is formatted in a JSON-style format. To start communication with the Arduino, send a "{" character, without the quotes.
+In this example code, data sent and received by the Arduino is formatted in a [JSON](https://json.org/)-style format. To start communication with the Arduino, send a "{" character, without the quotes.
 
 All messages sent to the Arduino from the computer will be echoed back to the computer as verification that the message was correctly received.
 
@@ -203,4 +224,11 @@ To write a PWM value to a PWM pin on the Arduino, send the following from the co
 ```
 
 ## Acknowledgements
-Modified and adapted from [example code](http://forum.arduino.cc/index.php?topic=396450) written by Robin2.
+#### Averager.h
+Originally authored in 2015 by [A. Heidgerken-Greene](https://github.com/heidgera)
+
+#### Button.h
+Originally authored in 2017 by [A. Heidgerken-Greene](https://github.com/heidgera)
+
+#### SerialManager.h, SerialMessenger.h, and SerialParser.h
+Modified and adapted in 2019 by [D. Bailey](https://github.com/twsdbailey), from [example code](http://forum.arduino.cc/index.php?topic=396450) written by Robin2.
