@@ -32,11 +32,13 @@ void setup() {
   // Parameter 1: pin location
   // Parameter 2: enable averaging to get a less constant stream of data
   boolean enableAverager = false;
-  // Parameter 3: enable lowpass filter for Averager to further smooth value
+  // Parameter 3: the number of samples to average
+  int averagerSampleRate = 10;
+  // Parameter 4: enable lowpass filter for Averager to further smooth value
   boolean enableLowPass = false;
-  // Parameter 4: callback
+  // Parameter 5: callback
 
-  analogInput1.setup(analogInput1Pin, enableAverager, enableLowPass, [](int analogInputValue) {
+  analogInput1.setup(analogInput1Pin, enableAverager, averagerSampleRate, enableLowPass, [](int analogInputValue) {
     serialManager.sendJsonMessage("analog-input1", analogInputValue);
   });
 

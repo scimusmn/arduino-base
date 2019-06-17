@@ -7,6 +7,7 @@ public:
   void (*callback)(int);
   boolean enableAverager;
   boolean enableLowPass;
+  int sampleRate = 10;
 
   int analogInputValue;
   Averager averager;
@@ -15,14 +16,15 @@ public:
 
   AnalogInput() {}
 
-  void setup(int pinLocation, boolean getAverage, boolean getLowPass, void (*CB)(int)) {
+  void setup(int pinLocation, boolean getAverage, int averagerSampleRate, boolean getLowPass, void (*CB)(int)) {
     analogInputPin = pinLocation;
     callback = CB;
     enableAverager = getAverage;
+    sampleRate = averagerSampleRate;
     enableLowPass = getLowPass;
 
     if (enableAverager) {
-      averager.setup(analogInputPin, 10, enableLowPass);
+      averager.setup(analogInputPin, sampleRate, enableLowPass);
     }
   }
 
