@@ -70,14 +70,15 @@ After getting the submodule path setup, copy the `arduino-base.ino` file from th
 ## Libraries
 
 ### AnalogInput.h
-This library is primarily a tool used to stop the constant output of Analog Input sensors. It achieves this by averaging `N` number of samples, using the `Average.h` library.
+This library is primarily a tool used to stop the constant output of Analog Input sensors. It achieves this by averaging `int averagerSampleRate` number of samples, using the `Average.h` library.
 
 To setup a new `AnalogInput`, you'll need to pass in four parameters:
 
 1. `int` pin, location of the input pin
 2. `boolean` enableAverager, to enable averaging via `Averager.h`
-3. `boolean` enableLowPass, to enable lowpass filtering via `Averager.h`
-4. `void (*callback)(int)`, a callback function that accepts the returned `int` value of the sensor
+3. `int`, the number of samples to average
+4. `boolean` enableLowPass, to enable lowpass filtering via `Averager.h`
+5. `void (*callback)(int)`, a callback function that accepts the returned `int` value of the sensor
 
 ```
 #include "Libraries/AnalogInput.h"
@@ -87,7 +88,7 @@ int analogInput1Pin = A0;
 
 void setup() {
 
-  analogInput1.setup(analogInput1Pin, enableAverager, enableLowPass, [](int analogInputValue) {
+  analogInput1.setup(analogInput1Pin, enableAverager, averagerSampleRate, enableLowPass, [](int analogInputValue) {
     // Do something with analogInputValue
   });
 
