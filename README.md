@@ -11,21 +11,27 @@ This repo is **NOT** a place to store exhibit-specific libraries or sketches. It
 In order to verify your sketch code compiles and to burn it to the Arduino, you'll first need to [download](https://www.arduino.cc/en/Main/Software) the official Arduino IDE and drivers. Instructions on the usage of the Arduino IDE can be found [here](https://www.arduino.cc/en/Guide/Environment).
 
 ## Suggested Usage
-There are two suggested way to incorporate this repo into projects. If you need do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
+There are two suggested way to incorporate this repo into projects. If you need to do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
 
-If an app-specific repo does exist and are familiar with SMM's repo management style, you're better off using the Submodule method. This method is a little bit more advanced, you should know about [`git submodules`](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before diving in, but the relevant commands are included to get you started.
+If an app-specific repo does exist and you are familiar with SMM's repo management style, you're better off using the Submodule method. This method is a little bit more advanced, you should know about [`git submodules`](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before diving in, but the relevant commands are included to get you started.
 
 ### Checkout/Clone Method
-When you are in the beginning stages of exhibit prototyping, the project you're working on may or may not have an app repo to hold the relevant code, or the exhibit may have no other code.
+When you are in the beginning stages of exhibit prototyping, the project you're working on may or may not have an app repo to hold the relevant code, or the exhibit may have no other code. If this is the case, or as mentioned above, you just want to start working on Arduino code, this method is preferred.
+
+To clone the repo to your machine either run this command via a command line:
 
 ```
 $ git clone https://github.com/scimusmn/arduino-base
 ```
 
+or click the "[Download Button](https://github.com/scimusmn/arduino-base/archive/master.zip)" on the GitHub page and save as a Zip file to your computer.
+
+**NOTE**: if you save the repo as a Zip file, you'll need to rename the unzipped directory to `arduino-base`, case-specific, or the Arduino IDE will complain during compile time and not compile.
+
 After cloning the repo to your computer, you can begin modifying the `arduino-base.ino` file to suit your needs. **DO NOT** commit this file back up this repo as that would be considered app-specific code. Instead, keep the sketch around until you're ready for it become permanent and then incorporate it into an app-specific repo.
 
 ### Submodule Method
-When there is an app repo that will ultimately hold the Arduino sketch you'll be building, it is **strongly** recommended to use this method instead of cloning a copy to the App-specific repo to avoid duplicating non-maintained code. However, in using this method, it is **VERY** important to not modify your local submodule copy of `arduino-base`, because your app-specific repo will the conflict with `arduino-base` and not be able to pull fresh changes.
+When there is an app repo that will ultimately hold the Arduino sketch you'll be building, it is **strongly** recommended to use this method instead of cloning a copy to the App-specific repo to avoid duplicating non-maintained code. However, in using this method, it is **VERY** important to **NOT** modify your local submodule copy of `arduino-base`, because your app-specific repo will the conflict with `arduino-base` and not be able to pull fresh changes.
 
 To see what an app setup with this method looks like, [stel-duino](https://github.com/scimusmn/stel-duino) is a good example.
 
@@ -64,8 +70,6 @@ $ git submodule update --init --force
 
 #### Copying the sketch
 After getting the submodule path setup, copy the `arduino-base.ino` file from the `arduino-base` submodule to your `Arduino` directory and rename the new copy to `Arduino.ino`. Use this file as a starting point to start working on your project. Inside the sketch are comments that explain how to use the libraries and how you can use the serial messaging system for parsing and sending messages.
-
----
 
 ## Libraries
 
