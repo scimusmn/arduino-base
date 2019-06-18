@@ -43,11 +43,6 @@ public:
         handshake = true;
         messenger.sendJsonMessage("Arduino-ready", 1);
       }
-
-      // Clear serial input buffer if character is not valid
-      if (Serial.read() != '{') {
-        while (Serial.available()) Serial.read();
-      }
     }
   }
 
