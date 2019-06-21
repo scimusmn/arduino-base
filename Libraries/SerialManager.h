@@ -39,9 +39,9 @@ public:
     while (!handshake) {
 
       // Send confirmation message to computer
-      if (Serial.available() > 0 && Serial.read() == '{') {
+      if (Serial.available() > 0 && Serial.read() == "{\"message\":\"wake-arduino\":\"value\":1}") {
         handshake = true;
-        messenger.sendJsonMessage("Arduino-ready", 1);
+        messenger.sendJsonMessage("arduino-ready", 1);
       }
     }
   }
