@@ -17,8 +17,8 @@ public:
       DeserializationError err = deserializeJson(doc, Serial);
 
       if (err) {
-        Serial.print(F("deserializeJson() failed: "))
-        Serial.println(err.c_str())
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(err.c_str());
       } else {
         callback(doc["message"], doc["value"]);
         Serial.read();
