@@ -19,7 +19,8 @@ public:
       if (err) {
         Serial.print(F("deserializeJson() failed: "));
         Serial.println(err.c_str());
-      } else {
+      }
+      else {
         callback(doc["message"], doc["value"]);
         Serial.read();
       }
