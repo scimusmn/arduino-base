@@ -18,7 +18,7 @@ Button button1;
 void setup() {
 
   // Ensure Serial Port is open and ready to communicate
-  serialManager.setup(baudRate, [](String message, int value) {
+  serialManager.setup(baudRate, [](char* message, char* value) {
     onParse(message, value);
   });
 
@@ -31,7 +31,7 @@ void setup() {
 
   // Parameter 1: pin location
   // Parameter 2: enable averaging to get a less constant stream of data
-  boolean enableAverager = false;
+  boolean enableAverager = true;
   // Parameter 3: the number of samples to average
   int averagerSampleRate = 10;
   // Parameter 4: enable lowpass filter for Averager to further smooth value
@@ -58,22 +58,18 @@ void loop() {
   serialManager.idle();
 }
 
-void onParse(String message, int value) {
-  if (message == "\"led\"" && value == 1) {
+void onParse(char* message, int value) {
+  if (strcmp(message, "led") == 0) {
     // Turn-on led
     digitalWrite(ledPin, value);
   }
-  else if (message == "\"led\"" && value == 0) {
-    // Turn-off led
-    digitalWrite(ledPin, value);
-  }
-  else if (message == "\"pwm-output\"" && value >= 0) {
+  else if (strcmp(message, "pwm-output") == 0 && value >= 0) {
     // Set pwm value to pwm pin
     analogWrite(pwmOutputPin, value);
     serialManager.sendJsonMessage("pwm-set", value);
   }
-  else if (message == "\"pot-rotation\"" && value == 1) {
-    serialManager.sendJsonMessage("pot-rotation", analogInput1.readValue());
+  else if (strcmp(message, "pot-rotation") == 0) {
+    serialManager.sendJsonMessage(message, analogInput1.readValue());
   }
   else {
     serialManager.sendJsonMessage("unknown-command", 1);

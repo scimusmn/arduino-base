@@ -1,5 +1,6 @@
 #include "arduino.h"
 
+#include "ArduinoJson-v6.11.1.h"
 #include "SerialMessenger.h"
 #include "SerialParser.h"
 
@@ -8,10 +9,9 @@ private:
   SerialMessenger messenger;
   SerialParser parser;
 public:
-  // Handshake initial state
   boolean handshake = false;
 
-  void (*parserCallback)(String message, int value);
+  void (*parserCallback)(char* message, int value);
 
   SerialManager() {}
 
@@ -19,7 +19,6 @@ public:
 
     waitForSerial(baudRate);
 
-    messenger.setup();
     parserCallback = CB;
     parser.setup(parserCallback);
   }
@@ -39,9 +38,10 @@ public:
     while (!handshake) {
 
       // Send confirmation message to computer
-      if (Serial.available() > 0 && Serial.read() == "{\"message\":\"wake-arduino\":\"value\":1}") {
+      if (Serial.available() > 0 && Serial.read() == '{') {
         handshake = true;
         messenger.sendJsonMessage("arduino-ready", 1);
+        Serial.read();
       }
     }
   }
