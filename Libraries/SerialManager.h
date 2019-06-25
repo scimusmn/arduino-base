@@ -15,12 +15,12 @@ public:
 
   SerialManager() {}
 
-  void setup(long baudRate, void (*CB)(String, int)) {
+  void setup(long baudRate, void (*CB)(String, int), boolean parserDebug) {
 
     waitForSerial(baudRate);
 
     parserCallback = CB;
-    parser.setup(parserCallback);
+    parser.setup(parserCallback, parserDebug);
   }
 
   void sendJsonMessage(String message, int value) {

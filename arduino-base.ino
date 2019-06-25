@@ -17,10 +17,13 @@ Button button1;
 
 void setup() {
 
+  // Enables/disables debug messaging from ArduinoJson
+  boolean arduinoJsonDebug = false;
+
   // Ensure Serial Port is open and ready to communicate
   serialManager.setup(baudRate, [](char* message, char* value) {
     onParse(message, value);
-  });
+  }, arduinoJsonDebug);
 
   // For every sketch, we need to set up our IO
   // Setup digital pins and default modes as needed, analog inputs are setup by default
