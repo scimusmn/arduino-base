@@ -74,6 +74,9 @@ void onParse(char* message, int value) {
   else if (strcmp(message, "pot-rotation") == 0) {
     serialManager.sendJsonMessage(message, analogInput1.readValue());
   }
+  else if (strcmp(message, "wake-arduino") == 0 && value == 1) {
+    serialManager.sendJsonMessage("arduino-ready", 1);
+  }
   else {
     serialManager.sendJsonMessage("unknown-command", 1);
   }
