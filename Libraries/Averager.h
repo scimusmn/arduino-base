@@ -4,18 +4,16 @@ class Averager {
 public:
 
   // Setup variables
-  int pin;
   int numberOfSamples;
   boolean useLowpassFilter = false;
 
   int * sampleReadings;
-  int currentSample;
+  int samplePointer;
   long samplingTotal;
 
   Averager() {}
 
-  void setup(int analogInput, int requestedNumberOfSamples = 10, boolean useLowpass = false) {
-    pin = analogInput;
+  void setup(int requestedNumberOfSamples = 10, boolean useLowpass = false) {
 
     // Tells us if we should use a lowpass filter on sensor readings
     useLowpassFilter = useLowpass;
@@ -30,23 +28,20 @@ public:
     }
   }
 
-  // This actually does pin reads and calculates the average
   int calculateAverage() {
-    for (int i = 0; i < numberOfSamples; i++) {
-      int newSample = analogRead(pin);
+    return samplingTotal / numberOfSamples;
+  }
 
-      if (useLowpassFilter == true) {
-        // Simple Low Pass filter to smooth out the jitter
-        newSample = (0.8 * newSample) + ((1 - 0.8) * currentSample);
-      }
+  void insertNewSample(double newSample) {
 
-      // Update our samplingTotal with the new measurement
-      samplingTotal -= sampleReadings[i];
-      sampleReadings[i] = newSample;
-      samplingTotal += sampleReadings[i];
+    if (useLowpassFilter == true) {
+      // Simple Low Pass filter to smooth out the jitter
+      newSample = (0.8 * newSample) + ((1 - 0.8) * newSample);
     }
 
-    currentSample = samplingTotal / numberOfSamples;
-    return currentSample;
+    samplingTotal -= sampleReadings[samplePointer];
+    sampleReadings[samplePointer] = newSample;
+    samplingTotal += newSample;
+    samplePointer = (samplePointer + 1) % numberOfSamples;
   }
 };

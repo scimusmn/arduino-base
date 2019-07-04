@@ -24,14 +24,17 @@ public:
     enableLowPass = getLowPass;
 
     if (enableAverager) {
-      averager.setup(analogInputPin, sampleRate, enableLowPass);
+      averager.setup(sampleRate, enableLowPass);
     }
   }
 
   void idle() {
     if (enableAverager == true) {
+      averager.insertNewSample(analogRead(analogInputPin));
+
       if (debounceTimer < millis()) {
         int average = averager.calculateAverage();
+
         if (average != analogInputValue) {
           analogInputValue = average;
           callback(analogInputValue);
