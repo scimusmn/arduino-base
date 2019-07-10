@@ -1,13 +1,17 @@
 #include "arduino.h"
 
 class Timer {
-public:
-  void (*callback)(boolean, boolean, unsigned long);
+private:
+  unsigned long currentDuration;
   unsigned long duration;
   boolean ended = false;
+  boolean postponed = false;
+  unsigned long postponedDuration;
   boolean running = false;
   unsigned long timeElapsed = 0;
   unsigned long timeStarted = 0;
+public:
+  void (*callback)(boolean, boolean, unsigned long);
 
   Timer() {}
 
@@ -18,16 +22,28 @@ public:
 
   void clear() {
     if (running == true) {
-      running = false;
       ended = false;
+      postponed = false;
+      running = false;
       timeStarted = 0;
       timeElapsed = 0;
     }
   }
 
+  boolean isRunning() {
+    return running;
+  }
+
+  void postpone(unsigned long postponeAmount) {
+    postponed = true;
+    postponedDuration = postponedDuration + postponeAmount;
+  }
+
   void start() {
     if (running == false) {
       ended = false;
+      postponed = false;
+      postponedDuration = duration;
       running = true;
       timeStarted = millis();
       timeElapsed = 0;
@@ -41,7 +57,8 @@ public:
       unsigned long now = millis();
       timeElapsed = now - timeStarted;
 
-      if (now >= (timeStarted + duration)) {
+      currentDuration = (postponed == false) ? duration : postponedDuration;
+      if (now >= (timeStarted + currentDuration)) {
         running = false;
         ended = true;
       }

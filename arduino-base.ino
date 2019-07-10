@@ -55,7 +55,15 @@ void setup() {
   button1.setup(button1Pin, [](int state) {
     if (state) {
       serialManager.sendJsonMessage("button1-press", 1);
-      timer1.start();
+
+      if (timer1.isRunning() == false) {
+        serialManager.sendJsonMessage("isTimerRunning", timer1.isRunning());
+        timer1.start();
+      }
+      else {
+        serialManager.sendJsonMessage("postpone", 1);
+        timer1.postpone(3000);
+      }
     }
   });
 
