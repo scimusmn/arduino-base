@@ -1,6 +1,7 @@
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
 #include "Libraries/SerialManager.h"
+#include "Libraries/Timer.h"
 
 SerialManager serialManager;
 
@@ -8,6 +9,7 @@ long baudRate = 115200;
 
 AnalogInput analogInput1;
 Button button1;
+Timer timer1;
 
 // Pin assignments
 #define analogInput1Pin A0
@@ -51,14 +53,29 @@ void setup() {
   // Parameter 2: callback
 
   button1.setup(button1Pin, [](int state) {
-    if (state) serialManager.sendJsonMessage("button1-press", 1);
+    if (state) {
+      serialManager.sendJsonMessage("button1-press", 1);
+      timer1.start();
+    }
   });
+
+  timer1.setup([](boolean running, boolean ended, unsigned long timeElapsed) {
+    if (running == true) {
+      serialManager.sendJsonMessage("timeout-running", timeElapsed);
+    }
+
+    if (ended == true) {
+      serialManager.sendJsonMessage("timeout-ended", timeElapsed);
+    }
+
+  }, 3000);
 }
 
 void loop() {
   analogInput1.idle();
   button1.idle();
   serialManager.idle();
+  timer1.idle();
 }
 
 void onParse(char* message, int value) {
