@@ -84,6 +84,7 @@ To setup a new `AnalogInput`, you'll need to pass in four parameters:
 4. `boolean` enableLowPass, to enable lowpass filtering via `Averager.h`
 5. `void (*callback)(int)`, a callback function that accepts the returned `int` value of the sensor
 
+#### AnalogInput Example
 ```
 #include "Libraries/AnalogInput.h"
 
@@ -111,6 +112,7 @@ To setup a new `Button`, you'll need to pass in two parameters:
 1. `int` pin, location of the input pin
 2. `void (*callback)(int)`, a callback function that accepts the returned `int` value of the sensor
 
+#### Button Example
 ```
 #include "Libraries/Button.h"
 
@@ -133,6 +135,58 @@ void loop() {
 }
 ```
 
+### Timer.h
+This library is used to handle common timer-related functions. Currently, it does timing by counting from `millis()` although, in the future, `micros()` may be implemented.
+
+To setup a new `Timer`, you'll need to pass in two parameters:
+
+1. `void (*callback)(boolean, boolean, unsigned long)`, a callback function that accepts the returned `int` value of the sensor
+2. `unsigned long`, the duration of the timer
+
+#### Timer Methods
+| Method          | Arguments                        | Returns      | Description |
+| :---------------|:---------------------------------|:-------------|:-----------------------------------------------------
+| postpone        | (unsigned long postponeAmount)   | void         | Postpones the timer's end by `postponeAmount`, provided in ms. |
+
+#### Timer Example
+```
+#include "Libraries/Button.h"
+#include "Libraries/Timer.h"
+
+Button button1;
+Timer timer1;
+
+void setup() {
+
+  timer1.setup([](boolean running, boolean ended, unsigned long timeElapsed) {
+    if (running == true) {
+      // Let's make sure a light is on!
+    }
+
+    if (ended == true) {
+      // Time's up! Lights out.
+    }
+
+  }, 3000);
+
+  button1.setup(button1Pin, [](int state) {
+    if (state == 1) {
+
+      if (timer1.isRunning() == false) {
+        timer1.start();
+      }
+      else {
+        timer1.postpone(3000);
+      }
+    }
+  });
+}
+
+void loop() {
+  timer1.idle();
+}
+```
+
 ### SerialManager.h
 This library is used to handle sending outgoing serial data, via `SerialMessenger.h`, and parsing incoming serial data, via `SerialParser.h`. It serves as a link between [stele](https://github.com/scimusmn/stele) and exhibit-specific apps by sending and receiving [JSON](https://json.org/) messages from [stele](https://github.com/scimusmn/stele).
 
@@ -143,6 +197,7 @@ To setup a new `SerialManager`, you'll need to pass in two parameters:
 1. `long`, the serial [baud rate](https://en.wikipedia.org/wiki/Serial_port#Speed)
 2. `void (*callback)(String, int)`, a callback function that accepts a `String` and an `int`.
 
+#### SerialManager Example
 ```
 #include "Libraries/SerialManager.h"
 
