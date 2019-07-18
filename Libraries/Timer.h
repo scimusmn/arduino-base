@@ -36,7 +36,7 @@ public:
 
   void postpone(unsigned long postponeAmount) {
     postponed = true;
-    postponedDuration = postponedDuration + postponeAmount;
+    postponedDuration = timeElapsed + postponeAmount;
   }
 
   void start() {
