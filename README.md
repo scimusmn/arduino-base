@@ -146,7 +146,7 @@ To setup a new `Timer`, you'll need to pass in two parameters:
 #### Timer Methods
 | Method          | Arguments                        | Returns      | Description |
 | :---------------|:---------------------------------|:-------------|:-----------------------------------------------------
-| postpone        | (unsigned long postponeAmount)   | void         | Postpones the timer's end by `postponeAmount`, provided in ms. |
+| postpone        | (unsigned long postponeAmount)   | void         | Resets the timer's duration to `postponeAmount`, provided in ms. |
 
 #### Timer Example
 ```
