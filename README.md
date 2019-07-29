@@ -278,6 +278,18 @@ To write a PWM value to a PWM pin on the Arduino, send the following from the co
 {"message":"pwm-output", "value":130}
 ```
 
+## Troubleshooting
+### Reintializing the submodule
+While editing apps, you may run into issues if you make changes to any of the underlying submodule files inside of an app the submodule
+
+1. Delete the relevant section from the `.gitmodules` file
+2. Delete the relevant section from `.git/config`
+3. Run `git rm --cached path_to_submodule` (no trailing slash)
+4. Run `rm -rfi .git/modules/src/Arduino` (no trailing slash)
+6. Delete the now untracked submodule files `rm -rfi src/Arduino/arduino-base`
+
+You are now ready to add the submodule again, the steps to follow are listed above.
+
 ## Acknowledgements
 #### Averager.h
 Originally authored in 2015 by [A. Heidgerken-Greene](https://github.com/heidgera)
