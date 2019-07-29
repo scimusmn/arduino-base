@@ -52,7 +52,7 @@ public:
     int val;
     if (enableAverager){
       val = averager.calculateAverage();
-    }else{
+    } else {
       val = analogRead(analogInputPin);
     }
 
