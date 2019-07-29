@@ -49,6 +49,13 @@ public:
   }
 
   int readValue() {
-    return analogRead(analogInputPin);
+    int val;
+    if (enableAverager){
+      val = averager.calculateAverage();
+    }else{
+      val = analogRead(analogInputPin);
+    }
+
+    return val;
   }
 };
