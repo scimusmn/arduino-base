@@ -150,6 +150,7 @@ const withSerialCommunication = (WrappedComponent) => {
       return (
         <React.Fragment>
           <WrappedComponent
+            restartIpcCommunication={this.restartIpcCommunication}
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
             ipcAvailable={ipcAvailable}
