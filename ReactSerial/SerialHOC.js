@@ -92,6 +92,11 @@ const withSerialCommunication = (WrappedComponent) => {
       }
     }
 
+    restartIpcCommunication() {
+      this.stopIpcCommunication();
+      this.startIpcCommunication();
+    }
+
     checkIpcAvailability() {
       if (window.ipcRef) {
         this.logLine('checkIpcAvailability: ipcAvailable: true');
