@@ -85,6 +85,9 @@ const withSerialCommunication = (WrappedComponent) => {
     }
 
     stopIpcCommunication() {
+      this.ipcRenderer = this.checkIpcAvailability();
+      if (this.ipcRenderer === null) return;
+      
       this.logLine('stopIpcCommunication');
       if (this.ipcRenderer) {
         this.ipcRenderer.removeAllListeners();
