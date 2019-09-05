@@ -153,10 +153,12 @@ const withSerialCommunication = (WrappedComponent) => {
       return (
         <React.Fragment>
           <WrappedComponent
+            ipcAvailable={ipcAvailable}
             restartIpcCommunication={this.restartIpcCommunication}
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
-            ipcAvailable={ipcAvailable}
+            startIpcCommunication={this.startIpcCommunication}
+            stopIpcCommunication={this.stopIpcCommunication}
             {...this.props}
           />
           {debugOverlay}
