@@ -96,8 +96,8 @@ const withSerialCommunication = (WrappedComponent) => {
     }
 
     restartIpcCommunication() {
-      this.stopIpcCommunication();
-      this.startIpcCommunication();
+      {this.stopIpcCommunication()};
+      {this.startIpcCommunication()};
     }
 
     checkIpcAvailability() {
