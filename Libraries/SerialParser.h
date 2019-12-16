@@ -1,4 +1,4 @@
-#include "arduino.h"
+#include "Arduino.h"
 #include "ArduinoJson-v6.11.1.h"
 
 class SerialParser {

@@ -1,4 +1,4 @@
-#include "arduino.h"
+#include "Arduino.h"
 #include "Averager.h"
 
 class AnalogInput {
