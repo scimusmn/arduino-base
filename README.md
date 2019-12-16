@@ -10,8 +10,8 @@ This repo is **NOT** a place to store exhibit-specific libraries or sketches. It
 ## Prerequisites
 In order to verify your sketch code compiles and to burn it to the Arduino, you'll first need to [download](https://www.arduino.cc/en/Main/Software) the official Arduino IDE and drivers. Instructions on the usage of the Arduino IDE can be found [here](https://www.arduino.cc/en/Guide/Environment).
 
-## Suggested Usage
-There are two suggested way to incorporate this repo into projects. If you need to do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
+## Suggested Usage with Stele
+There are two suggested way to incorporate this repo into stele-compatible projects. If you need to do rapid prototyping, an app-specific repository does not exist, or you just want to get familiar with writing Arduino code, you're probably better off doing the Checkout/Clone method.
 
 If an app-specific repo does exist and you are familiar with SMM's repo management style, you're better off using the Submodule method. This method is a little bit more advanced, you should know about [`git submodules`](https://git-scm.com/book/en/v2/Git-Tools-Submodules) before diving in, but the relevant commands are included to get you started.
 
@@ -70,6 +70,24 @@ $ git submodule update --init --force
 
 #### Copying the sketch
 After getting the submodule path setup, copy the `arduino-base.ino` file from the `arduino-base` submodule to your `Arduino` directory and rename the new copy to `Arduino.ino`. Use this file as a starting point to start working on your project. Inside the sketch are comments that explain how to use the libraries and how you can use the serial messaging system for parsing and sending messages.
+
+#### Setting up an app
+Finally, after following the setup above, you'll need to register an `ipcRenderer` from `Electron` to allow stele and `arduino-base` to communicate. If you're using the SMM `create-react-app`, this can be accomplished by adding a reference in `public/index.html` file.
+```
+<body>
+  ...
+
+  <!-- Expose Electron's IPC Renderer for use within React Components -->
+  <script>
+    /* eslint-disable */
+    if (typeof require !== 'undefined') {
+        window.ipcRef = require('electron').ipcRenderer;
+    }
+  </script>
+
+  ...
+</body>
+```
 
 ## Libraries
 
