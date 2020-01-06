@@ -1,5 +1,9 @@
 #include "Arduino.h"
 
+// ensure this library description is only included once
+#ifndef Button_h
+#define Button_h
+
 class Button {
 public:
   bool state;
@@ -34,3 +38,5 @@ public:
     }
   }
 };
+
+#endif

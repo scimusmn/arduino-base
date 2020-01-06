@@ -1,6 +1,10 @@
 #include "Arduino.h"
 #include "ArduinoJson-v6.11.1.h"
 
+// ensure this library description is only included once
+#ifndef SerialParser_h
+#define SerialParser_h
+
 class SerialParser {
 public:
   void (*callback)(char* message, int value);
@@ -30,3 +34,5 @@ public:
     }
   }
 };
+
+#endif
