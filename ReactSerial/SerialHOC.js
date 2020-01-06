@@ -151,7 +151,7 @@ const withSerialCommunication = (WrappedComponent) => {
         );
       }
       return (
-        <React.Fragment>
+        <>
           <WrappedComponent
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
@@ -161,7 +161,7 @@ const withSerialCommunication = (WrappedComponent) => {
             {...this.props}
           />
           {debugOverlay}
-        </React.Fragment>
+        </>
       );
     }
   }
