@@ -1,6 +1,10 @@
 #include "Arduino.h"
 #include "Averager.h"
 
+// ensure this library description is only included once
+#ifndef AnalogInput_h
+#define AnalogInput_h
+
 class AnalogInput {
 public:
   int analogInputPin;
@@ -59,3 +63,5 @@ public:
     return val;
   }
 };
+
+#endif

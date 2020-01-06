@@ -4,6 +4,10 @@
 #include "SerialMessenger.h"
 #include "SerialParser.h"
 
+// ensure this library description is only included once
+#ifndef SerialManager_h
+#define SerialManager_h
+
 class SerialManager {
 private:
   SerialMessenger messenger;
@@ -50,3 +54,5 @@ public:
     parser.idle();
   }
 };
+
+#endif

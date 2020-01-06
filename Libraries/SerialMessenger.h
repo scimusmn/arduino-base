@@ -1,6 +1,10 @@
 #include "Arduino.h"
 #include "ArduinoJson-v6.11.1.h"
 
+// ensure this library description is only included once
+#ifndef SerialMessenger_h
+#define SerialMessenger_h
+
 class SerialMessenger {
 public:
   SerialMessenger() {}
@@ -18,3 +22,5 @@ public:
     Serial.println(serializedJson);
   }
 };
+
+#endif

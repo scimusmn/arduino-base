@@ -1,5 +1,9 @@
 #include "Arduino.h"
 
+// ensure this library description is only included once
+#ifndef Averager_h
+#define Averager_h
+
 class Averager {
 public:
 
@@ -45,3 +49,5 @@ public:
     samplePointer = (samplePointer + 1) % numberOfSamples;
   }
 };
+
+#endif

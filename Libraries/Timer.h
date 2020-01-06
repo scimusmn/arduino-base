@@ -1,5 +1,9 @@
 #include "arduino.h"
 
+// ensure this library description is only included once
+#ifndef Timer_h
+#define Timer_h
+
 class Timer {
 private:
   unsigned long currentDuration;
@@ -70,3 +74,5 @@ public:
     callback(running, ended, timeElapsed);
   }
 };
+
+#endif
