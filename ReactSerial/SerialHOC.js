@@ -1,4 +1,5 @@
 /* eslint no-console: 0 */
+/* eslint max-len: 0 */
 import React from 'react';
 import ReactScrollableList from 'react-scrollable-list';
 import _ from 'lodash';
@@ -39,20 +40,20 @@ const withSerialCommunication = (WrappedComponent) => {
 
     onSerialData(event, arg) {
       let data = {};
-      console.log('onSerialData raw data: ', arg);
+
       this.logLine(`onSerialData: ${JSON.stringify(arg)}`);
 
       // TODO: Separate {}{}{} when multiple chunks found
       try {
         data = JSON.parse(arg);
       } catch (err) {
-        console.log(`WARNING: Unable to parse serial data:${err}`);
+        this.logLine(`WARNING: Unable to parse serial data:${err}`);
       }
 
       if (this.onDataCallback) {
         this.onDataCallback(data);
       } else {
-        console.log(`No onDataCallback set. Unused data:${data}`);
+        this.logLine(`No onDataCallback set. Unused data:${data}`);
       }
     }
 
@@ -62,8 +63,10 @@ const withSerialCommunication = (WrappedComponent) => {
 
     sendData(data) {
       const { ipcAvailable } = this.state;
-      console.log('From sendData HOC: ', data);
-      console.log('ipcAvailable: ', ipcAvailable);
+
+      this.logLine('From sendData HOC: ', data);
+      this.logLine('ipcAvailable: ', ipcAvailable);
+
       if (ipcAvailable) {
         this.logLine(`sendData: ${data}`);
         this.ipcRenderer.send(IPC.RENDERER_TO_SERIAL, data);
@@ -85,9 +88,6 @@ const withSerialCommunication = (WrappedComponent) => {
     }
 
     stopIpcCommunication() {
-      this.ipcRenderer = this.checkIpcAvailability();
-      if (this.ipcRenderer === null) return;
-
       this.logLine('stopIpcCommunication');
       if (this.ipcRenderer) {
         this.ipcRenderer.removeAllListeners();
@@ -101,19 +101,24 @@ const withSerialCommunication = (WrappedComponent) => {
         this.setState({ ipcAvailable: true });
         return window.ipcRef;
       }
-      console.log('WARNING: window.ipcRef unavailable. Make sure you are setting window.ipcRef in index.html:');
+
+      this.logLine('WARNING: window.ipcRef unavailable. Make sure you are setting window.ipcRef in index.html:');
       this.logLine('checkIpcAvailability: ipcAvailable: false');
+
       this.setState({ ipcAvailable: false });
       return null;
     }
 
     logLine(data) {
-      const { logs } = this.state;
-      const log = {
-        id: `log-${logs.length}`,
-        content: data,
-      };
-      this.setState({ logs: [...logs, log] });
+      const { debugView } = this.state;
+      if (debugView) {
+        const { logs } = this.state;
+        const log = {
+          id: `log-${logs.length}`,
+          content: data,
+        };
+        this.setState({ logs: [...logs, log] });
+      }
     }
 
     render() {
@@ -148,11 +153,9 @@ const withSerialCommunication = (WrappedComponent) => {
       return (
         <React.Fragment>
           <WrappedComponent
-            ipcAvailable={ipcAvailable}
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
-            startIpcCommunication={this.startIpcCommunication}
-            stopIpcCommunication={this.stopIpcCommunication}
+            ipcAvailable={ipcAvailable}
             {...this.props}
           />
           {debugOverlay}
