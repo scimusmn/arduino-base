@@ -156,6 +156,8 @@ const withSerialCommunication = (WrappedComponent) => {
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
             ipcAvailable={ipcAvailable}
+            startIpcCommunication={this.startIpcCommunication}
+            stopIpcCommunication={this.stopIpcCommunication}
             {...this.props}
           />
           {debugOverlay}
@@ -168,3 +170,4 @@ const withSerialCommunication = (WrappedComponent) => {
 };
 
 export default withSerialCommunication;
+
