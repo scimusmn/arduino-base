@@ -1,2 +1,2 @@
-export const ARDUINO_READY = { message: 'arduino-ready', value: 1 };
-export const WAKE_ARDUINO = { message: 'wake-arduino', value: 1 };
+export const ARDUINO_READY = '{arduino-ready:1}';
+export const WAKE_ARDUINO = '{wake-arduino:1}';

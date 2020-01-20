@@ -45,7 +45,11 @@ const withSerialCommunication = (WrappedComponent) => {
 
       // TODO: Separate {}{}{} when multiple chunks found
       try {
-        data = JSON.parse(arg);
+        keyValueArray = arg.replace(/[{}]/gm,'').split(':');
+        data = {
+          message: keyValueArray[0],
+          value: keyValueArray[1],
+        }
       } catch (err) {
         this.logLine(`WARNING: Unable to parse serial data:${err}`);
       }
