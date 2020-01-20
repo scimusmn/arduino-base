@@ -95,7 +95,7 @@ void SerialController::sendMessage(char* messageKey, char* messageValue) {
   strcat(result,messageValue);
   strcat(result,"}");
 
-  Serial.print(result);
+  Serial.println(result);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
