@@ -38,7 +38,13 @@ class SerialController {
   }
   
   void sendMessage(char* messageKey, char* messageValue);
+  void sendMessage(char* messageKey, int messageValue);
+  void sendMessage(char* messageKey, unsigned int messageValue);
+  void sendMessage(char* messageKey, long int messageValue);
+  void sendMessage(char* messageKey, long unsigned int messageValue);
+  void sendMessage(char* messageKey, float messageValue);
 
+  
   void update();
 };
 
@@ -96,6 +102,36 @@ void SerialController::sendMessage(char* messageKey, char* messageValue) {
   strcat(result,"}");
 
   Serial.println(result);
+}
+
+void SerialController::sendMessage(char* messageKey, int messageValue) {
+  char stringValue[MAX_STRING_LEN];
+  snprintf(stringValue, MAX_STRING_LEN, "%d", messageValue);
+  sendMessage(messageKey, stringValue);
+}
+
+void SerialController::sendMessage(char* messageKey, unsigned int messageValue) {
+  char stringValue[MAX_STRING_LEN];
+  snprintf(stringValue, MAX_STRING_LEN, "%u", messageValue);
+  sendMessage(messageKey, stringValue);
+}
+
+void SerialController::sendMessage(char* messageKey, long int messageValue) {
+  char stringValue[MAX_STRING_LEN];
+  snprintf(stringValue, MAX_STRING_LEN, "%ld", messageValue);
+  sendMessage(messageKey, stringValue);
+}
+
+void SerialController::sendMessage(char* messageKey, long unsigned int messageValue) {
+  char stringValue[MAX_STRING_LEN];
+  snprintf(stringValue, MAX_STRING_LEN, "%lu", messageValue);
+  sendMessage(messageKey, stringValue);
+}
+
+void SerialController::sendMessage(char* messageKey, float messageValue) {
+  char stringValue[MAX_STRING_LEN];
+  snprintf(stringValue, MAX_STRING_LEN, "%f", messageValue);
+  sendMessage(messageKey, stringValue);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
