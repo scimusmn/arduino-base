@@ -1,4 +1,4 @@
-#include "arduino.h"
+#include "Arduino.h"
 
 // ensure this library description is only included once
 #ifndef Timer_h
