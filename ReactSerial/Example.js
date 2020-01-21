@@ -88,19 +88,19 @@ class Example extends Component {
         <div>
           <h2>Arduino messages:</h2>
           Wake arduino:
-          <p>{'{"message":"wake-arduino", "value":1}'}</p>
+          <p>{'{wake-arduino:1}'}</p>
           Write pwm value on (white LED):
-          <p>{'{"message":"pwm-output", "value":150}'}</p>
+          <p>{'{pwm-output:150}'}</p>
           Write pwm value off (white LED):
-          <p>{'{"message":"pwm-output", "value":0}'}</p>
+          <p>{'{pwm-output:0}'}</p>
           Open door (red LED):
-          <p>{'{"message":"door-lock", "value":1}'}</p>
+          <p>{'{door-lock:1}'}</p>
           Lock door (red LED):
-          <p>{'{"message":"door-lock", "value":0}'}</p>
+          <p>{'{door-lock:0}'}</p>
           Read analog input (will be floating):
-          <p>{'{"message":"pot-rotation", "value":1}'}</p>
+          <p>{'{pot-rotation:1}'}</p>
           Push button:
-          <p>{'{"message":"vrs-button-press", "value":1}'}</p>
+          <p>{'{vrs-button-press:1}'}</p>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <Button
@@ -111,7 +111,7 @@ class Example extends Component {
               </Button>
               <Input
                 innerRef={input => (this.sendTextInput = input)}
-                placeholder="{“message”:”wake-arduino”, “value”:1}"
+                placeholder="{wake-arduino:1}"
               />
             </InputGroupAddon>
           </InputGroup>
