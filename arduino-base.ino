@@ -80,7 +80,7 @@ void setup() {
 void loop() {
   analogInput1.idle();
   button1.idle();
-  serialController.update();
+  serialController.idle();
   timer1.idle();
 }
 
