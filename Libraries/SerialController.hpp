@@ -153,7 +153,7 @@ void SerialController::update() {
       break;
       
     case PARSE_KEY:
-      if (keyIndex == 127) {
+      if (keyIndex == MAX_STRING_LEN-1) {
         key[keyIndex] = 0;
         state = PARSE_KEY_OVERFLOW;
       }
@@ -166,6 +166,11 @@ void SerialController::update() {
       else if (c == ':') {
         key[keyIndex] = 0;
         state = PARSE_VALUE;
+      }
+      else if (c == '}') {
+        key[keyIndex] = 0;
+        (*callback)(key,value);
+        state = WAIT_FOR_START;
       }
       else {
         key[keyIndex] = c;
