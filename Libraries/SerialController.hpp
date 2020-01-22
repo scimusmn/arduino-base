@@ -44,8 +44,7 @@ class SerialController {
   void sendMessage(char* messageKey, long unsigned int messageValue);
   void sendMessage(char* messageKey, float messageValue);
 
-  
-  void update();
+  void idle();
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +135,7 @@ void SerialController::sendMessage(char* messageKey, float messageValue) {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void SerialController::update() {
+void SerialController::idle() {
   while (Serial.available() > 0) {
     char c = Serial.read();
     switch (state) {
