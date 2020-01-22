@@ -1,9 +1,9 @@
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
-#include "Libraries/SerialManager.h"
+#include "Libraries/SerialController.hpp"
 #include "Libraries/Timer.h"
 
-SerialManager serialManager;
+SerialController serialController;
 
 long baudRate = 115200;
 
@@ -14,7 +14,7 @@ Timer timer1;
 // Pin assignments
 #define analogInput1Pin A0
 #define button1Pin 2
-#define ledPin 3
+#define ledPin 13
 #define pwmOutputPin 5
 
 void setup() {
@@ -23,9 +23,7 @@ void setup() {
   boolean arduinoJsonDebug = false;
 
   // Ensure Serial Port is open and ready to communicate
-  serialManager.setup(baudRate, [](char* message, char* value) {
-    onParse(message, value);
-  }, arduinoJsonDebug);
+  serialController.setup(baudRate, &onParse);
 
   // For every sketch, we need to set up our IO
   // Setup digital pins and default modes as needed, analog inputs are setup by default
@@ -44,7 +42,7 @@ void setup() {
   // Parameter 5: callback
 
   analogInput1.setup(analogInput1Pin, enableAverager, averagerSampleRate, enableLowPass, [](int analogInputValue) {
-    serialManager.sendJsonMessage("analog-input1", analogInputValue);
+    serialController.sendMessage("analog-input1", analogInputValue);
   });
 
   // DIGITAL INPUTS
@@ -54,14 +52,14 @@ void setup() {
 
   button1.setup(button1Pin, [](int state) {
     if (state) {
-      serialManager.sendJsonMessage("button1-press", 1);
+      serialController.sendMessage("button1-press", 1);
 
       if (timer1.isRunning() == false) {
-        serialManager.sendJsonMessage("isTimerRunning", timer1.isRunning());
+        serialController.sendMessage("isTimerRunning", 1);
         timer1.start();
       }
       else {
-        serialManager.sendJsonMessage("postpone", 1);
+        serialController.sendMessage("postpone", 1);
         timer1.postpone(3000);
       }
     }
@@ -69,11 +67,11 @@ void setup() {
 
   timer1.setup([](boolean running, boolean ended, unsigned long timeElapsed) {
     if (running == true) {
-      serialManager.sendJsonMessage("timeout-running", timeElapsed);
+      serialController.sendMessage("timeout-running", timeElapsed);
     }
 
     if (ended == true) {
-      serialManager.sendJsonMessage("timeout-ended", timeElapsed);
+      serialController.sendMessage("timeout-ended", timeElapsed);
     }
 
   }, 3000);
@@ -82,27 +80,27 @@ void setup() {
 void loop() {
   analogInput1.idle();
   button1.idle();
-  serialManager.idle();
+  serialController.idle();
   timer1.idle();
 }
 
-void onParse(char* message, int value) {
+void onParse(char* message, char* value) {
   if (strcmp(message, "led") == 0) {
     // Turn-on led
-    digitalWrite(ledPin, value);
+    digitalWrite(ledPin, atoi(value));
   }
   else if (strcmp(message, "pwm-output") == 0 && value >= 0) {
     // Set pwm value to pwm pin
-    analogWrite(pwmOutputPin, value);
-    serialManager.sendJsonMessage("pwm-set", value);
+    analogWrite(pwmOutputPin, atoi(value));
+    serialController.sendMessage("pwm-set", value);
   }
   else if (strcmp(message, "pot-rotation") == 0) {
-    serialManager.sendJsonMessage(message, analogInput1.readValue());
+    serialController.sendMessage(message, analogInput1.readValue());
   }
-  else if (strcmp(message, "wake-arduino") == 0 && value == 1) {
-    serialManager.sendJsonMessage("arduino-ready", 1);
+  else if (strcmp(message, "wake-arduino") == 0 && atoi(value) == 1) {
+    serialController.sendMessage("arduino-ready", 1);
   }
   else {
-    serialManager.sendJsonMessage("unknown-command", 1);
+    serialController.sendMessage("unknown-command", 1);
   }
 }
