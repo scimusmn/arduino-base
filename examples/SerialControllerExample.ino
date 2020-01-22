@@ -25,7 +25,7 @@ void setup() {
 
 void loop() {
   // update SerialController and check for new data
-  serialController.update();
+  serialController.idle();
   
   if (blinking) {
     if ((millis() - blinkcounter) >= blinkrate) {
