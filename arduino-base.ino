@@ -97,7 +97,7 @@ void onParse(char* message, char* value) {
   else if (strcmp(message, "pot-rotation") == 0) {
     serialController.sendMessage(message, analogInput1.readValue());
   }
-  else if (strcmp(message, "wake-arduino") == 0 && value == 1) {
+  else if (strcmp(message, "wake-arduino") == 0 && atoi(value) == 1) {
     serialController.sendMessage("arduino-ready", 1);
   }
   else {
