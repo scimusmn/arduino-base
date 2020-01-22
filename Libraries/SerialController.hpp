@@ -10,7 +10,9 @@
 typedef enum {
               WAIT_FOR_START,
               PARSE_KEY,
+              PARSE_KEY_OVERFLOW,
               PARSE_VALUE,
+              PARSE_VALUE_OVERFLOW,
               N_PARSE_STATES }
   parseState;
 
@@ -149,8 +151,19 @@ void SerialController::update() {
         valueIndex = 0;
       }
       break;
+      
     case PARSE_KEY:
-      if (c == ':') {
+      if (keyIndex == 127) {
+        key[keyIndex] = 0;
+        state = PARSE_KEY_OVERFLOW;
+      }
+      else if (c == '{') {
+        strcpy(key,"");
+        strcpy(value,"");
+        keyIndex = 0;
+        valueIndex = 0;
+      }
+      else if (c == ':') {
         key[keyIndex] = 0;
         state = PARSE_VALUE;
       }
@@ -159,8 +172,13 @@ void SerialController::update() {
         keyIndex++;
       }
       break;
+      
     case PARSE_VALUE:
-      if (c == '}') {
+      if (valueIndex == MAX_STRING_LEN - 1) {
+        value[valueIndex] = 0;
+        state = PARSE_VALUE_OVERFLOW;
+      }
+      else if (c == '}') {
         value[valueIndex] = 0;
         (*callback)(key,value);
         state = WAIT_FOR_START;
@@ -170,6 +188,34 @@ void SerialController::update() {
         valueIndex++;
       }
       break;
+
+    case PARSE_KEY_OVERFLOW:
+      if (c == ':') {
+        state = PARSE_VALUE;
+      }
+      else if (c == '{') {
+        strcpy(key,"");
+        strcpy(value,"");
+        keyIndex = 0;
+        valueIndex = 0;
+        state = PARSE_KEY;
+      }
+      break;
+
+    case PARSE_VALUE_OVERFLOW:
+      if (c == '{') {
+        strcpy(key,"");
+        strcpy(value,"");
+        keyIndex = 0;
+        valueIndex = 0;
+        state = PARSE_KEY;
+      }
+      else if (c == '}') {
+        (*callback)(key,value);
+        state = WAIT_FOR_START;
+      }
+      break;
+      
     default:
       // something's gone wrong, reset
       state = WAIT_FOR_START;
