@@ -21,7 +21,7 @@ public:
     offTime = duration2Time;
   }
 
-  void idle() {
+  void update() {
     unsigned long timeNow = millis();
     if (timeNow >= nextTime) {
       if (flipflopValue) {

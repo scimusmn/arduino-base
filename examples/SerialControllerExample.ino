@@ -25,8 +25,8 @@ void setup() {
 
 void loop() {
   // update SerialController and check for new data
-  serialController.idle();
-  
+  serialController.update();
+
   if (blinking) {
     if ((millis() - blinkcounter) >= blinkrate) {
       led_on = !led_on;

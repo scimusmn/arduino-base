@@ -32,7 +32,7 @@ public:
     }
   }
 
-  void idle() {
+  void update() {
     if (enableAverager == true) {
       averager.insertNewSample(analogRead(analogInputPin));
 

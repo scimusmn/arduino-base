@@ -84,11 +84,11 @@ void setup() {
 }
 
 void loop() {
-  analogInput1.idle();
-  button1.idle();
-  flipflopTimer1.idle();
-  serialController.idle();
-  timer1.idle();
+  analogInput1.update();
+  button1.update();
+  flipflopTimer1.update();
+  serialController.update();
+  timer1.update();
 }
 
 void onParse(char* message, char* value) {

@@ -8,5 +8,5 @@ void setup() {
   }, 1000, 500);
 }
 void loop() {
-  flipflopTimer1.idle();
+  flipflopTimer1.update();
 }
