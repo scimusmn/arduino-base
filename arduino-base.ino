@@ -1,5 +1,6 @@
 #include "Libraries/AnalogInput.h"
 #include "Libraries/Button.h"
+#include "Libraries/FlipflopTimer.h"
 #include "Libraries/SerialController.hpp"
 #include "Libraries/Timer.h"
 
@@ -9,12 +10,13 @@ long baudRate = 115200;
 
 AnalogInput analogInput1;
 Button button1;
+FlipflopTimer flipflopTimer1;
 Timer timer1;
 
 // Pin assignments
 #define analogInput1Pin A0
 #define button1Pin 2
-#define ledPin 13
+#define ledPin 3
 #define pwmOutputPin 5
 
 void setup() {
@@ -65,6 +67,10 @@ void setup() {
     }
   });
 
+  flipflopTimer1.setup([](boolean flipflopValue) {
+    digitalWrite(ledPin, flipflopValue);
+  }, 1000, 500);
+
   timer1.setup([](boolean running, boolean ended, unsigned long timeElapsed) {
     if (running == true) {
       serialController.sendMessage("timeout-running", timeElapsed);
@@ -80,6 +86,7 @@ void setup() {
 void loop() {
   analogInput1.idle();
   button1.idle();
+  flipflopTimer1.idle();
   serialController.idle();
   timer1.idle();
 }
