@@ -54,7 +54,7 @@ public:
     }
   }
 
-  void idle() {
+  void update() {
     if (running == true) {
 
       // Let's increment anything that needs it

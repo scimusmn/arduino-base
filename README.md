@@ -118,7 +118,7 @@ void setup() {
 }
 
 void loop() {
-  analogInput1.idle();
+  analogInput1.update();
 }
 ```
 
@@ -149,7 +149,7 @@ void setup() {
 }
 
 void loop() {
-  button1.idle();
+  button1.update();
 }
 ```
 
@@ -201,7 +201,7 @@ void setup() {
 }
 
 void loop() {
-  timer1.idle();
+  timer1.update();
 }
 ```
 
@@ -239,7 +239,7 @@ void onParse(String message, int value) {
 }
 
 void loop() {
-  serialManager.idle();
+  serialManager.update();
 }
 ```
 

@@ -16,7 +16,7 @@ typedef enum {
               N_PARSE_STATES }
   parseState;
 
-static void cleanString(char* string);   
+static void cleanString(char* string);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -29,7 +29,7 @@ class SerialController {
   int keyIndex, valueIndex;
 
   void waitForSerial(long baudrate);
-  
+
  public:
   bool handshake;
 
@@ -38,7 +38,7 @@ class SerialController {
     waitForSerial(baudrate);
     callback = callback_;
   }
-  
+
   void sendMessage(char* messageKey, char* messageValue);
   void sendMessage(char* messageKey, int messageValue);
   void sendMessage(char* messageKey, unsigned int messageValue);
@@ -46,7 +46,7 @@ class SerialController {
   void sendMessage(char* messageKey, long unsigned int messageValue);
   void sendMessage(char* messageKey, float messageValue);
 
-  void idle();
+  void update();
 };
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -54,7 +54,7 @@ class SerialController {
 void cleanString(char* string) {
   // remove '{', '}', and ':' delimiter characters from a string
   char result[MAX_STRING_LEN];
-  
+
   int i = 0;
   int j = 0;
   while(string[i] != 0) {
@@ -71,7 +71,7 @@ void cleanString(char* string) {
 
   // close string
   result[j] = 0;
-  
+
   string = result;
 }
 
@@ -80,7 +80,7 @@ void cleanString(char* string) {
 void SerialController::waitForSerial(long baudrate) {
   Serial.begin(baudrate);
   while(!Serial);
-  
+
   while(!handshake) {
     if (Serial.available() && Serial.read() == '{') {
       handshake = true;
@@ -137,7 +137,7 @@ void SerialController::sendMessage(char* messageKey, float messageValue) {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void SerialController::idle() {
+void SerialController::update() {
   while (Serial.available() > 0) {
     char c = Serial.read();
     switch (state) {
@@ -150,7 +150,7 @@ void SerialController::idle() {
         valueIndex = 0;
       }
       break;
-      
+
     case PARSE_KEY:
       if (keyIndex == MAX_STRING_LEN-1) {
         key[keyIndex] = 0;
@@ -176,7 +176,7 @@ void SerialController::idle() {
         keyIndex++;
       }
       break;
-      
+
     case PARSE_VALUE:
       if (valueIndex == MAX_STRING_LEN - 1) {
         value[valueIndex] = 0;
@@ -219,7 +219,7 @@ void SerialController::idle() {
         state = WAIT_FOR_START;
       }
       break;
-      
+
     default:
       // something's gone wrong, reset
       state = WAIT_FOR_START;
@@ -229,5 +229,5 @@ void SerialController::idle() {
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-#endif      
+
+#endif

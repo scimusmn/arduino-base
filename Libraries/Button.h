@@ -25,7 +25,7 @@ public:
     lastFired = state = fired = true;
   }
 
-  void idle() {
+  void update() {
     if (digitalRead(pin) != state) {
       state = !state;
       fired = !state;
