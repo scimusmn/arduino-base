@@ -10,7 +10,7 @@ long baudRate = 115200;
 
 AnalogInput analogInput1;
 Button button1;
-FlipflopTimer fipflopTimer1;
+FlipflopTimer flipflopTimer1;
 Timer timer1;
 
 // Pin assignments
