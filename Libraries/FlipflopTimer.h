@@ -24,7 +24,7 @@ public:
   void idle() {
     unsigned long timeNow = millis();
     if (timeNow >= nextTime) {
-      if (flpflopValue) {
+      if (flipflopValue) {
         flipflopValue = false;
         nextTime = timeNow + offTime;
       }
