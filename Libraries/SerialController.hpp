@@ -8,28 +8,28 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 typedef enum {
-              WAIT_FOR_START,
-              PARSE_KEY,
-              PARSE_KEY_OVERFLOW,
-              PARSE_VALUE,
-              PARSE_VALUE_OVERFLOW,
-              N_PARSE_STATES }
-  parseState;
+  WAIT_FOR_START,
+  PARSE_KEY,
+  PARSE_KEY_OVERFLOW,
+  PARSE_VALUE,
+  PARSE_VALUE_OVERFLOW,
+  N_PARSE_STATES
+} parseState;
 
 static void cleanString(char* string);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class SerialController {
- private:
-  parseState state;
-  void (*callback)(char* messageKey, char* messageValue);
-  char key[MAX_STRING_LEN];
-  char value[MAX_STRING_LEN];
-  int keyIndex, valueIndex;
+  private:
+    parseState state;
+    void (*callback)(char* messageKey, char* messageValue);
+    char key[MAX_STRING_LEN];
+    char value[MAX_STRING_LEN];
+    int keyIndex, valueIndex;
 
- public:
-  bool handshake;
+  public:
+    bool handshake;
 
   SerialManager() { state = WAIT_FOR_START; callback = NULL; }
   void setup(long baudrate, void (*callback_)(char*, char*)) {
@@ -197,8 +197,8 @@ void cleanString(char* string) {
   int j = 0;
   while(string[i] != 0) {
     if (string[i] == '{'
-        || string[i] == '}'
-        || string[i] == ':') {
+      || string[i] == '}'
+      || string[i] == ':') {
       i++;
     }
     else {
