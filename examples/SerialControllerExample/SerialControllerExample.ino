@@ -11,10 +11,6 @@ long blinkcounter = 0;
 #define ledpin 13
 
 void setup() {
-
-  // Enables/disables debug messaging from ArduinoJson
-  boolean arduinoJsonDebug = false;
-
   // Ensure Serial Port is open and ready to communicate
   serialController.setup(baudrate, &onParse);
 
