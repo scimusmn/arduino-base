@@ -29,56 +29,56 @@ enum sp_return show_config(struct sp_port* port) {
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_bits    (config, &bits);
   if ( err != SP_OK ) {
     printf("error encountered in getting data bits\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_parity  (config, &parity);
   if ( err != SP_OK ) {
     printf("error encountered in getting parity\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_stopbits(config, &stop_bits);
   if ( err != SP_OK ) {
     printf("error encountered in getting stop bits\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_rts     (config, &rts);
   if ( err != SP_OK ) {
     printf("error encountered in getting RTS\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_cts     (config, &cts);
   if ( err != SP_OK ) {
     printf("error encountered in getting CTS\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_dtr     (config, &dtr);
   if ( err != SP_OK ) {
     printf("error encountered in getting DTR\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_dsr     (config, &dsr);
   if ( err != SP_OK ) {
     printf("error encountered in getting DSR\n");
     print_error(err);
     return err;
   }
-  
+
   sp_get_config_xon_xoff(config, &xon_xoff);
   if ( err != SP_OK ) {
     printf("error encountered in getting XON/XOFF\n");
@@ -191,7 +191,7 @@ enum sp_return show_config(struct sp_port* port) {
   }
 
   fflush(stdout);
-  
+
   sp_free_config(config);
 
   return SP_OK;
@@ -207,56 +207,56 @@ enum sp_return set_arduino_config(struct sp_port* port, int baudrate) {
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_bits(port, 8);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_parity(port, SP_PARITY_NONE);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_stopbits(port, 1);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_rts(port, SP_RTS_ON);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_cts(port, SP_CTS_IGNORE);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_dtr(port, SP_DTR_ON);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_dsr(port, SP_DSR_IGNORE);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");
     print_error(err);
     return err;
   }
-  
+
   err = sp_set_xon_xoff(port, SP_XONXOFF_DISABLED);
   if ( err != SP_OK ) {
     printf("error encountered in setting baudrate\n");

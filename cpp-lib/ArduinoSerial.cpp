@@ -55,7 +55,7 @@ void ArduinoSerial::openPort(int baudRate)
         sp_new_event_set(&event_set);
         sp_add_port_events(event_set, portList[i], SP_EVENT_RX_READY);
         sp_wait(event_set, 5000);
-        
+
         sp_blocking_write(portList[i], "{", sizeof(char), ARDUINO_SERIAL_WRITE_TIMEOUT);
         sp_blocking_read(portList[i], &buf, 18, 10000);
         if (strncmp(buf, "{arduino-ready:1}", 8) == 0) {
@@ -86,7 +86,7 @@ void ArduinoSerial::send(std::string key, std::string value)
         throw std::runtime_error("no port opened!");
 
     std::string buffer = "{";
-    
+
     if (key.length() >= ARDUINO_SERIAL_MAX_STR_LEN)
         buffer += key.substr(0, ARDUINO_SERIAL_MAX_STR_LEN);
     else
@@ -195,5 +195,5 @@ void ArduinoSerial::processChar(char c)
         break;
     }
 }
-            
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
