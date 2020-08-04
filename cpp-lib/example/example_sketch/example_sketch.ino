@@ -1,7 +1,7 @@
 #include "SerialController.hpp"
 
 SerialController serialController;
-unsigned int baudrate = 115200;
+unsigned long baudrate = 115200;
 
 void onParse(char* key, char* val) {}
 

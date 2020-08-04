@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 #include "ArduinoSerial.h"
 
 ArduinoSerial::ArduinoSerial()
@@ -32,7 +33,7 @@ void ArduinoSerial::openPort(int baudRate)
         throw std::runtime_error("no serial devices found");
 
     for (int i=0; i<numPorts; i++) {
-        char buf = 0;
+        char buf[19];
         error = sp_open(portList[i], SP_MODE_READ_WRITE);
         if (error != SP_OK) {
             std::cerr << "WARNING: error trying to open port " << sp_get_port_name(portList[i]) << std::endl;
@@ -49,9 +50,15 @@ void ArduinoSerial::openPort(int baudRate)
 
         // port configured correctly, check handshake
         std::cout << "scanning port " << sp_get_port_name(portList[i]) << std::endl;
+
+        struct sp_event_set* event_set;
+        sp_new_event_set(&event_set);
+        sp_add_port_events(event_set, portList[i], SP_EVENT_RX_READY);
+        sp_wait(event_set, 5000);
+        
         sp_blocking_write(portList[i], "{", sizeof(char), ARDUINO_SERIAL_WRITE_TIMEOUT);
-        sp_blocking_read(portList[i], &buf, 1, 10000);
-        if (buf == '{') {
+        sp_blocking_read(portList[i], &buf, 18, 10000);
+        if (strncmp(buf, "{arduino-ready:1}", 8) == 0) {
             std::cout << "found arduino on port " << sp_get_port_name(portList[i]) << std::endl;
             serialPort = portList[i];
             return;

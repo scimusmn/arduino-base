@@ -31,7 +31,7 @@ class SerialController {
   public:
     bool handshake;
 
-  SerialManager() { state = WAIT_FOR_START; callback = NULL; handshake = false; }
+  SerialManager() { state = WAIT_FOR_START; callback = NULL; }
   void setup(long baudrate, void (*callback_)(char*, char*)) {
     waitForSerial(baudrate);
     callback = callback_;
