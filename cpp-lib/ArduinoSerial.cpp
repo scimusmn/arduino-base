@@ -8,6 +8,7 @@ ArduinoSerial::ArduinoSerial()
     state = WAIT_FOR_START;
     key = "";
     value = "";
+    callback = NULL;
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,15 +26,15 @@ std::vector<SerialPort> ArduinoSerial::findMatchingPorts(int vid, int pid)
     struct sp_port** portList;
     int numPorts;
     std::vector<struct sp_port*> matchingPorts;
-    
+
     error = enumeratePorts(&portList, &numPorts);
     if (error != SP_OK)
         throw std::runtime_error("failed to enumerate ports");
 
     for (int i=0; i<numPorts; i++) {
-	if (checkPort(portList[i], vid, pid))
-	    matchingPorts.push_back(portList[i]);
-    }	
+        if (checkPort(portList[i], vid, pid))
+            matchingPorts.push_back(portList[i]);
+    }
     return matchingPorts;
 }
 
@@ -43,33 +44,33 @@ void ArduinoSerial::openPort(SerialPort port, int baudRate)
 {
     enum sp_return error;
     std::string portName = sp_get_port_name(port);
-    
+
     error = sp_open(port, SP_MODE_READ_WRITE);
     if (error != SP_OK) {
-	std::string errorString = "error opening port ";
-	errorString += portName;
-	throw std::runtime_error(errorString);
+        std::string errorString = "error opening port ";
+        errorString += portName;
+        throw std::runtime_error(errorString);
     }
 
     // port opened correctly
     error = setArduinoConfig(port, baudRate);
     if (error != SP_OK) {
-	std::string errorString = "error configuring port ";
-	errorString += portName;
-	sp_close(port);
-	throw std::runtime_error(errorString);
+        std::string errorString = "error configuring port ";
+        errorString += portName;
+        sp_close(port);
+        throw std::runtime_error(errorString);
     }
 
     if (handshakePort(port))
-	serialPort = port;
+        serialPort = port;
     else {
-	std::string errorString = "handshake failed on port ";
-	errorString += portName;
-	sp_close(port);
-	throw std::runtime_error(portName);
+        std::string errorString = "handshake failed on port ";
+        errorString += portName;
+        sp_close(port);
+        throw std::runtime_error(portName);
     }
 }
-    
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -146,7 +147,7 @@ enum sp_return ArduinoSerial::enumeratePorts(SerialPort** ports, int* n_ports)
     enum sp_return err = sp_list_ports(ports);
     for (; (*ports)[n]; n++);
     if (err != SP_OK) {
-	printf("ERROR: could not get list of ports\n");
+        printf("ERROR: could not get list of ports\n");
     }
     printf("\n");
     (*n_ports) = n;
@@ -161,65 +162,65 @@ enum sp_return ArduinoSerial::setArduinoConfig(SerialPort port, int baudrate)
     enum sp_return err;
     err = sp_set_baudrate(port, baudrate);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_bits(port, 8);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_parity(port, SP_PARITY_NONE);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_stopbits(port, 1);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_rts(port, SP_RTS_ON);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_cts(port, SP_CTS_IGNORE);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_dtr(port, SP_DTR_ON);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_dsr(port, SP_DSR_IGNORE);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     err = sp_set_xon_xoff(port, SP_XONXOFF_DISABLED);
     if ( err != SP_OK ) {
-	printf("error encountered in setting baudrate\n");
-	print_error(err);
-	return err;
+        printf("error encountered in setting baudrate\n");
+        print_error(err);
+        return err;
     }
 
     return SP_OK;
@@ -227,22 +228,22 @@ enum sp_return ArduinoSerial::setArduinoConfig(SerialPort port, int baudrate)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 bool ArduinoSerial::checkPort(struct sp_port* port,
-			      int vid,
-			      int pid)
+                              int vid,
+                              int pid)
 {
     enum sp_transport transportType = sp_get_port_transport(port);
     if (transportType != SP_TRANSPORT_USB)
-	return false;
+        return false;
 
     int portvid, portpid;
     sp_get_port_usb_vid_pid(port, &portvid, &portpid);
     if ( ((vid != 0) && (portvid != vid)) ||
-	 ((pid != 0) && (portpid != pid)) )
-	return false;
+         ((pid != 0) && (portpid != pid)) )
+        return false;
 
     return true;
 }
-    
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 bool ArduinoSerial::handshakePort(SerialPort port)
@@ -254,13 +255,13 @@ bool ArduinoSerial::handshakePort(SerialPort port)
     sp_free_event_set(event_set);
 
     char buf[18];
-    
+
     sp_blocking_write(port, "{", sizeof(char), ARDUINO_SERIAL_WRITE_TIMEOUT);
     sp_blocking_read(port, &buf, 18, 10000);
     if (strncmp(buf, "{arduino-ready:1}", 8) == 0) {
-	std::cout << "found arduino on port " << sp_get_port_name(port) << std::endl;
-	serialPort = port;
-	return true;
+        std::cout << "found arduino on port " << sp_get_port_name(port) << std::endl;
+        serialPort = port;
+        return true;
     }
     return false;
 }
@@ -332,17 +333,17 @@ void ArduinoSerial::print_error(enum sp_return err)
 {
     switch (err) {
     case SP_ERR_ARG:
-	printf("ERROR: invalid arguments!\n");
-	break;
+        printf("ERROR: invalid arguments!\n");
+        break;
     case SP_ERR_FAIL:
-	printf("ERROR: system error occured!\n");
-	break;
+        printf("ERROR: system error occured!\n");
+        break;
     case SP_ERR_MEM:
-	printf("ERROR: memory allocation error\n");
-	break;
+        printf("ERROR: memory allocation error\n");
+        break;
     case SP_ERR_SUPP:
-	printf("ERROR: the requested operation is not supported by this device\n");
-	break;
+        printf("ERROR: the requested operation is not supported by this device\n");
+        break;
     }
 }
 
