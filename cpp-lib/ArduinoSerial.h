@@ -2,7 +2,8 @@
 #define ARDUINO_SERIAL_H
 
 #include <string>
-#include "arduino_util.h"
+#include <vector>
+#include <libserialport.h>
 
 #ifndef ARDUINO_SERIAL_MAX_STR_LEN
 #define ARDUINO_SERIAL_MAX_STR_LEN 128
@@ -16,12 +17,18 @@
 #define ARDUINO_SERIAL_READ_TIMEOUT 1000
 #endif
 
+#define METRO_MINI_VID 0x10c4
+#define METRO_MINI_PID 0xea60
+
+typedef struct sp_port* SerialPort;
+
 class ArduinoSerial
 {
  public:
     ArduinoSerial();
     ~ArduinoSerial();
-    void openPort(int baudRate);
+    std::vector<SerialPort> findMatchingPorts(int vid, int pid);
+    void openPort(SerialPort port, int baudRate);
     void closePort();
     void send(std::string key, std::string value);
     void update();
@@ -37,7 +44,12 @@ class ArduinoSerial
     std::string key, value;
     void (*callback)(std::string, std::string);
 
+    enum sp_return enumeratePorts(SerialPort** ports, int* n_ports);
+    enum sp_return setArduinoConfig(SerialPort port, int baudrate);
+    bool checkPort(SerialPort port, int vid, int pid);
+    bool handshakePort(SerialPort port);
     void processChar(char c);
+    void print_error(enum sp_return err);
 };
 
 #endif
