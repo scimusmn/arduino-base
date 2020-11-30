@@ -135,10 +135,10 @@ const withSerialCommunication = (WrappedComponent) => {
         top: 0,
         left: 0,
         padding: '30px',
-        backgroundColor: 'rgba(0,0,0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         width: '490px',
         height: '240px',
-        boxsizing: 'border-box',
+        boxSizing: 'border-box',
         overflowY: 'scroll',
         border: '#00FFBF solid 1px',
       };
