@@ -112,7 +112,9 @@ If you're using a **Gatsby** application such ass SMM's [app-template](https://g
 ```
 
 #### React example page
-An example React component can be found at `/ReactSerial/examples/arduino-test-page.js`. If you're using Gatsby's site structure, simply copy this file into your `pages` directory and a page will be generated at `http://localhost:8000/arduino-test-page`. You can use this page to test whether React is able to communicate through the IPC Renderer. 
+An example of a React component can be found at `/ReactSerial/examples/arduino-test-page.js`. 
+If you're using Gatsby, simply copy this file into your `pages` directory and rebuild your site. A page will be generated at `http://localhost:8000/arduino-test-page` that can be used to test communication with the IPC Renderer. 
+If you aren't using Gatsby, use this file as a reference, but you'll need to update the package pathing to match your own app structure.
 
 
 ## Libraries
