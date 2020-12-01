@@ -72,7 +72,10 @@ $ git submodule update --init --force
 After getting the submodule path setup, copy the `arduino-base.ino` file from the `arduino-base` submodule to your `Arduino` directory and rename the new copy to `Arduino.ino`. Use this file as a starting point to start working on your project. Inside the sketch are comments that explain how to use the libraries and how you can use the serial messaging system for parsing and sending messages.
 
 #### Setting up an app
-Finally, after following the setup above, you'll need to register an `ipcRenderer` from `Electron` to allow stele and `arduino-base` to communicate. If you're using the SMM `create-react-app`, this can be accomplished by adding a reference in `public/index.html` file.
+Finally, after following the setup above, you'll need to register an `ipcRenderer` from `Electron` to allow stele and `arduino-base` to communicate. 
+
+
+If you're using the SMM `create-react-app`, this can be accomplished by adding a reference in `public/index.html` file.
 ```
 <body>
   ...
@@ -88,6 +91,27 @@ Finally, after following the setup above, you'll need to register an `ipcRendere
   ...
 </body>
 ```
+
+If you're using a Gatsby application (e.g. SMM's [app-template](https://github.com/scimusmn/app-template), this can be accomplished by creating a custom [creating a custom `html.js` file](https://www.gatsbyjs.com/docs/custom-html/) `html.js` and injecting a script that makes the reference.
+```
+<body>
+  ...
+  {props.postBodyComponents}
+
+  <!-- Expose Electron's IPC Renderer for use within React Components -->
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `
+        if (typeof require !== 'undefined') {
+            window.ipcRef = require('electron').ipcRenderer;
+          }
+      `,
+    }}
+  />
+</body>
+```
+
+
 
 ## Libraries
 
