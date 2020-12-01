@@ -1,5 +1,6 @@
 /* eslint no-console: 0 */
 /* eslint max-len: 0 */
+/* eslint react/jsx-props-no-spreading: 0 */
 import React from 'react';
 import ReactScrollableList from 'react-scrollable-list';
 import _ from 'lodash';
@@ -154,8 +155,9 @@ const withSerialCommunication = (WrappedComponent) => {
           />
         );
       }
+
       return (
-        <React.Fragment>
+        <>
           <WrappedComponent
             sendData={this.sendData}
             setOnDataCallback={this.setOnDataCallback}
@@ -165,7 +167,7 @@ const withSerialCommunication = (WrappedComponent) => {
             {...this.props}
           />
           {debugOverlay}
-        </React.Fragment>
+        </>
       );
     }
   }

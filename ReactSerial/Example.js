@@ -69,7 +69,7 @@ class Example extends Component {
             color="primary"
             onClick={() => this.sendClick(WAKE_ARDUINO)}
           >
-          Wake Arduino
+            Wake Arduino
           </Button>
           <Button
             color="warning"
@@ -110,7 +110,7 @@ class Example extends Component {
                 Send:
               </Button>
               <Input
-                innerRef={input => (this.sendTextInput = input)}
+                innerRef={(input) => (this.sendTextInput = input)}
                 placeholder="{wake-arduino:1}"
               />
             </InputGroupAddon>
