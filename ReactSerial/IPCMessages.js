@@ -1,4 +1,3 @@
-
 const IPC = {
   HANDSHAKE: 'ipc-handshake',
   SERIAL_TO_RENDERER: 'serial-to-renderer',
