@@ -92,7 +92,7 @@ If you're using the SMM `create-react-app`, this can be accomplished by adding a
 </body>
 ```
 
-If you're using a Gatsby application (e.g. SMM's [app-template](https://github.com/scimusmn/app-template), this can be accomplished by creating a custom [creating a custom `html.js` file](https://www.gatsbyjs.com/docs/custom-html/) `html.js` and injecting a script that makes the reference.
+If you're using a **Gatsby** application such ass SMM's [app-template](https://github.com/scimusmn/app-template)), you will need to [customize the default `html.js` file](https://www.gatsbyjs.com/docs/custom-html/), and inject a script to make the same reference.
 ```
 <body>
   ...
@@ -111,6 +111,8 @@ If you're using a Gatsby application (e.g. SMM's [app-template](https://github.c
 </body>
 ```
 
+##### Test page
+Use the `/ReactSerial/examples/arduino-test-page.js` as an example of how to set up up a front end page or component. If you're using Gatsby's page structure, simply copy and paste this file into your `pages/` directory and a page will be generated at `http://localhost:8000/arduino-test-page`.
 
 
 ## Libraries
