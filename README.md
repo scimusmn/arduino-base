@@ -75,8 +75,9 @@ After getting the submodule path setup, copy the `arduino-base.ino` file from th
 Finally, after following the setup above, you'll need to register an `ipcRenderer` from `Electron` to allow stele and `arduino-base` to communicate. 
 
 
+##### create-react-app
 If you're using the SMM `create-react-app`, this can be accomplished by adding a reference in `public/index.html` file.
-```
+```html
 <body>
   ...
 
@@ -92,8 +93,15 @@ If you're using the SMM `create-react-app`, this can be accomplished by adding a
 </body>
 ```
 
-If you're using a **Gatsby** application such ass SMM's [app-template](https://github.com/scimusmn/app-template)), you will need to [customize the default `html.js` file](https://www.gatsbyjs.com/docs/custom-html/), and inject a script to make the same reference.
+##### Gatsby
+If you're using a **Gatsby** application, such as SMM's [app-template](https://github.com/scimusmn/app-template), you will need to [customize the default `html.js` file](https://www.gatsbyjs.com/docs/custom-html/) to inject a script that makes the reference.
+1. Make a copy of `.cache/default-html.js`. Place in the `src/` folder and rename to `html.js`. 
+```bash
+cd your-gatsby-repo
+cp .cache/default-html.js src/html.js
 ```
+2. Edit `src/html.js` and insert the entire `<script>` tag seen below. It should be the last tag before the `</body>` closing tag. We use React's [dangerouslySetInnerHTML](https://www.gatsbyjs.com/docs/custom-html/#adding-custom-javascript) attribute which should be used with caution, but this is an appropriate exception. 
+```html
 <body>
   ...
   {props.postBodyComponents}
