@@ -66,7 +66,7 @@ class ArduinoPage extends Component {
   }
 
   render() {
-    const { lastMessage, log } = this.state;
+    const { lastMessage, log, logCount } = this.state;
     const { ipcAvailable } = this.props;
     return (
       <div style={{ padding: '5%' }}>
@@ -93,7 +93,7 @@ class ArduinoPage extends Component {
         <h3>
           <strong>Incoming message count:</strong>
           {' '}
-          <span style={{ color: log.length === 0 ? 'gray' : 'green' }}>{log.length}</span>
+          <span style={{ color: logCount === 0 ? 'gray' : 'green' }}>{logCount}</span>
         </h3>
         <br />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -148,7 +148,7 @@ class ArduinoPage extends Component {
           heightOfItem={30}
           maxItemsToRender={this.logLimit}
           style={{
-            height: '325px',
+            height: '278px',
             boxSizing: 'border-box',
             overflowY: 'scroll',
             overflowAnchor: 'none',
@@ -156,9 +156,11 @@ class ArduinoPage extends Component {
             backgroundColor: '#efefef',
           }}
         />
-        <span>
+        <span style={{ fontSize: '12px', color: logCount < this.logLimit ? 'gray' : 'red' }}>
           History limit:
           {' '}
+          {log.length}
+          /
           {this.logLimit}
         </span>
       </div>
