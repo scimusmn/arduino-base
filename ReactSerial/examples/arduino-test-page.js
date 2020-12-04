@@ -9,11 +9,11 @@ import {
   InputGroup, InputGroupAddon, Button, Input,
 } from 'reactstrap';
 import ReactScrollableList from 'react-scrollable-list';
-import withSerialCommunication from '../Arduino/arduino-base/ReactSerial/SerialHOC';
-import { WAKE_ARDUINO } from '../Arduino/arduino-base/ReactSerial/ArduinoConstants';
-import IPC from '../Arduino/arduino-base/ReactSerial/IPCMessages';
+import withSerialCommunication from '../SerialHOC';
+import { WAKE_ARDUINO } from '../ArduinoConstants';
+import IPC from '../IPCMessages';
 
-class ArduinoPage extends Component {
+class ArduinoTestPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -168,6 +168,6 @@ class ArduinoPage extends Component {
   }
 }
 
-const ArduinoPageWithSerialCommunication = withSerialCommunication(ArduinoPage);
+const ArduinoTestPageWithSerialCommunication = withSerialCommunication(ArduinoTestPage);
 
-export default ArduinoPageWithSerialCommunication;
+export default ArduinoTestPageWithSerialCommunication;
