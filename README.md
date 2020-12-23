@@ -198,9 +198,9 @@ To setup a new `Timer`, you'll need to pass in two parameters:
 2. `unsigned long`, the duration of the timer
 
 #### Timer Methods
-| Method          | Arguments                        | Returns      | Description |
-| :---------------|:---------------------------------|:-------------|:-----------------------------------------------------
-| postpone        | (unsigned long postponeAmount)   | void         | Resets the timer's duration to `postponeAmount`, provided in ms. |
+| Method   | Arguments                      | Returns | Description                                                      |
+| :------- | :----------------------------- | :------ | :--------------------------------------------------------------- |
+| postpone | (unsigned long postponeAmount) | void    | Resets the timer's duration to `postponeAmount`, provided in ms. |
 
 #### Timer Example
 ```
@@ -261,15 +261,13 @@ long baudRate = 115200;
 
 void setup() {
 
-  manager.setup(baudRate, [[](String message, int value) {
-    onParse(message, value);
-  });
+  manager.setup(baudRate, &onParse);
 
 }
 
-void onParse(String message, int value) {
+void onParse(char* message, char* value) {
   // This runs when the Arduino receives serial data
-  if (message == "specific-message" && value == 1)
+  if (strcmp(message, "specific-message") == 0 && value == 1)
     // Do something
   }
 }
@@ -280,20 +278,20 @@ void loop() {
 ```
 
 #### Serial Messaging
-To send a serial message from the Arduino to the computer/stele, you can use the `sendJsonMessage` function like this:
+To send a serial message from the Arduino to the computer/stele, you can use the `sendMessage` function like this:
 ```
 // Arduino sends
-manager.sendJsonMessage("some-message-type", 99);
+manager.sendMessage("some-message-type", 99);
 
 ...
 
 // Computer/stele receives
-{"message": "some-message-type", "value": 99}
+{some-message-type:99}
 
 ```
 
 #### Serial Parsing
-In this example code, data sent and received by the Arduino is formatted in a [JSON](https://json.org/)-style format. To start communication with the Arduino, send a "{" character, without the quotes.
+To start communication with the Arduino, send a "{" character, without the quotes.
 
 All messages sent to the Arduino from the computer will be echoed back to the computer as verification that the message was correctly received.
 
@@ -303,33 +301,33 @@ All messages sent to the Arduino from the computer will be echoed back to the co
 To turn-on a digital output pin on the Arduino, send from the computer:
 
 ```
-{"message":"led", "value":1}
+{led:1}
 ```
 
 To turn it off:
 
 ```
-{"message":"led", "value":0}
+{led:0}
 ```
 
 #### AnalogRead example:
 To read an analog pin on the Arduino, send from the computer:
 
 ```
-{"message":"pot-rotation", "value":1}
+{pot-rotation:1}
 ```
 
 The following message will be sent back to the computer, with a value ranging from 0-1023:
 
 ```
-{"message":"pot-rotation", "value":566}
+{pot-rotation:566}
 ```
 
 #### AnalogWrite example:
 To write a PWM value to a PWM pin on the Arduino, send the following from the computer with a value ranging from 0-255:
 
 ```
-{"message":"pwm-output", "value":130}
+{pwm-output:130}
 ```
 
 ## Troubleshooting
