@@ -9,37 +9,50 @@ import {
   InputGroup, InputGroupAddon, Button, Input,
 } from 'reactstrap';
 import ReactScrollableList from 'react-scrollable-list';
-import withSerialCommunication from '../Arduino/arduino-base/ReactSerial/SerialHOC';
-import { WAKE_ARDUINO } from '../Arduino/arduino-base/ReactSerial/ArduinoConstants';
-import IPC from '../Arduino/arduino-base/ReactSerial/IPCMessages';
+import withSerialCommunication from '../SerialHOC';
+import { WAKE_ARDUINO } from '../ArduinoConstants';
+import IPC from '../IPCMessages';
 
-class ArduinoPage extends Component {
+class ArduinoTestPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       lastMessage: '...waiting on first message',
       log: [],
+      logCount: 0,
     };
 
     this.onData = this.onData.bind(this);
     this.sendClick = this.sendClick.bind(this);
+
+    this.logLimit = 150;
+    this.logArray = [];
   }
 
   componentDidMount() {
-    console.log('Serial Example mounted');
     const { setOnDataCallback } = this.props;
     setOnDataCallback(this.onData);
   }
 
   onData(data) {
     console.log('onData:', data);
+    const { logCount } = this.state;
     const timestamp = Date.now();
     const logData = {
-      id: timestamp,
-      content: `${timestamp} - ${JSON.stringify(data)}`,
+      // Generate unique ID
+      id: `${logCount}-${timestamp}`,
+      content: `${logCount} - ${timestamp} - ${JSON.stringify(data)}`,
     };
-    const { log } = this.state;
-    this.setState({ lastMessage: JSON.stringify(data), log: [...log, logData] });
+
+    this.logArray.push(logData);
+
+    if (this.logArray.length > this.logLimit) this.logArray.shift();
+
+    this.setState({
+      lastMessage: JSON.stringify(data),
+      log: this.logArray,
+      logCount: logCount + 1,
+    });
   }
 
   sendClick(msg) {
@@ -53,7 +66,7 @@ class ArduinoPage extends Component {
   }
 
   render() {
-    const { lastMessage, log } = this.state;
+    const { lastMessage, log, logCount } = this.state;
     const { ipcAvailable } = this.props;
     return (
       <div style={{ padding: '5%' }}>
@@ -75,6 +88,12 @@ class ArduinoPage extends Component {
           <strong>Last message recieved:</strong>
           {' '}
           <span style={{ color: lastMessage === '...waiting on first message' ? 'gray' : 'green' }}>{lastMessage}</span>
+        </h3>
+        <br />
+        <h3>
+          <strong>Incoming message count:</strong>
+          {' '}
+          <span style={{ color: logCount === 0 ? 'gray' : 'green' }}>{logCount}</span>
         </h3>
         <br />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -125,11 +144,11 @@ class ArduinoPage extends Component {
           Log
         </h4>
         <ReactScrollableList
-          listItems={log}
+          listItems={this.logArray}
           heightOfItem={30}
-          maxItemsToRender={2000}
+          maxItemsToRender={this.logLimit}
           style={{
-            minHeight: '220px',
+            height: '278px',
             boxSizing: 'border-box',
             overflowY: 'scroll',
             overflowAnchor: 'none',
@@ -137,11 +156,18 @@ class ArduinoPage extends Component {
             backgroundColor: '#efefef',
           }}
         />
+        <span style={{ fontSize: '12px', color: logCount < this.logLimit ? 'gray' : 'red' }}>
+          History limit:
+          {' '}
+          {log.length}
+          /
+          {this.logLimit}
+        </span>
       </div>
     );
   }
 }
 
-const ArduinoPageWithSerialCommunication = withSerialCommunication(ArduinoPage);
+const ArduinoTestPageWithSerialCommunication = withSerialCommunication(ArduinoTestPage);
 
-export default ArduinoPageWithSerialCommunication;
+export default ArduinoTestPageWithSerialCommunication;

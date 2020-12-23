@@ -44,12 +44,12 @@ const withSerialCommunication = (WrappedComponent) => {
 
       this.logLine(`onSerialData: ${JSON.stringify(arg)}`);
 
-      // TODO: Separate {}{}{} when multiple chunks found
       try {
+        // Strip arduino carriage return
+        // and split key / value
         const keyValueArray = arg.replace(/[{}\s]/gm, '').split(':');
         data = {
-          message: keyValueArray[0],
-          value: keyValueArray[1],
+          [keyValueArray[0]]: keyValueArray[1],
         };
       } catch (err) {
         this.logLine(`WARNING: Unable to parse serial data:${err}`);
