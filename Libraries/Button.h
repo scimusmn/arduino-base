@@ -4,36 +4,40 @@
 #ifndef Button_h
 #define Button_h
 
-class Button {
+class Button
+{
+private:
+  int pin;
+  bool reading;
+  unsigned long lastReadingChangeMillis;
+
 public:
   bool state;
-  bool fired;
-  bool lastFired;
-  unsigned long debounceTimer;
   int debounce;
-  int pin;
   void (*callback)(int state);
 
   Button() {}
 
-  void setup(int p, void (*CB)(int)) {
+  void setup(int p, void (*CB)(int))
+  {
     callback = CB;
     pin = p;
     pinMode(p, INPUT_PULLUP);
-    debounceTimer = 0;
     debounce = 20;
-    lastFired = state = fired = true;
+    state = (digitalRead(pin));
   }
 
-  void update() {
-    if (digitalRead(pin) != state) {
-      state = !state;
-      fired = !state;
-      debounceTimer = millis() + debounce;
+  void update()
+  {
+    if (digitalRead(pin) != reading)
+    {
+      reading = !reading;
+      lastReadingChangeMillis = millis();
     }
 
-    if (debounceTimer < millis() && state != fired && lastFired != state) {
-      lastFired = fired = state;
+    if (((millis() - lastReadingChangeMillis) > debounce) && state != reading)
+    {
+      state = reading;
       callback(!state);
     }
   }
