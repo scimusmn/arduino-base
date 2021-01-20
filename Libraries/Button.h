@@ -16,9 +16,7 @@ public:
   int debounce;
   void (*callback)(int buttonState);
 
-  Button() {}
-
-  void setup(int p, void (*CB)(int))
+  Button(int p, void (*CB)(int)) //pin, callback
   {
     callback = CB;
     pin = p;
