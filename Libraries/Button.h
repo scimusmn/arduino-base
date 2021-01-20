@@ -8,13 +8,13 @@ class Button
 {
 private:
   int pin;
-  bool reading;
-  unsigned long lastReadingChangeMillis;
+  bool lastPinState;
+  unsigned long pinChangeMillis;
 
 public:
-  bool state;
+  bool buttonState;
   int debounce;
-  void (*callback)(int state);
+  void (*callback)(int buttonState);
 
   Button() {}
 
@@ -24,21 +24,24 @@ public:
     pin = p;
     pinMode(p, INPUT_PULLUP);
     debounce = 20;
-    state = (digitalRead(pin));
+    lastPinState = buttonState = (digitalRead(pin));
   }
 
   void update()
   {
-    if (digitalRead(pin) != reading)
+    bool pinState = digitalRead(pin);
+
+    //if the state of the pin has changed.
+    if (pinState != lastPinState)
     {
-      reading = !reading;
-      lastReadingChangeMillis = millis();
+      lastPinState = pinState;
+      pinChangeMillis = millis();
     }
 
-    if (((millis() - lastReadingChangeMillis) > debounce) && state != reading)
+    if (((millis() - pinChangeMillis) > debounce) && buttonState != pinState)
     {
-      state = reading;
-      callback(!state);
+      buttonState = pinState;
+      callback(!buttonState);
     }
   }
 };
