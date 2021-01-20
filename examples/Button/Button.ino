@@ -4,9 +4,10 @@
 
 #include "C:\Users\jmeyer\Documents\Code\arduino-base\Libraries\Button.h"
 
+//declare pin assignments at the top as constant integers
 const int buttonPin = 4;
 
-Button myButton(buttonPin, &buttonFunction);
+Button myButton(buttonPin, &buttonFunction, 30); // pin, function reference, (optional)debounce in milliseconds.
 
 void setup()
 {
@@ -16,7 +17,7 @@ void setup()
 
 void loop()
 {
-  myButton.update();
+  myButton.listener();
 }
 
 void buttonFunction(int state)

@@ -9,23 +9,30 @@ class Button
 private:
   int pin;
   bool lastPinState;
-  unsigned long pinChangeMillis;
-
-public:
-  bool buttonState;
   int debounce;
+  unsigned long pinChangeMillis;
+  bool buttonState;
   void (*callback)(int);
 
-  Button(int p, void (*CB)(int)) //pin, callback
+public:
+  // constructor (pin, callback function, [optional] debounce in millis)
+  Button(int p, void (*CB)(int), int _debounce = 20)
   {
     callback = CB;
     pin = p;
     pinMode(p, INPUT_PULLUP);
-    debounce = 20;
+    debounce = _debounce;
     lastPinState = buttonState = (digitalRead(pin));
   }
 
-  void update()
+  // returns the button state
+  bool getState()
+  {
+    return buttonState;
+  }
+
+  //run in a loop when button press should be noticed.
+  void listener()
   {
     bool pinState = digitalRead(pin);
 
