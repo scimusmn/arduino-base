@@ -1,7 +1,6 @@
-// To get this sketch to compile
-// you must update this library with your own absolute path
 // Arduino does not support relative paths :(
-
+// To get this sketch to compile, you must update this include
+// statement with your own absolute path to the library
 #include "C:\Users\jmeyer\Documents\Code\arduino-base\Libraries\Button.h"
 
 //declare pin assignments at the top as constant integers
