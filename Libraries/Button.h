@@ -14,7 +14,7 @@ private:
 public:
   bool buttonState;
   int debounce;
-  void (*callback)(int buttonState);
+  void (*callback)(int);
 
   Button(int p, void (*CB)(int)) //pin, callback
   {

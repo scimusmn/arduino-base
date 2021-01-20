@@ -4,17 +4,25 @@
 
 #include "C:\Users\jmeyer\Documents\Code\arduino-base\Libraries\Button.h"
 
-int button1Pin = 2;
-Button button1(button1Pin, [](int state) {
-  digitalWrite(LED_BUILTIN, state);
-});
+const int buttonPin = 4;
+
+Button myButton(buttonPin, &buttonFunction);
 
 void setup()
 {
+  Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
 {
-  button1.update();
+  myButton.update();
+}
+
+void buttonFunction(int state)
+{
+  //replace with code to execute based on button state.
+  digitalWrite(LED_BUILTIN, state);
+  if (state == 1)
+    Serial.println("Button pressed");
 }
