@@ -5,23 +5,17 @@
 #define Averager_h
 
 class Averager {
-public:
-
+ public:
   // Setup variables
   int numberOfSamples;
-  boolean useLowpassFilter = false;
 
-  int * sampleReadings;
+  int* sampleReadings;
   int samplePointer;
   long samplingTotal;
 
   Averager() {}
 
-  void setup(int requestedNumberOfSamples = 10, boolean useLowpass = false) {
-
-    // Tells us if we should use a lowpass filter on sensor readings
-    useLowpassFilter = useLowpass;
-
+  void setup(int requestedNumberOfSamples = 10) {
     samplingTotal = 0;
     numberOfSamples = requestedNumberOfSamples;
     sampleReadings = new int[numberOfSamples];
@@ -32,17 +26,9 @@ public:
     }
   }
 
-  int calculateAverage() {
-    return samplingTotal / numberOfSamples;
-  }
+  int calculateAverage() { return samplingTotal / numberOfSamples; }
 
   void insertNewSample(double newSample) {
-
-    if (useLowpassFilter == true) {
-      // Simple Low Pass filter to smooth out the jitter
-      newSample = (0.8 * newSample) + ((1 - 0.8) * newSample);
-    }
-
     samplingTotal -= sampleReadings[samplePointer];
     sampleReadings[samplePointer] = newSample;
     samplingTotal += newSample;
