@@ -165,29 +165,10 @@ To setup a new `Button`, you'll need to pass in two parameters:
 
 1. `int` pin, location of the input pin
 2. `void (*callback)(int)`, a callback function that accepts the returned `int` value of the sensor
+3. (optional) `int` debounce value in milliseconds.
 
 #### Button Example
-```
-#include "Libraries/Button.h"
-
-Button button1;
-int button1Pin = 2;
-
-void setup() {
-
-  button1.setup(button1Pin, [](int state) {
-    if (state == 1) {
-      // This means, our button was pressed
-      // We should do something, like turn on a light
-    }
-  });
-
-}
-
-void loop() {
-  button1.update();
-}
-```
+See Examples Folder
 
 ### Timer.h
 This library is used to handle common timer-related functions. Currently, it does timing by counting from `millis()` although, in the future, `micros()` may be implemented.

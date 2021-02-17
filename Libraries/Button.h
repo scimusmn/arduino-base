@@ -5,36 +5,43 @@
 #define Button_h
 
 class Button {
-public:
-  bool state;
-  bool fired;
-  bool lastFired;
-  unsigned long debounceTimer;
-  int debounce;
+private:
   int pin;
-  void (*callback)(int state);
+  bool lastPinState;
+  int debounce;
+  unsigned long pinChangeMillis;
+  bool buttonState;
+  void (*callback)(int);
 
-  Button() {}
-
-  void setup(int p, void (*CB)(int)) {
+public:
+  // constructor (pin, callback function, [optional] debounce in millis)
+  Button(int p, void (*CB)(int), int _debounce = 20) {
     callback = CB;
     pin = p;
     pinMode(p, INPUT_PULLUP);
-    debounceTimer = 0;
-    debounce = 20;
-    lastFired = state = fired = true;
+    debounce = _debounce;
+    lastPinState = buttonState = (digitalRead(pin));
   }
 
+  // returns the button state
+  bool getState() {
+    return buttonState;
+  }
+
+  //run in a loop when button press should be noticed.
   void update() {
-    if (digitalRead(pin) != state) {
-      state = !state;
-      fired = !state;
-      debounceTimer = millis() + debounce;
+    bool pinState = digitalRead(pin);
+
+    //if the state of the pin has changed.
+    if (pinState != lastPinState) {
+      lastPinState = pinState;
+      pinChangeMillis = millis();
     }
 
-    if (debounceTimer < millis() && state != fired && lastFired != state) {
-      lastFired = fired = state;
-      callback(!state);
+    //if the pin state was stable for the debounce value in millis.
+    if (((millis() - pinChangeMillis) > debounce) && buttonState != pinState) {
+      buttonState = pinState;
+      callback(!buttonState);
     }
   }
 };
