@@ -6,16 +6,7 @@
 
 class Averager {
  public:
-  // Setup variables
-  int numberOfSamples;
-
-  int* sampleReadings;
-  int samplePointer;
-  long samplingTotal;
-
-  Averager() {}
-
-  void setup(int requestedNumberOfSamples = 10) {
+  Averager(int requestedNumberOfSamples = 10) {
     samplingTotal = 0;
     numberOfSamples = requestedNumberOfSamples;
     sampleReadings = new int[numberOfSamples];
@@ -25,7 +16,6 @@ class Averager {
       sampleReadings[i] = 0;
     }
   }
-
   int calculateAverage() { return samplingTotal / numberOfSamples; }
 
   void insertNewSample(double newSample) {
@@ -34,6 +24,12 @@ class Averager {
     samplingTotal += newSample;
     samplePointer = (samplePointer + 1) % numberOfSamples;
   }
+
+ private:
+  int numberOfSamples;
+  int* sampleReadings;
+  int samplePointer;
+  long samplingTotal;
 };
 
 #endif
