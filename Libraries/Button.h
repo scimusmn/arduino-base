@@ -41,7 +41,7 @@ public:
     //if the pin state was stable for the debounce value in millis.
     if (((millis() - pinChangeMillis) > debounce) && buttonState != pinState) {
       buttonState = pinState;
-      callback(!buttonState);
+      callback(buttonState);
     }
   }
 };
