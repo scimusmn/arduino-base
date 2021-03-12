@@ -96,9 +96,7 @@ public:
 
   void sendMessage(String messageKey, int messageValue);
 
-  void sendMessage(String messageKey, long int messageValue);
-
-  void sendMessage(String messageKey, double messageValue);
+  void sendMessage(String messageKey, float messageValue);
 
   void update();
 };
@@ -138,12 +136,7 @@ void SerialController::sendMessage(String messageKey, int messageValue) {
 }
 
 
-void SerialController::sendMessage(String messageKey, long int messageValue) {
-  sendMessage(messageKey, String(messageValue));
-}
-
-
-void SerialController::sendMessage(String messageKey, double messageValue) {
+void SerialController::sendMessage(String messageKey, float messageValue) {
   sendMessage(messageKey, String(messageValue));
 }
 
