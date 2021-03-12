@@ -18,9 +18,7 @@ private:
 
 
   void (*callback)(char* messageKey, char* messageValue);
-  char key[MAX_STRING_LEN];
-  char value[MAX_STRING_LEN];
-  int keyIndex, valueIndex;
+  String key, value;
 
   void waitForSerial(long baudrate);
 
@@ -99,80 +97,37 @@ void SerialController::update() {
     switch (state) {
     case WAIT_FOR_START:
       if (c == '{') {
+	key = "";
+	value = "";
 	state = PARSE_KEY;
-	strcpy(key,"");
-	strcpy(value,"");
-	keyIndex = 0;
-	valueIndex = 0;
       }
       break;
 
     case PARSE_KEY:
-      if (keyIndex == MAX_STRING_LEN-1) {
-	key[keyIndex] = 0;
-	state = PARSE_KEY_OVERFLOW;
-      }
-      else if (c == '{') {
-	strcpy(key,"");
-	strcpy(value,"");
-	keyIndex = 0;
-	valueIndex = 0;
+      if (c == '{') {
+	key = "";
+	value = "";
+	state = PARSE_KEY;
       }
       else if (c == ':') {
-	key[keyIndex] = 0;
 	state = PARSE_VALUE;
       }
       else if (c == '}') {
-	key[keyIndex] = 0;
-	(*callback)(key,value);
+	(*callback)(key.c_str(),value.c_str());
 	state = WAIT_FOR_START;
       }
       else {
-	key[keyIndex] = c;
-	keyIndex++;
+	key.concat(c);
       }
       break;
 
     case PARSE_VALUE:
-      if (valueIndex == MAX_STRING_LEN - 1) {
-	value[valueIndex] = 0;
-	state = PARSE_VALUE_OVERFLOW;
-      }
-      else if (c == '}') {
-	value[valueIndex] = 0;
-	(*callback)(key,value);
+      if (c == '}') {
+	(*callback)(key.c_str(),value.c_str());
 	state = WAIT_FOR_START;
       }
       else {
-	value[valueIndex] = c;
-	valueIndex++;
-      }
-      break;
-
-    case PARSE_KEY_OVERFLOW:
-      if (c == ':') {
-	state = PARSE_VALUE;
-      }
-      else if (c == '{') {
-	strcpy(key,"");
-	strcpy(value,"");
-	keyIndex = 0;
-	valueIndex = 0;
-	state = PARSE_KEY;
-      }
-      break;
-
-    case PARSE_VALUE_OVERFLOW:
-      if (c == '{') {
-	strcpy(key,"");
-	strcpy(value,"");
-	keyIndex = 0;
-	valueIndex = 0;
-	state = PARSE_KEY;
-      }
-      else if (c == '}') {
-	(*callback)(key,value);
-	state = WAIT_FOR_START;
+	value.concat(c);
       }
       break;
 
