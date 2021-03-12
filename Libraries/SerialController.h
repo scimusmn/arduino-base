@@ -22,7 +22,7 @@ private:
 
   void waitForSerial(long baudrate);
 
-  void cleanString(char* string);
+  void cleanString(String& string);
 
   
 public:
@@ -31,13 +31,13 @@ public:
   SerialManager() { state = WAIT_FOR_START; callback = NULL; }
   void setup(long baudrate, void (*callback_)(char*, char*));
   
-  void sendMessage(char* messageKey, char* messageValue);
+  void sendMessage(String messageKey, String messageValue);
 
-  void sendMessage(char* messageKey, int messageValue);
+  void sendMessage(String messageKey, int messageValue);
 
-  void sendMessage(char* messageKey, long int messageValue);
-  
-  void sendMessage(char* messageKey, double messageValue);
+  void sendMessage(String messageKey, long int messageValue);
+
+  void sendMessage(String messageKey, double messageValue);
 
   void update();
 };
@@ -55,39 +55,32 @@ void SerialController::setup(long baudrate, void (*callback_)(char*, char*)) {
 }
 
 
-void SerialController::sendMessage(char* messageKey, char* messageValue) {
+void SerialController::sendMessage(String messageKey, String messageValue) {
   cleanString(messageKey);
   cleanString(messageValue);
 
-  char result[2*MAX_STRING_LEN+3];
-  strcpy(result,"{");
-  strcat(result,messageKey);
-  strcat(result,":");
-  strcat(result,messageValue);
-  strcat(result,"}");
+  String result = "{";
+  result.concat(messageKey);
+  result.concat(":");
+  result.concat(messageValue);
+  result.concat("}");
 
   Serial.println(result);
 }
 
 
-void SerialController::sendMessage(char* messageKey, int messageValue) {
-  char stringValue[MAX_STRING_LEN];
-  snprintf(stringValue, MAX_STRING_LEN, "%d", messageValue);
-  sendMessage(messageKey, stringValue);
+void SerialController::sendMessage(String messageKey, int messageValue) {
+  sendMessage(messageKey, String(messageValue));
 }
 
 
-void SerialController::sendMessage(char* messageKey, long int messageValue) {
-  char stringValue[MAX_STRING_LEN];
-  snprintf(stringValue, MAX_STRING_LEN, "%ld", messageValue);
-  sendMessage(messageKey, stringValue);
+void SerialController::sendMessage(String messageKey, long int messageValue) {
+  sendMessage(messageKey, String(messageValue));
 }
 
 
-void SerialController::sendMessage(char* messageKey, double messageValue) {
-  char stringValue[MAX_STRING_LEN];
-  snprintf(stringValue, MAX_STRING_LEN, "%f", messageValue);
-  sendMessage(messageKey, stringValue);
+void SerialController::sendMessage(String messageKey, double messageValue) {
+  sendMessage(messageKey, String(messageValue));
 }
 
 
@@ -160,28 +153,10 @@ void SerialController::waitForSerial(long baudrate) {
 }
 
 
-void SerialController::cleanString(char* string) {
-  // remove '{', '}', and ':' delimiter characters from a string
-  char result[MAX_STRING_LEN];
-
-  int i = 0;
-  int j = 0;
-  while(string[i] != 0) {
-    if (string[i] == '{'
-	|| string[i] == '}'
-	|| string[i] == ':') {
-      i++;
-    }
-    else {
-      result[j] = string[i];
-      i++; j++;
-    }
-  }
-
-  // close string
-  result[j] = 0;
-
-  string = result;
+void SerialController::cleanString(String& string) {
+  string.replace("{", "");
+  string.replace("}", "");
+  string.replace(":", "");
 }
 
 #endif
