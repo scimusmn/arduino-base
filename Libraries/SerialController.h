@@ -18,12 +18,14 @@ typedef void (*floatResponse)(float);
  */
 
 struct SerialResponse {
-  String messageName;
-  enum {
+  String key;
+  typedef enum {
     STRING,
     INT,
     FLOAT
-  } valueType;
+  } ValueType;
+
+  ValueType valueType;
   union {
     stringResponse s;
     intResponse i;
@@ -61,7 +63,12 @@ void SerialResponse::respond(String value) {
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-    
+
+// you can #define SERIALCONTROLLER_MAX_RESPONSES before including
+// this file to adjust this parameter.
+#ifndef SERIALCONTROLLER_MAX_RESPONSES
+#define SERIALCONTROLLER_MAX_RESPONSES 16
+#endif
 
 class SerialController {
 private:
@@ -75,7 +82,8 @@ private:
   } state;
 
 
-  void (*callback)(char* messageKey, char* messageValue);
+  int numResponses;
+  SerialResponse responses[SERIALCONTROLLER_MAX_RESPONSES];
   String key, value;
   bool steleProtocol;
 
@@ -83,14 +91,19 @@ private:
 
   void cleanString(String& string);
 
-  
+  void lookupAndRunCallback();
+
+  static void 
+
 public:
   bool handshake;
 
-  SerialManager() { state = WAIT_FOR_START; callback = NULL; }
-  void setup(long baudrate,
-	     void (*callback_)(char*, char*),
-	     bool steleProtocol=true);
+  SerialManager() { state = WAIT_FOR_START; numResponses = 0; }
+  void setup(long baudrate=115200, bool steleProtocol=true);
+
+  void addResponse(String key, stringResponse response);
+  void addResponse(String key, intResponse response);
+  void addResponse(String key, floatResponse response);
   
   void sendMessage(String messageKey, String messageValue);
 
@@ -101,21 +114,51 @@ public:
   void update();
 };
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * SerialController public member functions
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
 
-void SerialController::setup(long baudrate,
-			     void (*callback_)(char*, char*),
-			     bool steleProtocol) {
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void SerialController::setup(long baudrate, bool steleProtocol) {
   this->steleProtocol = steleProtocol;
   waitForSerial(baudrate);
-  callback = callback_;
 }
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void SerialController::addResponse(String key, stringResponse response) {
+  SerialResponse* r = responses + numResponses;
+
+  r->key = key;
+  r->valueType = SerialResponse::ValueType::STRING;
+  r->response.s = response;
+  
+  numResponses += 1;
+}
+
+
+void SerialController::addResponse(String key, intResponse response) {
+  SerialResponse* r = responses + numResponses;
+
+  r->key = key;
+  r->valueType = SerialResponse::ValueType::INT;
+  r->response.i = response;
+
+  numResponses += 1;
+}
+
+
+void SerialController::addResponse(String key, floatResponse response) {
+  SerialResponse* r = responses + numResponses;
+
+  r->key = key;
+  r->valueType = SerialResponse::ValueType::FLOAT;
+  r->response.f = response;
+
+  numResponses += 1;
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void SerialController::sendMessage(String messageKey, String messageValue) {
   cleanString(messageKey);
@@ -141,6 +184,8 @@ void SerialController::sendMessage(String messageKey, float messageValue) {
 }
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 void SerialController::update() {
   while (Serial.available() > 0) {
     char c = Serial.read();
@@ -163,7 +208,7 @@ void SerialController::update() {
 	state = PARSE_VALUE;
       }
       else if (c == '}') {
-	(*callback)(key.c_str(),value.c_str());
+	lookupAndRunCallback();
 	state = WAIT_FOR_START;
       }
       else {
@@ -173,7 +218,7 @@ void SerialController::update() {
 
     case PARSE_VALUE:
       if (c == '}') {
-	(*callback)(key.c_str(),value.c_str());
+	lookupAndRunCallback();
 	state = WAIT_FOR_START;
       }
       else {
@@ -190,12 +235,7 @@ void SerialController::update() {
 }
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * SerialController private member functions
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void SerialController::waitForSerial(long baudrate) {
   Serial.begin(baudrate);
@@ -215,6 +255,18 @@ void SerialController::cleanString(String& string) {
   string.replace("{", "");
   string.replace("}", "");
   string.replace(":", "");
+}
+
+
+void SerialController::lookupAndRunCallback() {
+  for (int i=0; i<numResponses; i++) {
+    if (key == responses[i].key) {
+      responses[i].respond(value);
+      return;
+    }
+  }
+
+  sendMessage("unknown-command", 1);
 }
 
 #endif
