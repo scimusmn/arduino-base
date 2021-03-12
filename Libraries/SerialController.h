@@ -5,20 +5,21 @@
 
 #include <Arduino.h>
 
-typedef void (*stringResponse)(String);
-typedef void (*intResponse)(int);
-typedef void (*floatResponse)(float);
+typedef void (*stringCallback)(String);
+typedef void (*intCallback)(int);
+typedef void (*floatCallback)(float);
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * SerialResponse
+ * SerialCallback
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-struct SerialResponse {
+struct SerialCallback {
   String key;
+
   typedef enum {
     STRING,
     INT,
@@ -26,28 +27,29 @@ struct SerialResponse {
   } ValueType;
 
   ValueType valueType;
+
   union {
-    stringResponse s;
-    intResponse i;
-    floatResponse f;
-  } response;
+    stringCallback s;
+    intCallback i;
+    floatCallback f;
+  } callback;
 
   void respond(String value);
 };
 
 
-void SerialResponse::respond(String value) {
+void SerialCallback::respond(String value) {
   switch (valueType) {
   case STRING:
-    response.s(value);
+    callback.s(value);
     break;
 
   case INT:
-    response.i(value.toInt());
+    callback.i(value.toInt());
     break;
 
   case FLOAT:
-    response.f(value.toFloat());
+    callback.f(value.toFloat());
     break;
 
   default:
@@ -64,10 +66,8 @@ void SerialResponse::respond(String value) {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-// you can #define SERIALCONTROLLER_MAX_RESPONSES before including
-// this file to adjust this parameter.
-#ifndef SERIALCONTROLLER_MAX_RESPONSES
-#define SERIALCONTROLLER_MAX_RESPONSES 16
+#ifndef SERIALCONTROLLER_MAX_CALLBACKS
+#define SERIALCONTROLLER_MAX_CALLBACKS 16
 #endif
 
 class SerialController {
@@ -75,15 +75,13 @@ private:
   enum {
     WAIT_FOR_START,
     PARSE_KEY,
-    PARSE_KEY_OVERFLOW,
     PARSE_VALUE,
-    PARSE_VALUE_OVERFLOW,
     N_PARSE_STATES
   } state;
 
 
-  int numResponses;
-  SerialResponse responses[SERIALCONTROLLER_MAX_RESPONSES];
+  int numCallbacks;
+  SerialCallback callbacks[SERIALCONTROLLER_MAX_CALLBACKS];
   String key, value;
   bool steleProtocol;
 
@@ -95,18 +93,18 @@ private:
 
 public:
   bool handshake;
+  bool errorResponse;
 
-  SerialManager() { state = WAIT_FOR_START; numResponses = 0; }
+  SerialManager() { state = WAIT_FOR_START; numCallbacks = 0; }
+
   void setup(long baudrate=115200, bool steleProtocol=true);
 
-  void addResponse(String key, stringResponse response);
-  void addResponse(String key, intResponse response);
-  void addResponse(String key, floatResponse response);
+  void addCallback(String key, stringCallback callback);
+  void addCallback(String key, intCallback callback);
+  void addCallback(String key, floatCallback callback);
   
   void sendMessage(String messageKey, String messageValue);
-
   void sendMessage(String messageKey, int messageValue);
-
   void sendMessage(String messageKey, float messageValue);
 
   void update();
@@ -117,42 +115,43 @@ public:
 
 void SerialController::setup(long baudrate, bool steleProtocol) {
   this->steleProtocol = steleProtocol;
+  errorResponse = true;
   waitForSerial(baudrate);
 }
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void SerialController::addResponse(String key, stringResponse response) {
-  SerialResponse* r = responses + numResponses;
+void SerialController::addCallback(String key, stringCallback callback) {
+  SerialCallback* cb = callbacks + numCallbacks;
 
-  r->key = key;
-  r->valueType = SerialResponse::ValueType::STRING;
-  r->response.s = response;
+  cb->key = key;
+  cb->valueType = SerialCallback::ValueType::STRING;
+  cb->callback.s = callback;
   
-  numResponses += 1;
+  numCallbacks += 1;
 }
 
 
-void SerialController::addResponse(String key, intResponse response) {
-  SerialResponse* r = responses + numResponses;
+void SerialController::addCallback(String key, intCallback callback) {
+  SerialCallback* cb = callbacks + numCallbacks;
 
-  r->key = key;
-  r->valueType = SerialResponse::ValueType::INT;
-  r->response.i = response;
+  cb->key = key;
+  cb->valueType = SerialCallback::ValueType::INT;
+  cb->callback.i = callback;
 
-  numResponses += 1;
+  numCallbacks += 1;
 }
 
 
-void SerialController::addResponse(String key, floatResponse response) {
-  SerialResponse* r = responses + numResponses;
+void SerialController::addCallback(String key, floatCallback callback) {
+  SerialCallback* cb = callbacks + numCallbacks;
 
-  r->key = key;
-  r->valueType = SerialResponse::ValueType::FLOAT;
-  r->response.f = response;
+  cb->key = key;
+  cb->valueType = SerialCallback::ValueType::FLOAT;
+  cb->callback.f = callback;
 
-  numResponses += 1;
+  numCallbacks += 1;
 }
 
 
@@ -262,14 +261,16 @@ void SerialController::lookupAndRunCallback() {
     return;
   }
 
-  for (int i=0; i<numResponses; i++) {
-    if (key == responses[i].key) {
-      responses[i].respond(value);
+  for (int i=0; i<numCallbacks; i++) {
+    if (key == callbacks[i].key) {
+      callbacks[i].respond(value);
       return;
     }
   }
 
-  sendMessage("unknown-command", 1);
+  if (errorResponse) {
+    sendMessage("unknown-command", key);
+  }
 }
 
 #endif
