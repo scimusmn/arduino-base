@@ -19,6 +19,7 @@ private:
 
   void (*callback)(char* messageKey, char* messageValue);
   String key, value;
+  bool steleProtocol;
 
   void waitForSerial(long baudrate);
 
@@ -29,7 +30,9 @@ public:
   bool handshake;
 
   SerialManager() { state = WAIT_FOR_START; callback = NULL; }
-  void setup(long baudrate, void (*callback_)(char*, char*));
+  void setup(long baudrate,
+	     void (*callback_)(char*, char*),
+	     bool steleProtocol=true);
   
   void sendMessage(String messageKey, String messageValue);
 
@@ -49,7 +52,10 @@ public:
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-void SerialController::setup(long baudrate, void (*callback_)(char*, char*)) {
+void SerialController::setup(long baudrate,
+			     void (*callback_)(char*, char*),
+			     bool steleProtocol) {
+  this->steleProtocol = steleProtocol;
   waitForSerial(baudrate);
   callback = callback_;
 }
@@ -144,7 +150,8 @@ void SerialController::waitForSerial(long baudrate) {
   Serial.begin(baudrate);
   while(!Serial);
 
-  while(!handshake) {
+  // wait for handshake if using steleProtocol
+  while(!handshake && steleProtocol) {
     if (Serial.available() && Serial.read() == '{') {
       handshake = true;
       sendMessage("arduino-ready","1");
