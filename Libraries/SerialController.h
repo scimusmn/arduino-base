@@ -5,6 +5,64 @@
 
 #include <Arduino.h>
 
+typedef void (*stringResponse)(String);
+typedef void (*intResponse)(int);
+typedef void (*floatResponse)(float);
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * SerialResponse
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+struct SerialResponse {
+  String messageName;
+  enum {
+    STRING,
+    INT,
+    FLOAT
+  } valueType;
+  union {
+    stringResponse s;
+    intResponse i;
+    floatResponse f;
+  } response;
+
+  void respond(String value);
+};
+
+
+void SerialResponse::respond(String value) {
+  switch (valueType) {
+  case STRING:
+    response.s(value);
+    break;
+
+  case INT:
+    response.i(value.toInt());
+    break;
+
+  case FLOAT:
+    response.f(value.toFloat());
+    break;
+
+  default:
+    // bad valueType, do nothing
+    break;
+  }
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * SerialController
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+    
+
 class SerialController {
 private:
   enum {
