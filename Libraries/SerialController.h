@@ -93,8 +93,6 @@ private:
 
   void lookupAndRunCallback();
 
-  static void 
-
 public:
   bool handshake;
 
@@ -259,6 +257,11 @@ void SerialController::cleanString(String& string) {
 
 
 void SerialController::lookupAndRunCallback() {
+  if (steleProtocol && key == "wake-arduino") {
+    sendMessage("arduino-ready", "1");
+    return;
+  }
+
   for (int i=0; i<numResponses; i++) {
     if (key == responses[i].key) {
       responses[i].respond(value);
