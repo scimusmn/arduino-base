@@ -5,22 +5,18 @@
 
 #include <Arduino.h>
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-typedef enum {
-  WAIT_FOR_START,
-  PARSE_KEY,
-  PARSE_KEY_OVERFLOW,
-  PARSE_VALUE,
-  PARSE_VALUE_OVERFLOW,
-  N_PARSE_STATES
-} parseState;
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 class SerialController {
 private:
-  parseState state;
+  enum {
+    WAIT_FOR_START,
+    PARSE_KEY,
+    PARSE_KEY_OVERFLOW,
+    PARSE_VALUE,
+    PARSE_VALUE_OVERFLOW,
+    N_PARSE_STATES
+  } state;
+
+
   void (*callback)(char* messageKey, char* messageValue);
   char key[MAX_STRING_LEN];
   char value[MAX_STRING_LEN];
