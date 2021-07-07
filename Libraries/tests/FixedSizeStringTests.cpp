@@ -1,16 +1,14 @@
 #include "tests.h"
 #include "../FixedSizeString.h"
 
-#define test const char *
-
-test fss_create() {
+mu_test fss_create() {
     smm::FixedSizeString<32> string32;
     mu_assert_equal(string32.maxSize(), 32);
     return 0;
 }
 
 
-test fss_initialize() {
+mu_test fss_initialize() {
     smm::FixedSizeString<32> string("hello, world!");
     mu_assert_streq(string.c_str(), "hello, world!");
     mu_assert_equal(string.size(), 13);
@@ -18,7 +16,7 @@ test fss_initialize() {
 }
 
 
-test fss_initialize_overflow() {
+mu_test fss_initialize_overflow() {
     smm::FixedSizeString<5> string("hello");
     mu_assert_streq(string.c_str(), "hell");
     mu_assert_equal(string.size(), 4);
@@ -26,7 +24,7 @@ test fss_initialize_overflow() {
 }
 
 
-test fss_append() {
+mu_test fss_append() {
     smm::FixedSizeString<32> string("hello, ");
     string.append("world!");
     mu_assert_streq(string.c_str(), "hello, world!");
@@ -34,7 +32,7 @@ test fss_append() {
     return 0;
 }
 
-test fss_append_overflow() {
+mu_test fss_append_overflow() {
     smm::FixedSizeString<10> string("hello, ");
     string.append("world!");
     mu_assert_streq(string.c_str(), "hello, wo");
@@ -42,7 +40,7 @@ test fss_append_overflow() {
     return 0;
 }
 
-test fss_append_char() {
+mu_test fss_append_char() {
     smm::FixedSizeString<32> string("hell");
     string.append('o');
     mu_assert_streq(string.c_str(), "hello");
@@ -50,7 +48,7 @@ test fss_append_char() {
     return 0;
 }
 
-test fss_equality() {
+mu_test fss_equality() {
     smm::FixedSizeString<32> string1("hello");
     smm::FixedSizeString<32> string2("hello");
     mu_assert_equal(string1, string2);

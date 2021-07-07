@@ -20,6 +20,9 @@
     if (tests_failed > 0) { printf("ran %d tests, " RED "%d" RESET " failed\n", tests_run, tests_failed); } \
     else { printf("ran %d tests, " GREEN "all succeeded\n" RESET, tests_run); } \
     } while(0)
+
+#define mu_test const char *
+
 extern int tests_run, tests_failed;
 
 #endif
