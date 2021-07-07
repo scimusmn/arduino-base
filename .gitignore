@@ -1,4 +1,5 @@
 .DS_Store
 *~
-
 ReactSerial/node_modules
+*.gch
+Libraries/tests/build
