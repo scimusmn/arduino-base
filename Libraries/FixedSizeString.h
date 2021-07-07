@@ -1,33 +1,34 @@
 #pragma once
 
 #include <string.h>
+#include <stdlib.h>
 
 namespace smm {
-    template<size_t MAX_SIZE>
+    template<size_t MAX_LENGTH>
     class FixedSizeString {
     public:
 	FixedSizeString() { clear(); }
 	FixedSizeString(const char *str) {
 	    clear();
-	    strncpy(m_str, str, MAX_SIZE);
-	    m_size = strlen(m_str);
+	    strncpy(m_str, str, MAX_LENGTH);
+	      m_length = strlen(m_str);
 	}
 
 	void clear() {
-	    memset(m_str, 0, MAX_SIZE);
-	    m_size = 0;
+	    memset(m_str, 0, MAX_LENGTH+1);
+	    m_length = 0;
 	}
 
 	void append(const char *string) {
-	    strncat(m_str, string, MAX_SIZE - m_size);
-	    m_size = strlen(m_str);
+	    strncat(m_str, string, MAX_LENGTH - m_length);
+	      m_length = strlen(m_str);
 	}
 
 	void append(char c) {
-	    if (m_size < MAX_SIZE-1) {
-		m_str[m_size] = c;
-		m_str[m_size+1] = 0;
-		m_size++;
+	    if (m_length < (MAX_LENGTH-1)) {
+		m_str[m_length] = c;
+		m_str[m_length+1] = 0;
+		m_length++;
 	    }
 	}
 
@@ -41,17 +42,31 @@ namespace smm {
 
 	const char * c_str() { return m_str; }
 
-	inline friend bool operator==(FixedSizeString& lhs, FixedSizeString& rhs) {
-	    return strcmp(lhs.c_str(), rhs.c_str()) == 0;
+	inline friend bool operator==(FixedSizeString& lhs, const char *rhs) {
+	    return strcmp(lhs.c_str(), rhs) == 0;
 	}
-	inline friend bool operator!=(FixedSizeString& lhs, FixedSizeString& rhs) { return !(lhs == rhs); }
+	inline friend bool operator!=(FixedSizeString& lhs, const char *rhs) {
+	    return !(lhs == rhs);
+	}
+	inline friend bool operator==(const char *lhs, FixedSizeString& rhs) {
+	    return rhs == lhs;
+	}
+	inline friend bool operator!=(const char *lhs, FixedSizeString& rhs) {
+	    return rhs != lhs;
+	}
+	inline friend bool operator==(FixedSizeString& lhs, FixedSizeString& rhs) {
+	    return lhs == rhs.c_str();
+	}
+	inline friend bool operator!=(FixedSizeString& lhs, FixedSizeString& rhs) {
+	    return !(lhs == rhs);
+	}
 
-	unsigned int size() { return m_size; }
+	unsigned int length() { return m_length; }
 
-	size_t maxSize() { return MAX_SIZE; }
+	size_t maxLength() { return MAX_LENGTH; }
 	
     private:
-	unsigned int m_size;
-	char m_str[MAX_SIZE];
+	unsigned int m_length;
+	char m_str[MAX_LENGTH+1];
     };
 }
