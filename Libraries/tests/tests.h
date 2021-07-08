@@ -3,3 +3,4 @@
 #include "minunit.h"
 
 void FixedSizeStringTests();
+void LookupTableTests();

@@ -6,6 +6,7 @@ project(arduino-base-tests
 set(TEST_SOURCES
   tests.cpp
   FixedSizeStringTests.cpp
+  LookupTableTests.cpp
   )
 
 add_executable(tests ${TEST_SOURCES})

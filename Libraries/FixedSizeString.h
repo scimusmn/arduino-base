@@ -11,13 +11,20 @@ namespace smm {
 	FixedSizeString(const char *str) {
 	    clear();
 	    strncpy(m_str, str, MAX_LENGTH);
-	      m_length = strlen(m_str);
+	    m_length = strlen(m_str);
 	}
 
 	void clear() {
 	    memset(m_str, 0, MAX_LENGTH+1);
 	    m_length = 0;
 	}
+
+	void operator=(const char *string) {
+	    strncpy(m_str, string, MAX_LENGTH);
+	    m_length = strlen(m_str);
+	}
+
+	void operator=(FixedSizeString& string) { this->operator=(string.c_str()); }
 
 	void append(const char *string) {
 	    strncat(m_str, string, MAX_LENGTH - m_length);

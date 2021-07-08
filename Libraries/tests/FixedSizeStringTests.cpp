@@ -31,6 +31,42 @@ mu_test fss_initialize_overflow() {
 }
 
 
+mu_test fss_equals_operator_cstring() {
+    smm::FixedSizeString<32> string;
+    mu_assert_streq(string.c_str(), "");
+    mu_assert_equal(string.length(), 0);
+    string = "hello, world!";
+    mu_assert_streq(string.c_str(), "hello, world!");
+    mu_assert_equal(string.length(), 13);
+    return 0;
+}
+
+
+mu_test fss_equals_operator_cstring_overflow() {
+    smm::FixedSizeString<5> string;
+    mu_assert_streq(string.c_str(), "");
+    mu_assert_equal(string.length(), 0);
+    string = "hello, world!";
+    mu_assert_streq(string.c_str(), "hello");
+    mu_assert_equal(string.length(), 5);
+    return 0;
+}
+
+
+mu_test fss_equals_operator_fsstring() {
+    smm::FixedSizeString<32> string;
+    mu_assert_streq(string.c_str(), "");
+    mu_assert_equal(string.length(), 0);
+
+    smm::FixedSizeString<32> helloString("hello, world!");
+    
+    string = helloString;
+    mu_assert_streq(string.c_str(), "hello, world!");
+    mu_assert_equal(string.length(), 13);
+    return 0;
+}
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * appending & overflow tests
@@ -224,6 +260,9 @@ void FixedSizeStringTests() {
     mu_run_test("create and allocate space for string", fss_create);
     mu_run_test("initialize string value", fss_initialize);
     mu_run_test("string initialization overflow", fss_initialize_overflow);
+    mu_run_test("equals operator with C string", fss_equals_operator_cstring);
+    mu_run_test("overflow on equals operator with C string", fss_equals_operator_cstring_overflow);
+    mu_run_test("equals operator with FixedSizeString", fss_equals_operator_fsstring);
     
     mu_run_test("append to string", fss_append);
     mu_run_test("append multiple times to string", fss_append_multi);
