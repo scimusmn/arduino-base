@@ -24,6 +24,51 @@ mu_test lut_add_entries() {
 }
 
 
+mu_test lut_lookup_entry() {
+    smm::LookupTable<8, int> table;
+    bool success = table.add("twenty", 20);
+    mu_assert(success, "failed to add key 'twenty' to table!");
+    success = table.add("five", 5);
+    mu_assert(success, "failed to add key 'five' to table!");
+
+    int *n = table["twenty"];
+    mu_assert_unequal(n, nullptr);
+    mu_assert_equal(*n, 20);
+    n = table["five"];
+    mu_assert_unequal(n, nullptr);
+    mu_assert_equal(*n, 5);
+    n = table["dne"];
+    mu_assert_equal(n, nullptr);
+    return 0;
+}
+
+
+mu_test lut_add_entries_overflow() {
+    smm::LookupTable<2, int> table;
+    bool success;
+    success = table.add("one", 1);
+    mu_assert(success, "failed to add key 'one' to table!");
+    success = table.add("two", 2);
+    mu_assert(success, "failed to add key 'two' to table!");
+    success = table.add("three", 3);
+    mu_assert(!success, "incorrectly succeeded in adding key 'three' to table!");
+
+    int *n;
+    n = table["one"];
+    mu_assert_unequal(n, nullptr);
+    mu_assert_equal(*n, 1);
+
+    n = table["two"];
+    mu_assert_unequal(n, nullptr);
+    mu_assert_equal(*n, 2);
+
+    n = table["three"];
+    mu_assert_equal(n, nullptr);
+    
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void LookupTableTests() {
@@ -31,4 +76,6 @@ void LookupTableTests() {
 
     mu_run_test("create LookupTable", lut_create);
     mu_run_test("add entries to table", lut_add_entries);
+    mu_run_test("lookup table entries", lut_lookup_entry);
+    mu_run_test("check table entry list overflow", lut_add_entries_overflow);
 }
