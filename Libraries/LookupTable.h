@@ -35,7 +35,7 @@ namespace smm {
 	 * @param[in] value The value for the new entry
 	 *
 	 * @returns True if the entry was added successfully and false otherwise. */
-	bool addEntry(const char *key, T value) { return false; }
+	bool add(const char *key, T value) { return false; }
 
 	
 	/** add an entry to the table
@@ -45,7 +45,7 @@ namespace smm {
 	 * @param[in] value The value for the new entry
 	 *
 	 * @returns True if the entry was added successfully and false otherwise. */
-	bool addEntry(smm::FixedSizeString<MAX_STR_LEN>& key, T value) { return false; }
+	bool add(smm::FixedSizeString<MAX_STR_LEN>& key, T value) { return false; }
 
 
 	/** get the current number of table entries
