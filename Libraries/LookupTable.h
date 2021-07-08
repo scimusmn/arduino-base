@@ -7,6 +7,10 @@ namespace smm {
     template<unsigned int MAX_ENTRIES, typename T, size_t MAX_STR_LEN = 32>
     class LookupTable {
     public:
+	/** (constructor) */
+	LookupTable() : m_numEntries(0) {}
+	
+	
 	/** look up a particular entry in the table.
 	 *
 	 * @param[in] key The key for the entry to look up.
@@ -14,40 +18,35 @@ namespace smm {
 	 * @returns A pointer to the requested entry if it exists, and `nullptr` otherwise.
 	 */
 	T* operator[](const char *key) {
+	    // this table is intended for small (<32) sizes, so a simple for loop
+	    // should be fine, no need for anything fancy
+	    for (int i=0; i<m_numEntries; i++) {
+		if (m_keys[i] == key) {
+		    return m_values + i;
+		}
+	    }
 	    return nullptr;
 	}
 
 	
-	/** look up a particular entry in the table.
-	 *
-	 * This is an overload of the above function and differs only in the arguments it accepts.
-	 *
-	 * @param[in] key The key for the entry to look up.
-	 *
-	 * @returns A pointer to the requested entry if it exists, and `nullptr` otherwise.
-	 */
-	T* operator[](smm::FixedSizeString<MAX_STR_LEN>& key) { return nullptr; }
-
-	
 	/** add an entry to the table
 	 *
 	 * @param[in] key The key for the new entry
 	 * @param[in] value The value for the new entry
 	 *
 	 * @returns True if the entry was added successfully and false otherwise. */
-	bool add(const char *key, T value) { return false; }
+	bool add(const char *key, T value) {
+	    if (m_numEntries < MAX_ENTRIES) {
+		int i = m_numEntries;
+		m_keys[i] = key;
+		m_values[i] = value;
+		m_numEntries++;
+		return true;
+	    }
+	    else { return false; }
+	}
 
 	
-	/** add an entry to the table
-	 * This is an overload of the above function and differs only in the arguments it accepts.
-	 * 
-	 * @param[in] key The key for the new entry
-	 * @param[in] value The value for the new entry
-	 *
-	 * @returns True if the entry was added successfully and false otherwise. */
-	bool add(smm::FixedSizeString<MAX_STR_LEN>& key, T value) { return false; }
-
-
 	/** get the current number of table entries
 	 *
 	 * @returns The number of entries currently in the table. */
@@ -61,7 +60,7 @@ namespace smm {
 
     private:
 	unsigned int m_numEntries;
-	smm::FixedSizeString<MAX_STR_LEN> m_strings[MAX_ENTRIES];
-	T m_entries[MAX_ENTRIES];
+	smm::FixedSizeString<MAX_STR_LEN> m_keys[MAX_ENTRIES];
+	T m_values[MAX_ENTRIES];
     };
 }
