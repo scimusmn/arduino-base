@@ -65,7 +65,7 @@ namespace smm {
 	 *
 	 * @param[in] c The character to append. */
 	void append(char c) {
-	    if (m_length < (MAX_LENGTH-1)) {
+	    if (m_length < (MAX_LENGTH)) {
 		m_str[m_length] = c;
 		m_str[m_length+1] = 0; // ensure a trailing null character
 		m_length++;

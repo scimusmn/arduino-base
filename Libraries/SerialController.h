@@ -129,7 +129,7 @@ namespace smm {
 	unsigned int numCallbacks() { return m_callbacks.size(); }
 
     private:
-	smm::LookupTable<MAX_CALLBACKS, SerialCallback> m_callbacks;
+	smm::LookupTable<MAX_CALLBACKS, SerialCallback, MAX_KEY_LEN> m_callbacks;
 	smm::FixedSizeString<MAX_KEY_LEN> m_key;
 	smm::FixedSizeString<MAX_VAL_LEN> m_value;
 

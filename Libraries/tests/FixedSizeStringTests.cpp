@@ -53,6 +53,17 @@ mu_test fss_equals_operator_cstring_overflow() {
 }
 
 
+mu_test fss_equals_operator_cstring_overflow_2() {
+    smm::FixedSizeString<1> string;
+    mu_assert_streq(string.c_str(), "");
+    mu_assert_equal(string.length(), 0);
+    string = "hello, world!";
+    mu_assert_streq(string.c_str(), "h");
+    mu_assert_equal(string.length(), 1);
+    return 0;
+}
+
+
 mu_test fss_equals_operator_fsstring() {
     smm::FixedSizeString<32> string;
     mu_assert_streq(string.c_str(), "");
@@ -143,7 +154,14 @@ mu_test fss_append_char_multi() {
 
 
 mu_test fss_append_char_overflow() {
-    smm::FixedSizeString<4> string("hell");
+    smm::FixedSizeString<4> string("hel");
+    mu_assert_streq(string.c_str(), "hel");
+    mu_assert_equal(string.length(), 3);
+
+    string.append('l');
+    mu_assert_streq(string.c_str(), "hell");
+    mu_assert_equal(string.length(), 4);
+
     string.append('o');
     mu_assert_streq(string.c_str(), "hell");
     mu_assert_equal(string.length(), 4);
@@ -260,9 +278,10 @@ void FixedSizeStringTests() {
     mu_run_test("create and allocate space for string", fss_create);
     mu_run_test("initialize string value", fss_initialize);
     mu_run_test("string initialization overflow", fss_initialize_overflow);
-    mu_run_test("equals operator with C string", fss_equals_operator_cstring);
-    mu_run_test("overflow on equals operator with C string", fss_equals_operator_cstring_overflow);
-    mu_run_test("equals operator with FixedSizeString", fss_equals_operator_fsstring);
+    mu_run_test("assignment operator with C string", fss_equals_operator_cstring);
+    mu_run_test("overflow on assignment operator with C string", fss_equals_operator_cstring_overflow);
+    mu_run_test("overflow on assignment operator with C string", fss_equals_operator_cstring_overflow_2);
+    mu_run_test("assignment operator with FixedSizeString", fss_equals_operator_fsstring);
     
     mu_run_test("append to string", fss_append);
     mu_run_test("append multiple times to string", fss_append_multi);
