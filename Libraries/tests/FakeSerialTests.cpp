@@ -83,6 +83,8 @@ mu_test fs_reset() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FakeSerialTests() {
+    int tests_run_old = tests_run;
+    
     printf("running tests for fake Serial\n");
     mu_run_test("receive data", fs_receive);
     mu_run_test("transmit data", fs_transmit);
@@ -91,4 +93,6 @@ void FakeSerialTests() {
     mu_run_test("receive data on Serial object", fs_receive_real);
     mu_run_test("transmit multiple lines of data on Serial object", fs_transmit_multi_real);
     mu_run_test("reset Serial object", fs_reset);
+
+    printf("  ran %d tests\n", tests_run - tests_run_old);
 }

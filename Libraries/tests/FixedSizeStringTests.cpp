@@ -274,6 +274,8 @@ mu_test fss_to_float_nan() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FixedSizeStringTests() {
+    int tests_run_old = tests_run;
+    
     printf("running tests for FixedSizeString\n");
     mu_run_test("create and allocate space for string", fss_create);
     mu_run_test("initialize string value", fss_initialize);
@@ -304,4 +306,6 @@ void FixedSizeStringTests() {
     mu_run_test("convert to negative float", fss_to_float_negative);
     mu_run_test("convert to float from integer string", fss_to_float_int);
     mu_run_test("fail to convert arbitrary string to float", fss_to_float_nan);
+
+    printf("  ran %d tests\n", tests_run_old);
 }

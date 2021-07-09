@@ -72,10 +72,12 @@ mu_test lut_add_entries_overflow() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void LookupTableTests() {
+    int tests_run_old = tests_run;
     printf("running tests for LookupTable\n");
 
     mu_run_test("create LookupTable", lut_create);
     mu_run_test("add entries to table", lut_add_entries);
     mu_run_test("lookup table entries", lut_lookup_entry);
     mu_run_test("check table entry list overflow", lut_add_entries_overflow);
+    printf("  ran %d tests\n", tests_run - tests_run_old);
 }

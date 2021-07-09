@@ -282,6 +282,8 @@ mu_test sctrl_malformed_multi_colon() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void SerialControllerTests() {
+    int tests_run_old = tests_run;
+    
     printf("running tests for SerialCallback\n");
     mu_run_test("create and call none callback", scb_none);
     mu_run_test("create and call void callback", scb_void);
@@ -289,7 +291,8 @@ void SerialControllerTests() {
     mu_run_test("create and call integer callback", scb_int);
     mu_run_test("create and call float callback", scb_float);
     mu_run_test("assign callback to none callback", scb_assignment);
-    
+    printf("  ran %d tests\n", tests_run - tests_run_old);
+    tests_run_old = tests_run;
 
     printf("running tests for SerialController\n");
     mu_run_test("normal operation", sctrl_normal);
@@ -301,4 +304,5 @@ void SerialControllerTests() {
     mu_run_test("process messages with multiple closing brackets", sctrl_malformed_multi_closingbracket);
     mu_run_test("process messages with multiple opening brackets", sctrl_malformed_multi_openingbracket);
     mu_run_test("ignore messages with multiple colons", sctrl_malformed_multi_colon);
+    printf("  ran %d tests\n", tests_run - tests_run_old);
 }
