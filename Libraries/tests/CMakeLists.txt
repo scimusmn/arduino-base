@@ -5,6 +5,7 @@ project(arduino-base-tests
 
 set(TEST_SOURCES
   tests.cpp
+  FakeSerialTests.cpp
   FixedSizeStringTests.cpp
   LookupTableTests.cpp
   )
