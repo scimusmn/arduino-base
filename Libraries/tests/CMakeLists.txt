@@ -4,10 +4,12 @@ project(arduino-base-tests
   DESCRIPTION "Test suite for SMM's arduino-base")
 
 set(TEST_SOURCES
+  FakeSerial.cpp
   tests.cpp
   FakeSerialTests.cpp
   FixedSizeStringTests.cpp
   LookupTableTests.cpp
+  SerialControllerTests.cpp
   )
 
 add_executable(tests ${TEST_SOURCES})

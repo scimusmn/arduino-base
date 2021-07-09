@@ -7,6 +7,7 @@ int main() {
     FakeSerialTests();
     FixedSizeStringTests();
     LookupTableTests();
+    SerialControllerTests();
 
     mu_tests_finished();
     return 0;

@@ -30,5 +30,4 @@ struct _Serial {
     std::queue<byte> inbuffer;
 };
 
-_Serial Serial;
-
+extern _Serial Serial;
