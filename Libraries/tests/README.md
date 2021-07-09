@@ -7,18 +7,7 @@ A set of unit tests using modified [minunit] testing macros.
 Building & Running
 ------------------
 
-In the `Libraries/tests` folder, run
-
-```bash
-mkdir build
-cd build
-cmake ..
-make
-```
-
-If on Windows, replace `make` with whatever build tool you're using (usually `msbuild`).
-
-To run the tests: `./tests`
+In the `Libraries/tests` folder, on a *nix system run `./run_tests.sh`, or on Windows run `run_tests.bat`.
 
 
 Writing Tests
