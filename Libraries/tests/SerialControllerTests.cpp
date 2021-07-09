@@ -9,7 +9,7 @@
  */
 
 bool success = false;
-const char *str = "";
+std::string str = "";
 int integer = 0;
 float number = 0.0f;
 
@@ -40,7 +40,7 @@ mu_test scb_string() {
     smm::SerialCallback s(stringcb);
     mu_assert_equal(s.callback.s, stringcb);
     s("hello!");
-    mu_assert_streq(str, "hello!");
+    mu_assert_equal(str, "hello!");
     return 0;
 }
 

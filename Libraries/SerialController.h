@@ -181,6 +181,7 @@ namespace smm {
 		unknownMessage();
 	    else
 		(*cb)(m_value.c_str());
+	    reset();
 	}
 
 
