@@ -16,6 +16,10 @@ struct _Serial {
 	return b;
     }
 
+    void print(std::string str) {
+	outbuffer += str;
+    }
+    
     void println(std::string line) {
 	outbuffer += line + "\n";
     }

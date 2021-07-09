@@ -115,7 +115,10 @@ namespace smm {
 
 
 	// updating
-	void update() {}
+	void update() {
+	    while(Serial.available())
+		eatCharacter(Serial.read());
+	}
 
 
 	// size info
@@ -129,5 +132,69 @@ namespace smm {
 	smm::LookupTable<MAX_CALLBACKS, SerialCallback> m_callbacks;
 	smm::FixedSizeString<MAX_KEY_LEN> m_key;
 	smm::FixedSizeString<MAX_VAL_LEN> m_value;
+
+	enum {
+	    WAIT_FOR_START,
+	    PARSE_KEY,
+	    PARSE_VALUE,
+	} m_state;
+
+	
+	void eatCharacter(char c) {
+	    switch (m_state) {
+	    case WAIT_FOR_START:
+		if (c == '{')
+		    m_state = PARSE_KEY;
+		break;
+
+	    case PARSE_KEY:
+		if (c == '{' || c == '}')
+		    // malformed input!
+		    reset();
+		else if (c == ':')
+		    m_state = PARSE_VALUE;
+		else
+		    m_key.append(c);
+		break;
+
+	    case PARSE_VALUE:
+		if (c == '{' || c == ':')
+		    // malformed input!
+		    reset();
+		else if (c == '}')
+		    handleMessage();
+		else
+		    m_value.append(c);
+		break;
+
+	    default:
+		// something's gone wrong, reset
+		reset();
+		break;
+	    }
+	}
+
+	
+	void handleMessage() {
+	    SerialCallback* cb = m_callbacks[m_key.c_str()];
+	    if (cb == nullptr)
+		unknownMessage();
+	    else
+		(*cb)(m_value.c_str());
+	}
+
+
+	void unknownMessage() {
+	    Serial.print("{unknown-message:");
+	    Serial.print(m_key.c_str());
+	    Serial.println("}");
+	}
+	
+
+	void reset() {
+	    m_state = WAIT_FOR_START;
+	    m_key.clear();
+	    m_value.clear();
+	}
     };
 }
