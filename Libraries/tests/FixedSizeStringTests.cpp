@@ -208,6 +208,18 @@ mu_test fss_cstring_inequality() {
 }
 
 
+mu_test fss_substring_inequality() {
+    smm::FixedSizeString<32> string1("hello, world!");
+    mu_assert_unequal(string1, "hello");
+    mu_assert_unequal("hello", string1);
+
+    smm::FixedSizeString<32> string2("hello");
+    mu_assert_unequal(string2, "hello, world!");
+    mu_assert_unequal("hello, world!", string2);
+    return 0;
+}
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * conversion tests
@@ -296,6 +308,7 @@ void FixedSizeStringTests() {
     mu_run_test("equality operator with C strings", fss_cstring_equality);
     mu_run_test("inequality operator", fss_inequality);
     mu_run_test("inequality operator with C strings", fss_cstring_inequality);
+    mu_run_test("inequality operator with substrings", fss_substring_inequality);
 
     mu_run_test("convert to integer", fss_to_int);
     mu_run_test("convert to negative integer", fss_to_int_negative);
