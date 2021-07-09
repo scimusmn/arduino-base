@@ -28,7 +28,7 @@ mu_test fs_receive() {
 mu_test fs_transmit() {
     _Serial serial;
     serial.println("hello, world!");
-    mu_assert_equal(serial.outbuffer, "hello, world!");
+    mu_assert_equal(serial.outbuffer, "hello, world!\n");
     return 0;
 }
 
@@ -43,11 +43,36 @@ mu_test fs_transmit_multi() {
 }
 
 
+mu_test fs_receive_real() {
+    Serial.send("hello");
+    mu_assert_equal(Serial.available(), 5);
+    mu_assert_equal(Serial.read(), 'h');
+    mu_assert_equal(Serial.read(), 'e');
+    mu_assert_equal(Serial.read(), 'l');
+    mu_assert_equal(Serial.read(), 'l');
+    mu_assert_equal(Serial.read(), 'o');
+    mu_assert_equal(Serial.available(), 0);
+    return 0;    
+}
+
+
+mu_test fs_transmit_multi_real() {
+    Serial.println("hello, world!");
+    mu_assert_equal(Serial.outbuffer, "hello, world!\n");
+    Serial.println("goodnight!");
+    mu_assert_equal(Serial.outbuffer, "hello, world!\ngoodnight!\n");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FakeSerialTests() {
     printf("running tests for fake Serial\n");
     mu_run_test("receive data", fs_receive);
     mu_run_test("transmit data", fs_transmit);
-    mu_run_test("transmit multiple lines of data", fs_transmit);
+    mu_run_test("transmit multiple lines of data", fs_transmit_multi);
+
+    mu_run_test("receive data on Serial object", fs_receive_real);
+    mu_run_test("transmit multiple lines of data on Serial object", fs_transmit_multi_real);
 }
