@@ -26,6 +26,11 @@ struct _Serial {
 	}
     }
 
+    void reset() {
+	outbuffer = "";
+	inbuffer = std::queue<byte>();
+    }
+
     std::string outbuffer;
     std::queue<byte> inbuffer;
 };

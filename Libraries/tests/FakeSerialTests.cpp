@@ -65,6 +65,21 @@ mu_test fs_transmit_multi_real() {
 }
 
 
+mu_test fs_reset() {
+    Serial.reset();
+    mu_assert_equal(Serial.available(), 0);
+    mu_assert_equal(Serial.outbuffer, "");
+    Serial.println("hello, world!");
+    Serial.send("goodbye!");
+    mu_assert_equal(Serial.outbuffer, "hello, world!\n");
+    mu_assert_equal(Serial.available(), 8);
+    Serial.reset();
+    mu_assert_equal(Serial.available(), 0);
+    mu_assert_equal(Serial.outbuffer, "");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FakeSerialTests() {
@@ -75,4 +90,5 @@ void FakeSerialTests() {
 
     mu_run_test("receive data on Serial object", fs_receive_real);
     mu_run_test("transmit multiple lines of data on Serial object", fs_transmit_multi_real);
+    mu_run_test("reset Serial object", fs_reset);
 }

@@ -7,6 +7,8 @@ A set of unit tests using modified [minunit] testing macros.
 Building & Running
 ------------------
 
+[CMake] is required to build the tests.
+
 In the `Libraries/tests` folder, on a *nix system run `./run_tests.sh`, or on Windows run `run_tests.bat`.
 
 
@@ -40,3 +42,4 @@ Generally, there is a source file for each file in `Libraries/`, each defining a
 
 
 [minunit]: https://web.archive.org/web/20140804170151/http://www.jera.com/techinfo/jtns/jtn002.html
+[CMake]: https://cmake.org/download/
