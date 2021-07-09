@@ -25,12 +25,14 @@ namespace smm {
      */
 
     struct SerialCallback {
+	SerialCallback() { valueType = NONE; }
 	SerialCallback(voidCallback cb)   { valueType = VOID;   callback.v = cb; }
 	SerialCallback(stringCallback cb) { valueType = STRING; callback.s = cb; }
 	SerialCallback(intCallback cb)    { valueType = INT;    callback.i = cb; }
 	SerialCallback(floatCallback cb)  { valueType = FLOAT;  callback.f = cb; }
 
 	typedef enum {
+	    NONE,
 	    VOID,
 	    STRING,
 	    INT,
@@ -48,6 +50,9 @@ namespace smm {
 
 	void operator()(const char *value) {
 	    switch (valueType) {
+	    case NONE:
+		break;
+		
 	    case VOID:
 		callback.v();
 		break;
@@ -89,10 +94,18 @@ namespace smm {
 	void setup(long baudrate=115200) {}
   
 	// overloaded callback-adding functions
-	void addCallback(const char *key, voidCallback cb) {}
-	void addCallback(const char *key, stringCallback cb) {}
-	void addCallback(const char *key, intCallback cb) {}
-	void addCallback(const char *key, floatCallback cb) {}
+	void addCallback(const char *key, voidCallback cb) {
+	    m_callbacks.add(key, SerialCallback(cb));
+	}
+	void addCallback(const char *key, stringCallback cb) {
+	    m_callbacks.add(key, SerialCallback(cb));
+	}
+	void addCallback(const char *key, intCallback cb) {
+	    m_callbacks.add(key, SerialCallback(cb));
+	}
+	void addCallback(const char *key, floatCallback cb) {
+	    m_callbacks.add(key, SerialCallback(cb));
+	}
   
 	// message sending
 	void sendMessage(const char *messageKey, const char *messageValue) {}
@@ -110,6 +123,11 @@ namespace smm {
 	size_t maxValueLength() { return MAX_VAL_LEN; }
 	unsigned int maxNumCallbacks() { return MAX_CALLBACKS; }
 
-	unsigned int numCallbacks() { return 0; }
+	unsigned int numCallbacks() { return m_callbacks.size(); }
+
+    private:
+	smm::LookupTable<MAX_CALLBACKS, SerialCallback> m_callbacks;
+	smm::FixedSizeString<MAX_KEY_LEN> m_key;
+	smm::FixedSizeString<MAX_VAL_LEN> m_value;
     };
 }

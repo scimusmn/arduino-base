@@ -19,6 +19,14 @@ void intcb(int n) { integer = n; }
 void floatcb(float f) { number = f; }
 
 
+mu_test scb_none() {
+    smm::SerialCallback none;
+    mu_assert_equal(none.valueType, smm::SerialCallback::ValueType::NONE);
+    none("");
+    return 0;
+}
+
+
 mu_test scb_void() {
     smm::SerialCallback v(voidcb);
     mu_assert_equal(v.callback.v, voidcb);
@@ -51,6 +59,22 @@ mu_test scb_float() {
     mu_assert_equal(f.callback.f, floatcb);
     f("1.618f");
     mu_assert_equal(number, 1.618f);
+    return 0;
+}
+
+
+mu_test scb_assignment() {
+    success = false;
+    
+    smm::SerialCallback none;
+    mu_assert_equal(none.valueType, smm::SerialCallback::ValueType::NONE);
+
+    smm::SerialCallback v(voidcb);
+    none = v;
+    mu_assert_equal(none.callback.v, voidcb);
+    mu_assert_equal(success, false);
+    none("literally anything");
+    mu_assert_equal(success, true);
     return 0;
 }
 
@@ -248,6 +272,8 @@ mu_test sctrl_malformed_multi_colon() {
     controller.update();
     mu_assert_unequal(str, "b:q:p");
     mu_assert_equal(str, "");
+    Serial.send("{string:b}");
+    mu_assert_equal(str, "b");
 
     return 0;
 }
@@ -257,10 +283,13 @@ mu_test sctrl_malformed_multi_colon() {
 
 void SerialControllerTests() {
     printf("running tests for SerialCallback\n");
+    mu_run_test("create and call none callback", scb_none);
     mu_run_test("create and call void callback", scb_void);
     mu_run_test("create and call string callback", scb_string);
     mu_run_test("create and call integer callback", scb_int);
     mu_run_test("create and call float callback", scb_float);
+    mu_run_test("assign callback to none callback", scb_assignment);
+    
 
     printf("running tests for SerialController\n");
     mu_run_test("normal operation", sctrl_normal);
