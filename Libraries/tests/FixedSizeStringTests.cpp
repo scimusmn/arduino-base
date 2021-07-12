@@ -313,6 +313,22 @@ mu_test fss_from_float() {
 }
 
 
+mu_test fss_from_int_overflow() {
+    smm::FixedSizeString<2> string;
+    string = 456;
+    mu_assert_equal(string, "44");
+    return 0;
+}
+
+
+mu_test fss_from_float_overflow() {
+    smm::FixedSizeString<3> string;
+    string = 2.718f;
+    mu_assert_equal(string, "2.7");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FixedSizeStringTests() {
@@ -352,6 +368,8 @@ void FixedSizeStringTests() {
     mu_run_test("fail to convert arbitrary string to float", fss_to_float_nan);
     mu_run_test("convert from int", fss_from_int);
     mu_run_test("convert from float", fss_from_float);
+    mu_run_test("overflow on convert from int", fss_from_int_overflow);
+    mu_run_test("overflow convert from float", fss_from_float_overflow);
 
     printf("  ran %d tests\n", tests_run_old);
 }
