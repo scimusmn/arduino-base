@@ -55,14 +55,20 @@ namespace smm {
 	 * This is an overload of the above function; it is provided for convenience.
 	 *
 	 * @param[in] number The buffer will be set to the base10 representation of this number */
-	void operator=(int number) {}
+	void operator=(int number) {
+	    clear();
+	    snprintf(m_str, MAX_LENGTH+1, "%d", number);
+	}
 
 
 	/** set the value stored in the character buffer
 	 * This is an overload of the above function; it is provided for convenience.
 	 *
 	 * @param[in] number The buffer will be set to the base10 representation of this number */
-	void operator=(float number) {}
+	void operator=(float number) {
+	    clear();
+	    snprintf(m_str, MAX_LENGTH+1, "%.3f", number);
+	}
 	    
 
 	/** append to the string
