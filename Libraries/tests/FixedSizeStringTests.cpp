@@ -78,6 +78,20 @@ mu_test fss_equals_operator_fsstring() {
 }
 
 
+mu_test fss_equals_operator_fsstring_different() {
+    smm::FixedSizeString<32> string;
+    mu_assert_streq(string.c_str(), "");
+    mu_assert_equal(string.length(), 0);
+
+    smm::FixedSizeString<16> helloString("hello, world!");
+    
+    string = helloString;
+    mu_assert_streq(string.c_str(), "hello, world!");
+    mu_assert_equal(string.length(), 13);
+    return 0;
+}
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * appending & overflow tests
@@ -283,6 +297,22 @@ mu_test fss_to_float_nan() {
 }
 
 
+mu_test fss_from_int() {
+    smm::FixedSizeString<32> string;
+    string = 565;
+    mu_assert_equal(string, "565");
+    return 0;
+}
+
+
+mu_test fss_from_float() {
+    smm::FixedSizeString<32> string;
+    string = 2.718f;
+    mu_assert_equal(string, "2.718");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FixedSizeStringTests() {
@@ -296,6 +326,7 @@ void FixedSizeStringTests() {
     mu_run_test("overflow on assignment operator with C string", fss_equals_operator_cstring_overflow);
     mu_run_test("overflow on assignment operator with C string", fss_equals_operator_cstring_overflow_2);
     mu_run_test("assignment operator with FixedSizeString", fss_equals_operator_fsstring);
+    mu_run_test("assignment operator with different-size FixedSizeString", fss_equals_operator_fsstring_different);
     
     mu_run_test("append to string", fss_append);
     mu_run_test("append multiple times to string", fss_append_multi);
@@ -319,6 +350,8 @@ void FixedSizeStringTests() {
     mu_run_test("convert to negative float", fss_to_float_negative);
     mu_run_test("convert to float from integer string", fss_to_float_int);
     mu_run_test("fail to convert arbitrary string to float", fss_to_float_nan);
+    mu_run_test("convert from int", fss_from_int);
+    mu_run_test("convert from float", fss_from_float);
 
     printf("  ran %d tests\n", tests_run_old);
 }

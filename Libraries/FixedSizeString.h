@@ -47,8 +47,23 @@ namespace smm {
 	 * This is an overload of the above function; it is provided for convenience.
 	 *
 	 * @param[in] string The string to set the buffer to */
-	void operator=(FixedSizeString& string) { this->operator=(string.c_str()); }
+	template<size_t size>
+	void operator=(FixedSizeString<size>& string) { this->operator=(string.c_str()); }
 
+	
+	/** set the value stored in the character buffer
+	 * This is an overload of the above function; it is provided for convenience.
+	 *
+	 * @param[in] number The buffer will be set to the base10 representation of this number */
+	void operator=(int number) {}
+
+
+	/** set the value stored in the character buffer
+	 * This is an overload of the above function; it is provided for convenience.
+	 *
+	 * @param[in] number The buffer will be set to the base10 representation of this number */
+	void operator=(float number) {}
+	    
 
 	/** append to the string
 	 * In case of overflow, the string will be truncated.

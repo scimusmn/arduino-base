@@ -110,9 +110,27 @@ namespace smm {
 	}
   
 	// message sending
-	void send(const char *messageKey, const char *messageValue) {}
-	void send(const char *messageKey) {}
-	void send(const char *messageKey, int messageValue) {}
+	void send(const char *messageKey, const char *messageValue, bool cleanValue=true) {
+	    smm::FixedSizeString<MAX_KEY_LEN> key;
+	    smm::FixedSizeString<MAX_VAL_LEN> value;
+	    
+	    cleanString(key, messageKey);
+	    if (cleanValue)
+		cleanString(value, messageValue);
+	    else
+		value = messageValue;
+
+	    Serial.print("{");
+	    Serial.print(key.c_str());
+	    Serial.print(":");
+	    Serial.print(value.c_str());
+	    Serial.println("}");
+	}
+	void send(const char *messageKey) { send(messageKey, "1"); }
+	void send(const char *messageKey, int messageValue) {
+	    char value[MAX_VAL_LEN];
+	    
+	}
 	void send(const char *messageKey, float messageValue) {}
 
 
@@ -215,6 +233,17 @@ namespace smm {
 	    m_key.clear();
 	    m_value.clear();
 	    m_keyOverflowed = false;
+	}
+
+	template<size_t size>
+	void cleanString(smm::FixedSizeString<size>& dest, const char *source) {
+	    size_t length = strlen(source);
+	    for (int i=0; i<length; i++) {
+		char c = source[i];
+		if (c == '{' || c == ':' || c == '}')
+		    continue;
+		dest.append(c);
+	    }
 	}
     };
 }

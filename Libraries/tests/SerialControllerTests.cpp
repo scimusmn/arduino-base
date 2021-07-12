@@ -292,7 +292,7 @@ mu_test sctrl_send_string() {
 
     Serial.reset();
     controller.send("hello", "world");
-    mu_assert_equal(Serial.outbuffer, "{hello:world}");
+    mu_assert_equal(Serial.outbuffer, "{hello:world}\n");
     return 0;
 }
 
@@ -302,7 +302,7 @@ mu_test sctrl_send_int() {
 
     Serial.reset();
     controller.send("life", 42);
-    mu_assert_equal(Serial.outbuffer, "{life:42}");
+    mu_assert_equal(Serial.outbuffer, "{life:42}\n");
     return 0;
 }
 
@@ -312,7 +312,7 @@ mu_test sctrl_send_float() {
 
     Serial.reset();
     controller.send("e", 2.718f);
-    mu_assert_equal(Serial.outbuffer, "{e:2.718}");
+    mu_assert_equal(Serial.outbuffer, "{e:2.718}\n");
     return 0;
 }
 
@@ -322,7 +322,7 @@ mu_test sctrl_send_void() {
 
     Serial.reset();
     controller.send("arduino-ready");
-    mu_assert_equal(Serial.outbuffer, "{arduino-ready:1}");
+    mu_assert_equal(Serial.outbuffer, "{arduino-ready:1}\n");
     return 0;
 }
 
