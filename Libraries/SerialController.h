@@ -91,7 +91,9 @@ namespace smm {
 	     size_t MAX_KEY_LEN=32, size_t MAX_VAL_LEN=MAX_KEY_LEN>
     class SerialController {
     public:
-	void setup(long baudrate=115200) {}
+	void setup(long baudrate=115200) {
+	    reset();
+	}
   
 	// overloaded callback-adding functions
 	void addCallback(const char *key, voidCallback cb) {
@@ -108,10 +110,10 @@ namespace smm {
 	}
   
 	// message sending
-	void sendMessage(const char *messageKey, const char *messageValue) {}
-	void sendMessage(const char *messageKey) {}
-	void sendMessage(const char *messageKey, int messageValue) {}
-	void sendMessage(const char *messageKey, float messageValue) {}
+	void send(const char *messageKey, const char *messageValue) {}
+	void send(const char *messageKey) {}
+	void send(const char *messageKey, int messageValue) {}
+	void send(const char *messageKey, float messageValue) {}
 
 
 	// updating
@@ -132,6 +134,7 @@ namespace smm {
 	smm::LookupTable<MAX_CALLBACKS, SerialCallback, MAX_KEY_LEN> m_callbacks;
 	smm::FixedSizeString<MAX_KEY_LEN> m_key;
 	smm::FixedSizeString<MAX_VAL_LEN> m_value;
+	bool m_keyOverflowed;
 
 	enum {
 	    WAIT_FOR_START,
@@ -148,18 +151,31 @@ namespace smm {
 		break;
 
 	    case PARSE_KEY:
-		if (c == '{' || c == '}')
-		    // malformed input!
+		if (c == '{') {
+		    // malformed input, new message starting
+		    reset();
+		    m_state = PARSE_KEY;
+		}
+		else if (c == '}')
+		    // malformed input, ignore
 		    reset();
 		else if (c == ':')
 		    m_state = PARSE_VALUE;
-		else
+		else {
+		    if (m_key.length() == m_key.maxLength())
+			m_keyOverflowed = true;
 		    m_key.append(c);
+		}
 		break;
 
 	    case PARSE_VALUE:
-		if (c == '{' || c == ':')
-		    // malformed input!
+		if (c == '{') {
+		    // malformed input, new message starting
+		    reset();
+		    m_state = PARSE_KEY;
+		}
+		else if (c == ':')
+		    // malformed input, ignore
 		    reset();
 		else if (c == '}')
 		    handleMessage();
@@ -177,7 +193,9 @@ namespace smm {
 	
 	void handleMessage() {
 	    SerialCallback* cb = m_callbacks[m_key.c_str()];
-	    if (cb == nullptr)
+	    if (m_keyOverflowed)
+		send("warning", "Key overflow!");
+	    else if (cb == nullptr)
 		unknownMessage();
 	    else
 		(*cb)(m_value.c_str());
@@ -196,6 +214,7 @@ namespace smm {
 	    m_state = WAIT_FOR_START;
 	    m_key.clear();
 	    m_value.clear();
+	    m_keyOverflowed = false;
 	}
     };
 }
