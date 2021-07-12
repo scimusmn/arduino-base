@@ -273,6 +273,7 @@ mu_test sctrl_malformed_multi_colon() {
     mu_assert_unequal(str, "b:q:p");
     mu_assert_equal(str, "");
     Serial.send("{string:b}");
+    controller.update();
     mu_assert_equal(str, "b");
 
     return 0;
