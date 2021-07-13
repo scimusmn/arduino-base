@@ -5,6 +5,7 @@ int tests_failed = 0;
 
 int main() {
     FakeSerialTests();
+    FakeEEPROMTests();
     FixedSizeStringTests();
     LookupTableTests();
     SerialControllerTests();

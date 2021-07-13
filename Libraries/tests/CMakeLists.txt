@@ -4,9 +4,10 @@ project(arduino-base-tests
   DESCRIPTION "Test suite for SMM's arduino-base")
 
 set(TEST_SOURCES
-  FakeSerial.cpp
+  singletons.cpp
   tests.cpp
   FakeSerialTests.cpp
+  FakeEEPROMTests.cpp
   FixedSizeStringTests.cpp
   LookupTableTests.cpp
   SerialControllerTests.cpp
