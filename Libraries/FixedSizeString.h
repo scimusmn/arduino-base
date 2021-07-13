@@ -57,7 +57,8 @@ namespace smm {
 	 * @param[in] number The buffer will be set to the base10 representation of this number */
 	void operator=(int number) {
 	    clear();
-	    snprintf(m_str, MAX_LENGTH+1, "%d", number);
+	    snprintf(m_str, MAX_LENGTH, "%d", number);
+	    m_length = strlen(m_str);
 	}
 
 
@@ -67,7 +68,8 @@ namespace smm {
 	 * @param[in] number The buffer will be set to the base10 representation of this number */
 	void operator=(float number) {
 	    clear();
-	    snprintf(m_str, MAX_LENGTH+1, "%.3f", number);
+	    snprintf(m_str, MAX_LENGTH, "%.3f", number);
+	    m_length = strlen(m_str);
 	}
 	    
 

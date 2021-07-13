@@ -301,6 +301,7 @@ mu_test fss_from_int() {
     smm::FixedSizeString<32> string;
     string = 565;
     mu_assert_equal(string, "565");
+    mu_assert_equal(string.length(), 3);
     return 0;
 }
 
@@ -309,6 +310,7 @@ mu_test fss_from_float() {
     smm::FixedSizeString<32> string;
     string = 2.718f;
     mu_assert_equal(string, "2.718");
+    mu_assert_equal(string.length(), 5);
     return 0;
 }
 
@@ -316,7 +318,7 @@ mu_test fss_from_float() {
 mu_test fss_from_int_overflow() {
     smm::FixedSizeString<2> string;
     string = 456;
-    mu_assert_equal(string, "44");
+    mu_assert_equal(string, "45");
     return 0;
 }
 
