@@ -373,5 +373,5 @@ void FixedSizeStringTests() {
     mu_run_test("overflow on convert from int", fss_from_int_overflow);
     mu_run_test("overflow convert from float", fss_from_float_overflow);
 
-    printf("  ran %d tests\n", tests_run_old);
+    printf("  ran %d tests\n", tests_run - tests_run_old);
 }

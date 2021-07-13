@@ -92,6 +92,7 @@ namespace smm {
     class SerialController {
     public:
 	void setup(long baudrate=115200) {
+	    Serial.begin(baudrate);
 	    reset();
 	}
   
