@@ -3,3 +3,4 @@
 ReactSerial/node_modules
 *.gch
 Libraries/tests/build
+examples/*/*.h

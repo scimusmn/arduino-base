@@ -2,7 +2,9 @@
 
 #include "SerialController.h"
 
-SerialController serialController;
+using namespace smm;
+
+SerialController<> serialController;
 
 long baudrate = 115200;
 int blinkrate = 1000;
@@ -50,7 +52,7 @@ void loop() {
       blinkcounter = millis();
 
       // send data to stele
-      serialController.sendMessage("led-status", led_on);
+      serialController.send("led-status", led_on);
     }
   }
 }
