@@ -152,4 +152,10 @@ namespace smm {
 	unsigned int m_length;
 	char m_str[MAX_LENGTH+1];
     };
+
+    // convenience typedefs
+    typedef FixedSizeString<64> String64;
+    typedef FixedSizeString<32> String32;
+    typedef FixedSizeString<16> String16;
+    typedef FixedSizeString<8> String8;
 }
