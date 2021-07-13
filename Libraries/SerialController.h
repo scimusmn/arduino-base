@@ -128,11 +128,16 @@ namespace smm {
 	}
 	void send(const char *messageKey) { send(messageKey, "1"); }
 	void send(const char *messageKey, int messageValue) {
-	    char value[MAX_VAL_LEN];
-	    
+	    smm::FixedSizeString<MAX_VAL_LEN> value;
+	    value = messageValue;
+	    send(messageKey, value.c_str());
 	}
-	void send(const char *messageKey, float messageValue) {}
-
+	void send(const char *messageKey, float messageValue) {
+	    smm::FixedSizeString<MAX_VAL_LEN> value;
+	    value = messageValue;
+	    send(messageKey, value.c_str());
+	}
+	
 
 	// updating
 	void update() {
