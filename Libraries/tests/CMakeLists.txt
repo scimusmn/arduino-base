@@ -11,6 +11,7 @@ set(TEST_SOURCES
   FixedSizeStringTests.cpp
   LookupTableTests.cpp
   SerialControllerTests.cpp
+  RfidTests.cpp
   )
 
 add_executable(tests ${TEST_SOURCES})

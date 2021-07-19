@@ -9,3 +9,4 @@ void FakeEEPROMTests();
 void FixedSizeStringTests();
 void LookupTableTests();
 void SerialControllerTests();
+void RfidTests();

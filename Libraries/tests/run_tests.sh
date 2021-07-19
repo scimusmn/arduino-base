@@ -1,5 +1,5 @@
 if [ ! -d build ]; then
-   mkdir build;
+	mkdir build
 fi
 
 cd build
@@ -7,3 +7,4 @@ cmake ..
 make
 ./tests
 cd ..
+

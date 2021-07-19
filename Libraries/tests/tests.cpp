@@ -9,6 +9,7 @@ int main() {
     FixedSizeStringTests();
     LookupTableTests();
     SerialControllerTests();
+    RfidTests();
 
     mu_tests_finished();
     return 0;
