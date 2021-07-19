@@ -58,6 +58,9 @@ namespace smm {
 	 * @returns The maximum possible number of entries the table can hold. */
 	unsigned int maxSize() { return MAX_ENTRIES; }
 
+	const char *key(int index) { return m_keys[index].c_str(); }
+	T value(int index) { return m_values[index]; }
+
     private:
 	unsigned int m_numEntries;
 	smm::FixedSizeString<MAX_STR_LEN> m_keys[MAX_ENTRIES];

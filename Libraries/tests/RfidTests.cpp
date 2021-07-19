@@ -45,6 +45,46 @@ mu_test elt_save_load() {
 }
 
 
+mu_test elt_save_load_overflow() {
+    EEPROM.clear();
+    smm::EEPROMLookupTable<16> tbl;
+    mu_assert_equal(tbl.size(), 0);
+    mu_assert_equal(tbl.maxSize(), 16);
+    tbl.add("aaaaa", 'a');
+    tbl.add("bbbbb", 'b');
+    tbl.add("ccccc", 'c');
+    mu_assert_equal(tbl.size(), 3);
+    mu_assert_equal(tbl.maxSize(), 16);
+    mu_assert_equal(*(tbl["aaaaa"]), 'a');
+    mu_assert_equal(*(tbl["bbbbb"]), 'b');
+    mu_assert_equal(*(tbl["ccccc"]), 'c');
+
+    tbl.save();
+
+    smm::EEPROMLookupTable<2> tbl2;
+    mu_assert_equal(tbl2.size(), 0);
+    mu_assert_equal(tbl2.maxSize(), 2);
+    tbl2.load();
+    mu_assert_equal(tbl2.size(), 2);
+    mu_assert_equal(tbl2.maxSize(), 2);
+    mu_assert_equal(*(tbl2["aaaaa"]), 'a');
+    mu_assert_equal(*(tbl2["bbbbb"]), 'b');
+    mu_assert_equal(tbl2["ccccc"], nullptr);
+
+    smm::EEPROMLookupTable<16> tbl3;
+    mu_assert_equal(tbl3.size(), 0);
+    mu_assert_equal(tbl3.maxSize(), 16);
+    tbl3.load();
+    mu_assert_equal(tbl3.size(), 3);
+    mu_assert_equal(tbl3.maxSize(), 16);
+    mu_assert_equal(*(tbl3["aaaaa"]), 'a');
+    mu_assert_equal(*(tbl3["bbbbb"]), 'b');
+    mu_assert_equal(*(tbl3["ccccc"]), 'c');
+
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -53,6 +93,7 @@ void RfidTests() {
 
     mu_run_test("create EEPROM lookup table", elt_create);
     mu_run_test("save and load lookup table from EEPROM", elt_save_load);
+    mu_run_test("save and load lookup table from EEPROM with overflow", elt_save_load_overflow);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }
