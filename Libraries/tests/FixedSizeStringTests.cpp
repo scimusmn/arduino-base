@@ -318,7 +318,7 @@ mu_test fss_from_float() {
 mu_test fss_from_int_overflow() {
     smm::FixedSizeString<2> string;
     string = 456;
-    mu_assert_equal(string, "45");
+    mu_assert(string == "45", "'string' is not equal to '45' (if built on MSYS, this is a known bug in their version of snprintf)");
     return 0;
 }
 
@@ -326,7 +326,7 @@ mu_test fss_from_int_overflow() {
 mu_test fss_from_float_overflow() {
     smm::FixedSizeString<3> string;
     string = 2.718f;
-    mu_assert_equal(string, "2.7");
+    mu_assert_equal(string, "'string' is not equal to '2.7' (if built on MSYS, this is a known bug in their version of snprintf)");
     return 0;
 }
 

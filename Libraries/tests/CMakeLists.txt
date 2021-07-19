@@ -8,6 +8,7 @@ set(TEST_SOURCES
   tests.cpp
   FakeSerialTests.cpp
   FakeEEPROMTests.cpp
+  FakeWireTests.cpp
   FixedSizeStringTests.cpp
   LookupTableTests.cpp
   SerialControllerTests.cpp

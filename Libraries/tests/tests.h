@@ -6,6 +6,7 @@
 
 void FakeSerialTests();
 void FakeEEPROMTests();
+void FakeWireTests();
 void FixedSizeStringTests();
 void LookupTableTests();
 void SerialControllerTests();
