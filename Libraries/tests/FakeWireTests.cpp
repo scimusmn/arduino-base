@@ -4,44 +4,39 @@
 #include <string>
 
 
-class BasicPeripheral : public PeripheralDevice {
-public:
-    void onReceive(int num_bytes) {}
-    void onRequest() {}
-    std::string str;
-};
+_Wire *pWire; // peripheral Wire object
+std::string pString; // peripheral string
+
+void setPeripheralString(int numBytes) {
+    pString = "";
+    for (int i=0; i<numBytes; i++)
+	pString += (char) pWire->read();
+}
+void sendABC() {
+    pWire->write('a');
+    pWire->write('b');
+    pWire->write('c');
+}
+
+
+mu_test fwire_add_peripheral() {
+    mu_except(WireBus.bus.at(0x70));
+    pWire = new _Wire;
+    pWire->begin(0x70);
+    mu_try(WireBus.bus.at(0x70));
+    mu_assert_equal(&(WireBus.bus.at(0x70)), pWire);
+    delete pWire;
+    mu_except(WireBus.bus.at(0x70));
+    return 0;
+}
 
 
 mu_test fwire_basic_tx() {
-    Wire.reset();
-    BasicPeripheral peripheral;
-    Wire.attach(peripheral, 0x70);
-
-    Wire.beginTransmission(0x70);
-    Wire.write('a');
-    Wire.write('b');
-    Wire.write('c');
-    Wire.endTransmission();
-
-    mu_assert_equal(peripheral.str, "abc");
-    
     return 0;
 }
 
 
 mu_test fwire_basic_rx() {
-    Wire.reset();
-    BasicPeripheral peripheral;
-    Wire.attach(peripheral, 0x70);
-
-    Wire.requestFrom(0x70, 3);
-    mu_assert_equal(Wire.available(), 3);
-    mu_assert_equal(Wire.read(), 'a');
-    mu_assert_equal(Wire.read(), 'b');
-    mu_assert_equal(Wire.read(), 'c');
-
-    mu_assert_equal(Wire.available(), 0);
-
     return 0;
 }
 
@@ -53,6 +48,7 @@ void FakeWireTests() {
 
     printf("running tests for fake Wire\n");
 
+    mu_run_test("add peripheral to bus", fwire_add_peripheral);
     mu_run_test("transmit to peripheral", fwire_basic_tx);
     mu_run_test("receive from peripheral", fwire_basic_rx);
 

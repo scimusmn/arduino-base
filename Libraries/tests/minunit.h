@@ -8,10 +8,12 @@
 #define STR(x) STR_IMPL(x)
 
 /* minunit testing macros from /www.jera.com/techinfo/jtns/jtn002.html */
-#define mu_assert(test, message) do { if (!(test)) return message " [line " STR(__LINE__) "]"; } while (0)
+#define mu_assert(test, message) do { if (!(test)) return message "\n   [" __FILE__ ", line " STR(__LINE__) "]"; } while (0)
 #define mu_assert_equal(a, b) mu_assert(a == b, "'" #a "' is not equal to '" #b "'")
 #define mu_assert_unequal(a, b) mu_assert(a != b, "'" #a "' is equal to '" #b "'")
 #define mu_assert_streq(a, b) mu_assert(strcmp(a, b) == 0, "'" #a "' is not equal to '" #b "'")
+#define mu_try(expr) do { try { (expr); } catch (...) { mu_assert(false, "'" #expr "' threw an exception!"); } } while(0)
+#define mu_except(expr) do { bool exception = false; try { (expr); } catch (...) { exception = true; } if (!exception) mu_assert(false, "'" #expr "' succeeded without exception!"); } while (0)
 #define mu_run_test(name, test) do {                            \
 	const char *message = test();					\
 	tests_run++;                                            \

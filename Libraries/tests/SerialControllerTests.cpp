@@ -137,7 +137,7 @@ mu_test sctrl_normal() {
 
 
 mu_test sctrl_overflow() {
-    smm::SerialController<NORMAL_PROTOCOL, 2, 4> controller;
+    smm::SerialController<2, 4> controller;
 
     mu_assert_equal(controller.maxNumCallbacks(), 2);
     mu_assert_equal(controller.numCallbacks(), 0);
@@ -352,6 +352,23 @@ mu_test sctrl_send_disallowed_chars() {
 }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * SteleSerialController tests
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+mu_test sctrl_stele_handshake() {
+    Serial.reset();
+    smm::SteleSerialController<> controller;
+    Serial.send("{");
+    controller.setup();
+    mu_assert_equal(Serial.outbuffer, "{arduino-ready:1}\n");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void SerialControllerTests() {
@@ -383,6 +400,8 @@ void SerialControllerTests() {
     mu_run_test("send float-valued message", sctrl_send_float);
     mu_run_test("send void-valued message", sctrl_send_void);
     mu_run_test("strip disallowed characters", sctrl_send_disallowed_chars);
+
+    mu_run_test("stele protocol handshake", sctrl_stele_handshake);
     
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }

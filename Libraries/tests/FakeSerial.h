@@ -35,6 +35,10 @@ struct _Serial {
 	inbuffer = std::queue<byte>();
     }
 
+    bool operator!() {
+	return false;
+    }
+
     std::string outbuffer;
     std::queue<byte> inbuffer;
 };

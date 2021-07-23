@@ -1,18 +1,17 @@
 #pragma once
 
+#include <map>
+#include <queue>
+
 typedef unsigned char byte;
-
-
-class PeripheralDevice {
-public:
-    virtual void onReceive(int num_bytes) = 0;
-    virtual void onRequest() = 0;
-};
+typedef void (*rxHandler)();
+typedef void (*txHandler)(int);
 
 
 class _Wire {
 public:
     void begin() {}
+    void begin(byte address) {}
     
     byte requestFrom(byte address, size_t quantity, bool stop=true) { return 0; }
     
@@ -27,8 +26,15 @@ public:
     
     void SetClock(unsigned long frequency) {}
 
-    void reset() {}
-    void attach(PeripheralDevice& device, byte address) {}
+    void onReceive(txHandler handler);
+    void onRequest(rxHandler handler);
 };
 
-extern _Wire Wire;
+
+struct _WireBus {
+    std::map<byte, _Wire&> bus;
+    std::queue<byte> copi; // controller out, peripheral in
+    std::queue<byte> cipo; // controller in, peripheral out
+};
+
+extern _WireBus WireBus;

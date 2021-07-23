@@ -80,6 +80,12 @@ mu_test fs_reset() {
 }
 
 
+mu_test fs_ready() {
+    mu_assert_equal(!Serial, false);
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FakeSerialTests() {
@@ -93,6 +99,8 @@ void FakeSerialTests() {
     mu_run_test("receive data on Serial object", fs_receive_real);
     mu_run_test("transmit multiple lines of data on Serial object", fs_transmit_multi_real);
     mu_run_test("reset Serial object", fs_reset);
+
+    mu_run_test("boolean conversion", fs_ready);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }

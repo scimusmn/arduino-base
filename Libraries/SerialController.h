@@ -84,10 +84,7 @@ namespace smm {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    #define NORMAL_PROTOCOL 0
-    #define STELE_PROTOCOL 1
-
-    template<int PROTOCOL=NORMAL_PROTOCOL, unsigned int MAX_CALLBACKS=16,
+    template<unsigned int MAX_CALLBACKS=16,
 	     size_t MAX_KEY_LEN=32, size_t MAX_VAL_LEN=MAX_KEY_LEN>
     class SerialController {
     public:
@@ -250,6 +247,23 @@ namespace smm {
 		    continue;
 		dest.append(c);
 	    }
+	}
+    };
+
+
+    template<unsigned int MAX_CALLBACKS=16,
+	     size_t MAX_KEY_LEN=32, size_t MAX_VAL_LEN=MAX_KEY_LEN>
+    class SteleSerialController : public SerialController<MAX_CALLBACKS, MAX_KEY_LEN, MAX_VAL_LEN> {
+    public:
+	void setup(long baudrate=115200) {
+	    Serial.begin(baudrate);
+	    while (!Serial);
+	    bool handshake = false;
+	    while (!handshake) {
+		if (Serial.available())
+		    handshake = Serial.read() == '{';
+	    }
+	    this->send("arduino-ready");
 	}
     };
 }

@@ -4,4 +4,4 @@
 
 _Serial Serial;
 _EEPROM<2048> EEPROM;
-_Wire Wire;
+_WireBus WireBus;
