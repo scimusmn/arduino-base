@@ -29,6 +29,11 @@ namespace smm {
 		     tagData[0], tagData[1], tagData[2], tagData[3], tagData[4]);
 	    return str;
 	}
-	unsigned char checksum() { return 0; }
+	unsigned char checksum() {
+	    unsigned char check = 0x00;
+	    for (int i=0; i<5; i++)
+		check ^= tagData[i];
+	    return check;
+	}
     };
 }
