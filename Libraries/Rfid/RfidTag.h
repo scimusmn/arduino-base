@@ -29,6 +29,6 @@ namespace smm {
 		     tagData[0], tagData[1], tagData[2], tagData[3], tagData[4]);
 	    return str;
 	}
-	unsigned char crc8() { return 0; }
+	unsigned char checksum() { return 0; }
     };
 }

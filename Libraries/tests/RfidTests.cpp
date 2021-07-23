@@ -172,6 +172,13 @@ mu_test rftag_tostring() {
 }
 
 
+mu_test rftag_checksum() {
+    smm::RfidTag tag( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
+    mu_assert_equal(tag.checksum(), 0x8e);
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -193,6 +200,7 @@ void RfidTests() {
     mu_run_test("use index operator for mutation", rftag_index_operator_modify);
     mu_run_test("check equality operator", rftag_equality_operator);
     mu_run_test("convert to string", rftag_tostring);
+    mu_run_test("compute checksum", rftag_checksum);
 	       
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }
