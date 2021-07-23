@@ -24,7 +24,7 @@ mu_test fwire_add_peripheral() {
     pWire = new _Wire;
     pWire->begin(0x70);
     mu_try(WireBus.bus.at(0x70));
-    mu_assert_equal(&(WireBus.bus.at(0x70)), pWire);
+    mu_assert_equal(WireBus.bus.at(0x70), pWire);
     delete pWire;
     mu_except(WireBus.bus.at(0x70));
     return 0;
@@ -46,6 +46,8 @@ mu_test fwire_basic_tx() {
     Wire.endTransmission();
 
     mu_assert_equal(pString, "abc");
+    mu_assert_equal(WireBus.copi.size(), 0);
+    mu_assert_equal(pWire->available(), 0);
     delete pWire;
     return 0;
 }
@@ -65,6 +67,8 @@ mu_test fwire_basic_rx() {
     mu_assert_equal(Wire.read(), 'a');
     mu_assert_equal(Wire.read(), 'b');
     mu_assert_equal(Wire.read(), 'c');
+
+    mu_assert_equal(Wire.available(), 0);
 
     delete pWire;
     return 0;
