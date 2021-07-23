@@ -2,7 +2,7 @@
 #include "../LookupTable.h"
 
 mu_test lut_create() {
-    smm::LookupTable<8, int> table;
+    smm::LookupTable<smm::String32, int, 8> table;
     mu_assert_equal(table.size(), 0);
     mu_assert_equal(table.maxSize(), 8);
     return 0;
@@ -10,7 +10,7 @@ mu_test lut_create() {
 
 
 mu_test lut_add_entries() {
-    smm::LookupTable<8, int> table;
+    smm::LookupTable<smm::String32, int, 8> table;
     mu_assert_equal(table.size(), 0);
     mu_assert_equal(table.maxSize(), 8);
     bool success = table.add("twenty", 20);
@@ -25,7 +25,7 @@ mu_test lut_add_entries() {
 
 
 mu_test lut_lookup_entry() {
-    smm::LookupTable<8, int> table;
+    smm::LookupTable<smm::String32, int> table;
     bool success = table.add("twenty", 20);
     mu_assert(success, "failed to add key 'twenty' to table!");
     success = table.add("five", 5);
@@ -44,7 +44,7 @@ mu_test lut_lookup_entry() {
 
 
 mu_test lut_add_entries_overflow() {
-    smm::LookupTable<2, int> table;
+    smm::LookupTable<smm::String32, int, 2> table;
     bool success;
     success = table.add("one", 1);
     mu_assert(success, "failed to add key 'one' to table!");

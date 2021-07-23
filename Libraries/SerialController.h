@@ -152,7 +152,7 @@ namespace smm {
 	unsigned int numCallbacks() { return m_callbacks.size(); }
 
     private:
-	smm::LookupTable<MAX_CALLBACKS, SerialCallback, MAX_KEY_LEN> m_callbacks;
+	smm::LookupTable<smm::FixedSizeString<MAX_KEY_LEN>, SerialCallback, MAX_CALLBACKS> m_callbacks;
 	smm::FixedSizeString<MAX_KEY_LEN> m_key;
 	smm::FixedSizeString<MAX_VAL_LEN> m_value;
 	bool m_keyOverflowed;

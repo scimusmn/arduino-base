@@ -9,7 +9,7 @@
  */
 
 mu_test elt_create() {
-    smm::EEPROMLookupTable<16> tbl;
+    smm::EEPROMLookupTable<smm::String32, char, 16> tbl;
     mu_assert_equal(tbl.size(), 0);
     mu_assert_equal(tbl.maxSize(), 16);
     return 0;
@@ -18,7 +18,7 @@ mu_test elt_create() {
 
 mu_test elt_save_load() {
     EEPROM.clear();
-    smm::EEPROMLookupTable<16> tbl;
+    smm::EEPROMLookupTable<smm::String32, char, 16> tbl;
     mu_assert_equal(tbl.size(), 0);
     mu_assert_equal(tbl.maxSize(), 16);
     tbl.add("aaaaa", 'a');
@@ -32,7 +32,7 @@ mu_test elt_save_load() {
 
     tbl.save();
 
-    smm::EEPROMLookupTable<16> tbl2;
+    smm::EEPROMLookupTable<smm::String32, char, 16> tbl2;
     mu_assert_equal(tbl2.size(), 0);
     mu_assert_equal(tbl2.maxSize(), 16);
     tbl2.load();
@@ -47,7 +47,7 @@ mu_test elt_save_load() {
 
 mu_test elt_save_load_overflow() {
     EEPROM.clear();
-    smm::EEPROMLookupTable<16> tbl;
+    smm::EEPROMLookupTable<smm::String32, char, 16> tbl;
     mu_assert_equal(tbl.size(), 0);
     mu_assert_equal(tbl.maxSize(), 16);
     tbl.add("aaaaa", 'a');
@@ -61,7 +61,7 @@ mu_test elt_save_load_overflow() {
 
     tbl.save();
 
-    smm::EEPROMLookupTable<2> tbl2;
+    smm::EEPROMLookupTable<smm::String32, char, 2> tbl2;
     mu_assert_equal(tbl2.size(), 0);
     mu_assert_equal(tbl2.maxSize(), 2);
     tbl2.load();
@@ -71,7 +71,7 @@ mu_test elt_save_load_overflow() {
     mu_assert_equal(*(tbl2["bbbbb"]), 'b');
     mu_assert_equal(tbl2["ccccc"], nullptr);
 
-    smm::EEPROMLookupTable<16> tbl3;
+    smm::EEPROMLookupTable<smm::String32, char, 16> tbl3;
     mu_assert_equal(tbl3.size(), 0);
     mu_assert_equal(tbl3.maxSize(), 16);
     tbl3.load();

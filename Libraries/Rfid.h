@@ -2,16 +2,18 @@
 
 #ifdef UNIT_TEST
 #include "tests/FakeEEPROM.h"
+#include "tests/FakeWire.h"
 #else
 #include <EEPROM.h>
+#include <Wire.h>
 #endif
 
 #include "LookupTable.h"
 
 namespace smm {
-    template<unsigned int MAX_ENTRIES, size_t MAX_STR_LEN = 5>
+    template<typename keyT, typename valT, unsigned int MAX_ENTRIES>
     class EEPROMLookupTable :
-	public smm::LookupTable<MAX_ENTRIES, char, MAX_STR_LEN> {
+	public smm::LookupTable<keyT, valT, MAX_ENTRIES> {
     public:
 	void load() {
 	    int numEntries = EEPROM[0];
@@ -35,23 +37,45 @@ namespace smm {
 	}
     private:
 	void readEntry(int index) {
-	    const int entrySize = (MAX_STR_LEN * sizeof(char)) + 1;
+	    const int entrySize = sizeof(keyT) + sizeof(valT);
 	    int address = 1 + (index * entrySize);
 
-	    smm::FixedSizeString<MAX_STR_LEN> str;
-	    for (int i=0; i<MAX_STR_LEN; i++)
-		str.append(EEPROM[address + i]);
-	    this->add(str.c_str(), EEPROM[address+MAX_STR_LEN]);
+	    keyT key;
+	    unsigned char *b = (unsigned char *) &key;
+	    for (int i=0; i<sizeof(keyT); i++) {
+		*b = EEPROM[address+i];
+		b++;
+	    }
+	    valT value;
+	    b = (unsigned char *) &value;
+	    for (int i=0; i<sizeof(valT); i++) {
+		*b = EEPROM[address+sizeof(keyT)+i];
+		b++;
+	    }
+	    this->add(key, value);
 	}
 
 	void saveEntry(int index) {
-	    const int entrySize = (MAX_STR_LEN * sizeof(char)) + 1;
+	    const int entrySize = sizeof(keyT) + sizeof(valT);
 	    int address = 1 + (index * entrySize);
 
-	    const char *str = this->key(index);;
-	    for (int i=0; i<MAX_STR_LEN; i++)
-		EEPROM.update(address+i, str[i]);
-	    EEPROM.update(address+MAX_STR_LEN, this->value(index));
+	    keyT key = this->key(index);
+	    unsigned char *b = (unsigned char *) &key;
+	    for (int i=0; i<sizeof(keyT); i++)
+		EEPROM.update(address+i, *(b+i));
+
+	    valT value = this->value(index);
+	    b = (unsigned char *) &value;
+	    for (int i=0; i<sizeof(valT); i++)
+		EEPROM.update(address+sizeof(keyT)+i, *(b+i));
 	}
+    };
+
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    template<unsigned int MAX_ENTRIES>
+    class RfidController {
+	
     };
 }

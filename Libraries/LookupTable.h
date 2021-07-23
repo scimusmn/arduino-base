@@ -4,7 +4,7 @@
 #include "FixedSizeString.h"
 
 namespace smm {
-    template<unsigned int MAX_ENTRIES, typename T, size_t MAX_STR_LEN = 32>
+    template<typename keyT, typename valT, unsigned int MAX_ENTRIES=16>
     class LookupTable {
     public:
 	/** (constructor) */
@@ -17,7 +17,7 @@ namespace smm {
 	 *
 	 * @returns A pointer to the requested entry if it exists, and `nullptr` otherwise.
 	 */
-	T* operator[](const char *key) {
+	valT* operator[](keyT key) {
 	    // this table is intended for small (<32) sizes, so a simple for loop
 	    // should be fine, no need for anything fancy
 	    for (int i=0; i<m_numEntries; i++) {
@@ -35,7 +35,7 @@ namespace smm {
 	 * @param[in] value The value for the new entry
 	 *
 	 * @returns True if the entry was added successfully and false otherwise. */
-	bool add(const char *key, T value) {
+	bool add(keyT key, valT value) {
 	    if (m_numEntries < MAX_ENTRIES) {
 		int i = m_numEntries;
 		m_keys[i] = key;
@@ -58,12 +58,12 @@ namespace smm {
 	 * @returns The maximum possible number of entries the table can hold. */
 	unsigned int maxSize() { return MAX_ENTRIES; }
 
-	const char *key(int index) { return m_keys[index].c_str(); }
-	T value(int index) { return m_values[index]; }
+	keyT key(int index) { return m_keys[index]; }
+	valT value(int index) { return m_values[index]; }
 
     private:
 	unsigned int m_numEntries;
-	smm::FixedSizeString<MAX_STR_LEN> m_keys[MAX_ENTRIES];
-	T m_values[MAX_ENTRIES];
+	keyT m_keys[MAX_ENTRIES];
+	valT m_values[MAX_ENTRIES];
     };
 }
