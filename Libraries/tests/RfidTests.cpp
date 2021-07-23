@@ -85,6 +85,93 @@ mu_test elt_save_load_overflow() {
 }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * RfidTag tests
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+mu_test rftag_create() {
+    smm::RfidTag tag;
+    tag.tagData[0] = 'a';
+    tag.tagData[1] = 'b';
+    tag.tagData[2] = 'c';
+    tag.tagData[3] = 'd';
+    tag.tagData[4] = 'e';
+
+    mu_assert_equal(tag.tagData[0], 'a');
+    mu_assert_equal(tag.tagData[1], 'b');
+    mu_assert_equal(tag.tagData[2], 'c');
+    mu_assert_equal(tag.tagData[3], 'd');
+    mu_assert_equal(tag.tagData[4], 'e');
+
+    return 0;
+}
+
+
+mu_test rftag_array_constructor() {
+    smm::RfidTag tag( 0x00, 0x01, 0x02, 0x03, 0x04 );
+
+    mu_assert_equal(tag.tagData[0], 0x00);
+    mu_assert_equal(tag.tagData[1], 0x01);
+    mu_assert_equal(tag.tagData[2], 0x02);
+    mu_assert_equal(tag.tagData[3], 0x03);
+    mu_assert_equal(tag.tagData[4], 0x04);
+
+    return 0;
+}
+
+
+mu_test rftag_index_operator_access() {
+    smm::RfidTag tag( 0x00, 0x01, 0x02, 0x03, 0x04 );
+
+    mu_assert_equal(tag[0], 0x00);
+    mu_assert_equal(tag[1], 0x01);
+    mu_assert_equal(tag[2], 0x02);
+    mu_assert_equal(tag[3], 0x03);
+    mu_assert_equal(tag[4], 0x04);
+
+    return 0;    
+}
+
+
+mu_test rftag_index_operator_modify() {
+    smm::RfidTag tag( 0x00, 0x01, 0x02, 0x03, 0x04 );
+
+    mu_assert_equal(tag[3], 0x03);
+    tag[3] = 0xff;
+    mu_assert_equal(tag[3], 0xff);
+
+    return 0;
+}
+
+
+mu_test rftag_equality_operator() {
+    smm::RfidTag tag1( 0x00, 0x01, 0x02, 0x03, 0x04 );
+    smm::RfidTag tag2( 0xff, 0x01, 0x02, 0x03, 0x04 );
+    smm::RfidTag tag3( 0x00, 0x01, 0x02, 0x03, 0x04 );
+
+    mu_assert_equal(tag1, tag3);
+    mu_assert_equal(tag3, tag1);
+    mu_assert_unequal(tag1, tag2);
+    mu_assert_unequal(tag3, tag2);
+    mu_assert_unequal(tag2, tag1);
+    mu_assert_unequal(tag2, tag3);
+
+    return 0;
+}
+
+
+mu_test rftag_tostring() {
+    smm::RfidTag tag( 0x00, 0x01, 0x02, 0x03, 0x04 );
+
+    smm::String16 str = tag.toString();
+    mu_assert_equal(str, "00 01 02 03 04");
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -95,5 +182,17 @@ void RfidTests() {
     mu_run_test("save and load lookup table from EEPROM", elt_save_load);
     mu_run_test("save and load lookup table from EEPROM with overflow", elt_save_load_overflow);
 
+    printf("  ran %d tests\n", tests_run - tests_run_old);
+
+    tests_run_old = tests_run;
+    printf("running tests for RfidTag\n");
+
+    mu_run_test("create RFID tag", rftag_create);
+    mu_run_test("create RFID tag with array constructor", rftag_array_constructor);
+    mu_run_test("use index operator for access", rftag_index_operator_access);
+    mu_run_test("use index operator for mutation", rftag_index_operator_modify);
+    mu_run_test("check equality operator", rftag_equality_operator);
+    mu_run_test("convert to string", rftag_tostring);
+	       
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }
