@@ -43,4 +43,9 @@ struct _Serial {
     std::queue<byte> inbuffer;
 };
 
+
+struct SoftwareSerial : public _Serial {
+    SoftwareSerial(int rxPin, int txPin) {}
+};
+
 extern _Serial Serial;

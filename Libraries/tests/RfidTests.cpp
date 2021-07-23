@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "../Rfid.h"
+#include "../Rfid/ID12LA.h"
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -179,6 +180,34 @@ mu_test rftag_checksum() {
 }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * ID12LA tests
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+smm::RfidTag testTag;
+void onReadTag(smm::RfidTag& tag) {
+    testTag = tag;
+}
+
+
+mu_test id12la_rx_normal() {
+    smm::ID12LA reader;
+    reader.setup(2, onReadTag);
+
+    SoftwareSerial *serial = reader.getSerial();
+    serial->send("\x02" "0C000621A5" "\r\n\x03");
+    reader.update();
+
+    smm::RfidTag expected( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
+    mu_assert_equal(testTag, expected);
+    
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -190,7 +219,6 @@ void RfidTests() {
     mu_run_test("save and load lookup table from EEPROM with overflow", elt_save_load_overflow);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
-
     tests_run_old = tests_run;
     printf("running tests for RfidTag\n");
 
@@ -202,5 +230,11 @@ void RfidTests() {
     mu_run_test("convert to string", rftag_tostring);
     mu_run_test("compute checksum", rftag_checksum);
 	       
+    printf("  ran %d tests\n", tests_run - tests_run_old);
+    tests_run_old = tests_run;
+    printf("running tests for ID12LA\n");
+
+    mu_run_test("read sample tag", id12la_rx_normal);
+
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }
