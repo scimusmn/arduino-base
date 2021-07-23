@@ -43,6 +43,9 @@ mu_test fwire_basic_tx() {
     Wire.write('a');
     Wire.write('b');
     Wire.write('c');
+
+    mu_assert_equal(pWire->available(), 3);
+    
     Wire.endTransmission();
 
     mu_assert_equal(pString, "abc");
@@ -75,6 +78,43 @@ mu_test fwire_basic_rx() {
 }
 
 
+mu_test fwire_nonexistant_tx() {
+    _Wire Wire;
+    Wire.begin();
+
+    Wire.beginTransmission(0x70);
+    Wire.write('a');
+    Wire.write('b');
+    Wire.write('c');
+    int status = Wire.endTransmission();
+    
+    mu_assert_equal(status, 2);
+    mu_assert_equal(Wire.available(), 0);
+    return 0;
+}
+
+
+mu_test fwire_nohandler_tx() {
+    pWire = new _Wire;
+    pWire->begin(0x70);
+    
+    _Wire Wire;
+    Wire.begin();
+
+    Wire.beginTransmission(0x70);
+    Wire.write('a');
+    Wire.write('b');
+    Wire.write('c');
+    int status = Wire.endTransmission();
+    
+    mu_assert_equal(status, 3);
+    mu_assert_equal(Wire.available(), 0);
+
+    delete pWire;
+    return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void FakeWireTests() {
@@ -85,6 +125,9 @@ void FakeWireTests() {
     mu_run_test("add peripheral to bus", fwire_add_peripheral);
     mu_run_test("transmit to peripheral", fwire_basic_tx);
     mu_run_test("receive from peripheral", fwire_basic_rx);
+
+    mu_run_test("transmit to nonexistant peripheral", fwire_nonexistant_tx);
+    mu_run_test("transmit to non-receiving peripheral", fwire_nohandler_tx);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }

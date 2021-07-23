@@ -67,6 +67,7 @@ public:
 	}
     }
 
+    
     // not spec-compliant but not needed now
     byte write(byte b) {
 	if (isController) {
