@@ -32,11 +32,41 @@ mu_test fwire_add_peripheral() {
 
 
 mu_test fwire_basic_tx() {
+    pWire = new _Wire;
+    pWire->begin(0x70);
+    pWire->onReceive(setPeripheralString);
+
+    _Wire Wire;
+    Wire.begin();
+
+    Wire.beginTransmission(0x70);
+    Wire.write('a');
+    Wire.write('b');
+    Wire.write('c');
+    Wire.endTransmission();
+
+    mu_assert_equal(pString, "abc");
+    delete pWire;
     return 0;
 }
 
 
 mu_test fwire_basic_rx() {
+    pWire = new _Wire;
+    pWire->begin(0x70);
+    pWire->onRequest(sendABC);
+
+    _Wire Wire;
+    Wire.begin();
+
+    Wire.requestFrom(0x70, 3);
+
+    mu_assert_equal(Wire.available(), 3);
+    mu_assert_equal(Wire.read(), 'a');
+    mu_assert_equal(Wire.read(), 'b');
+    mu_assert_equal(Wire.read(), 'c');
+
+    delete pWire;
     return 0;
 }
 

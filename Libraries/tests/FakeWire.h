@@ -26,8 +26,8 @@ public:
     
     void SetClock(unsigned long frequency) {}
 
-    void onReceive(txHandler handler);
-    void onRequest(rxHandler handler);
+    void onReceive(txHandler handler) {}
+    void onRequest(rxHandler handler) {}
 };
 
 
