@@ -86,6 +86,38 @@ mu_test elt_save_load_overflow() {
 }
 
 
+mu_test elt_save_load_rfid() {
+    EEPROM.clear();
+
+    smm::EEPROMLookupTable<smm::RfidTag, char, 16> tbl1;
+    mu_assert_equal(tbl1.size(), 0);
+    mu_assert_equal(tbl1.maxSize(), 16);
+    smm::RfidTag tag1(0x01, 0x01, 0x01, 0x01, 0x01);
+    smm::RfidTag tag1_2(0x01, 0x01, 0x01, 0x01, 0x01);
+    smm::RfidTag tag2(0x02, 0x02, 0x02, 0x02, 0x02);
+    smm::RfidTag tag2_2(0x02, 0x02, 0x02, 0x02, 0x02);
+    smm::RfidTag tag3(0x03, 0x03, 0x03, 0x03, 0x03);
+    smm::RfidTag tag3_2(0x03, 0x03, 0x03, 0x03, 0x03);
+    tbl1.add(tag1, '1');
+    tbl1.add(tag2, '2');
+    tbl1.add(tag3, '3');
+    mu_assert_equal(tbl1.size(), 3);
+    mu_assert_equal(*(tbl1[tag1_2]), '1');
+    mu_assert_equal(*(tbl1[tag2_2]), '2');
+    mu_assert_equal(*(tbl1[tag3_2]), '3');
+    tbl1.save();
+
+    smm::EEPROMLookupTable<smm::RfidTag, char, 16> tbl2;
+    tbl2.load();
+    mu_assert_equal(tbl2.size(), 3);
+    mu_assert_equal(*(tbl2[tag1_2]), '1');
+    mu_assert_equal(*(tbl2[tag2_2]), '2');
+    mu_assert_equal(*(tbl2[tag3_2]), '3');
+
+    return 0;
+}
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * RfidTag tests
@@ -274,6 +306,18 @@ mu_test id12la_rx_corrupted() {
 }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * RfidController tests
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+mu_test rfidc_one_tag() {
+    
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -283,6 +327,7 @@ void RfidTests() {
     mu_run_test("create EEPROM lookup table", elt_create);
     mu_run_test("save and load lookup table from EEPROM", elt_save_load);
     mu_run_test("save and load lookup table from EEPROM with overflow", elt_save_load_overflow);
+    mu_run_test("save and load lookup table with RFID tag keys", elt_save_load_rfid);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
     tests_run_old = tests_run;
