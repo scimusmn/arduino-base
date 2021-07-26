@@ -1,16 +1,16 @@
 #pragma once
 
 #ifdef UNIT_TEST
-#include "tests/FakeEEPROM.h"
-#include "tests/FakeWire.h"
+#include "../tests/FakeEEPROM.h"
+#include "../tests/FakeWire.h"
 #else
 #include <EEPROM.h>
 #include <Wire.h>
 #endif
 
-#include "FixedSizeString.h"
-#include "LookupTable.h"
-#include "Rfid/RfidTag.h"
+#include "../FixedSizeString.h"
+#include "../LookupTable.h"
+#include "Tag.h"
 
 typedef unsigned char byte;
 

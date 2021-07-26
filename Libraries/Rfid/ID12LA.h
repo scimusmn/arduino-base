@@ -6,8 +6,9 @@
 #include <SoftwareSerial.h>
 #endif
 
-#include "RfidTag.h"
+#include "Tag.h"
 #include "../FixedSizeString.h"
+
 
 namespace smm {
     typedef void (*tagReadCallback)(RfidTag&);
@@ -59,9 +60,9 @@ namespace smm {
 		break;
 		
 	    case READ_TAG:
-		if (str.length() < 10 && charIsOkay(c))
+		if (str.length() < 12 && charIsOkay(c))
 		    str.append(c);
-		else if (str.length() == 10 && c == '\r')
+		else if (str.length() == 12 && c == '\r')
 		    state = READ_NEWLINE;
 		else
 		    reset();
@@ -87,7 +88,28 @@ namespace smm {
 	    }
 	}
 
+	void reset() {
+	    state = WAIT_STX;
+	    str = "";
+	}
 
-	
+	void readTag() {
+	    char substr[3];
+	    unsigned char d0 = getDigit(0, substr);
+	    unsigned char d1 = getDigit(1, substr);
+	    unsigned char d2 = getDigit(2, substr);
+	    unsigned char d3 = getDigit(3, substr);
+	    unsigned char d4 = getDigit(4, substr);
+	    unsigned char checksum = getDigit(5, substr);
+	    RfidTag tag(d0, d1, d2, d3, d4);
+	    if (tag.checksum() == checksum)
+		callback(tag);
+	}
+
+	int getDigit(int index, char *substr) {
+	    substr[0] = str.c_str()[2*index];
+	    substr[1] = str.c_str()[(2*index) + 1];
+	    return strtol(substr, NULL, 16);
+	}
     };
 }

@@ -1,5 +1,5 @@
 #include "tests.h"
-#include "../Rfid.h"
+#include "../Rfid/Controller.h"
 #include "../Rfid/ID12LA.h"
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -192,17 +192,83 @@ void onReadTag(smm::RfidTag& tag) {
     testTag = tag;
 }
 
+#define STX "\x02"
+#define ETX "\r\n\x03"
 
 mu_test id12la_rx_normal() {
     smm::ID12LA reader;
     reader.setup(2, onReadTag);
 
     SoftwareSerial *serial = reader.getSerial();
-    serial->send("\x02" "0C000621A5" "\r\n\x03");
+    serial->send(STX "0C000621A58E" ETX);
     reader.update();
 
     smm::RfidTag expected( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
     mu_assert_equal(testTag, expected);
+    
+    return 0;
+}
+
+
+mu_test id12la_rx_multi() {
+    smm::ID12LA reader;
+    reader.setup(2, onReadTag);
+
+    SoftwareSerial *serial = reader.getSerial();
+    serial->send(STX "0C000621A58E" ETX);
+    reader.update();
+
+    smm::RfidTag expected( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
+    mu_assert_equal(testTag, expected);
+
+    serial->send(STX "05AAE062B499" ETX);
+    reader.update();
+
+    expected = smm::RfidTag(0x05, 0xaa, 0xe0, 0x62, 0xb4);
+    mu_assert_equal(testTag, expected);
+    
+    return 0;
+}
+
+
+mu_test id12la_rx_corrupted() {
+    smm::ID12LA reader;
+    reader.setup(2, onReadTag);
+
+    SoftwareSerial *serial = reader.getSerial();
+    serial->send(STX "0C000621A58E" ETX);
+    reader.update();
+
+    smm::RfidTag expected( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
+    mu_assert_equal(testTag, expected);
+
+    // bad checksum
+    serial->send(STX "05AAE062B444" ETX);
+    reader.update();
+    smm::RfidTag nonexpected(0x05, 0xaa, 0xe0, 0x62, 0xb4);
+    mu_assert_equal(testTag, expected);
+    mu_assert_unequal(testTag, nonexpected);
+
+    // corrupted bit
+    serial->send(STX "05AAE072B499" ETX);
+    reader.update();
+    mu_assert_equal(testTag, expected);
+    mu_assert_unequal(testTag, nonexpected);
+
+    // too short
+    serial->send(STX "05AAE062B44" ETX);
+    reader.update();
+    mu_assert_equal(testTag, expected);
+    mu_assert_unequal(testTag, nonexpected);
+
+    // correct
+    serial->send(STX "05AAE062B499" ETX);
+    reader.update();
+    smm::RfidTag tmp = expected;
+    expected = nonexpected;
+    nonexpected = tmp;
+    mu_assert_equal(testTag, expected);
+    mu_assert_unequal(testTag, nonexpected);
     
     return 0;
 }
@@ -235,6 +301,8 @@ void RfidTests() {
     printf("running tests for ID12LA\n");
 
     mu_run_test("read sample tag", id12la_rx_normal);
+    mu_run_test("read multiple tags", id12la_rx_multi);
+    mu_run_test("handle corrupted input data", id12la_rx_corrupted);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }
