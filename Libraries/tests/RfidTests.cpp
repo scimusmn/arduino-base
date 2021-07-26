@@ -306,18 +306,6 @@ mu_test id12la_rx_corrupted() {
 }
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * RfidController tests
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-mu_test rfidc_one_tag() {
-    
-}
-
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {

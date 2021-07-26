@@ -81,16 +81,43 @@ namespace smm {
     typedef void (*readHandler)(RfidTag&);
     
 
-    template<unsigned int MAX_TAGS>
+    template<unsigned int MAX_READERS,
+	     unsigned int MAX_TAGS,
+	     unsigned int MAX_CATEGORIES>
     class RfidController {
     public:
-	void setup() {}
-	void update() {}
+	void setup() {
+	    tags.load();
+	    numReaders = 0;
+	}
+	void update() {
+	    for (int i=0; i<numReaders; i++)
+		updateReader(readers[i]);
+	}
 
-	void addReader(byte address) {}
-	void onRead(byte category, readHandler handler) {}
-	void teachTag(RfidTag tag, byte category) {}
+	void addReader(byte address) {
+	    readers[numReaders] = address;
+	    numReaders++;
+	}
+	void onRead(byte category, readHandler handler) {
+	    handlers.add(category, handler);
+	}
+	void teachTag(RfidTag tag, byte category) {
+	    tags.add(tag, category);
+	    tags.save();
+	}
 
-	void forgetLastTag() {}
+	void forgetLastTag() {
+	    byte newSize = tags.size() - 1;
+	    if (newSize < 0)
+		newSize = 0;
+	    EEPROM[0] = newSize;
+	    tags.load();
+	}
+    private:
+	EEPROMLookupTable<RfidTag, byte, MAX_TAGS> tags;
+	LookupTable<char, readHandler, MAX_CATEGORIES> handlers;
+	int numReaders;
+	byte readers[MAX_READERS];
     };
 }
