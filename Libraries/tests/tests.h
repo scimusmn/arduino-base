@@ -11,3 +11,4 @@ void FixedSizeStringTests();
 void LookupTableTests();
 void SerialControllerTests();
 void RfidTests();
+void ButtonTests();

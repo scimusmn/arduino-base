@@ -11,6 +11,7 @@ int main() {
     LookupTableTests();
     SerialControllerTests();
     RfidTests();
+    ButtonTests();
 
     mu_tests_finished();
     return 0;

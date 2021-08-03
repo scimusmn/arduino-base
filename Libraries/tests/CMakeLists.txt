@@ -5,6 +5,7 @@ project(arduino-base-tests
 
 set(TEST_SOURCES
   singletons.cpp
+  FakeArduino.cpp
   tests.cpp
   FakeSerialTests.cpp
   FakeEEPROMTests.cpp
@@ -13,6 +14,7 @@ set(TEST_SOURCES
   LookupTableTests.cpp
   SerialControllerTests.cpp
   RfidTests.cpp
+  ButtonTests.cpp
   )
 
 add_executable(tests ${TEST_SOURCES})
