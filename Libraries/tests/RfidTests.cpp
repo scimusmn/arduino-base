@@ -1,6 +1,7 @@
 #include "tests.h"
-#include "../Rfid/Controller.h"
-#include "../Rfid/ID12LA.h"
+#include "Rfid/Controller.h"
+#include "Rfid/ID12LA.h"
+#include "Rfid/Reader/RfidReader.hpp"
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -306,6 +307,65 @@ mu_test id12la_rx_corrupted() {
 }
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * RfidReader.h tests
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+struct RfidReader rfid_reader;
+
+mu_test rfidreader_setup_and_read() {
+   setupReader();
+   SoftwareSerial *serial = rfid_reader.id12la.getSerial();
+   mu_assert_equal(digitalRead(LED_PIN), 0);
+
+   _Wire testWire;
+   testWire.begin();
+
+   testWire.requestFrom(ADDRESS, 5);
+   mu_assert_equal(testWire.available(), 5);
+   byte b = testWire.read(); printf("%02x\n", b);
+   mu_assert_equal(b, 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.available(), 0);
+
+   serial->send(STX "0C000621A58E" ETX);
+   updateReader();
+   smm::RfidTag expected( 0x0c, 0x00, 0x06, 0x21, 0xa5 );
+   mu_assert_equal(rfid_reader.tag, expected);
+   
+   testWire.requestFrom(ADDRESS, 5);
+   mu_assert_equal(testWire.available(), 5);
+   mu_assert_equal(testWire.read(), 0x0c);
+   mu_assert_equal(testWire.read(), 0x00);
+   mu_assert_equal(testWire.read(), 0x06);
+   mu_assert_equal(testWire.read(), 0x21);
+   mu_assert_equal(testWire.read(), 0xa5);
+   mu_assert_equal(testWire.available(), 0);
+
+   testWire.beginTransmission(ADDRESS);
+   testWire.write(CMD_CLEAR_TAG);
+   testWire.endTransmission();
+
+   testWire.requestFrom(ADDRESS, 5);
+   mu_assert_equal(testWire.available(), 5);
+   b = testWire.read(); printf("%02x\n", b);
+   mu_assert_equal(b, 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.read(), 0xff);
+   mu_assert_equal(testWire.available(), 0);
+
+   return 0;
+}
+
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void RfidTests() {
@@ -336,6 +396,8 @@ void RfidTests() {
     mu_run_test("read sample tag", id12la_rx_normal);
     mu_run_test("read multiple tags", id12la_rx_multi);
     mu_run_test("handle corrupted input data", id12la_rx_corrupted);
+
+    mu_run_test("setup and read from RfidReader", rfidreader_setup_and_read);
 
     printf("  ran %d tests\n", tests_run - tests_run_old);
 }

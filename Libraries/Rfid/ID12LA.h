@@ -1,13 +1,13 @@
 #pragma once
 
 #ifdef UNIT_TEST
-#include "../tests/FakeSerial.h"
+#include "tests/FakeSerial.h"
 #else
 #include <SoftwareSerial.h>
 #endif
 
 #include "Tag.h"
-#include "../FixedSizeString.h"
+#include "FixedSizeString.h"
 
 
 namespace smm {

@@ -3,6 +3,7 @@ project(arduino-base-tests
   VERSION 1.0.0
   DESCRIPTION "Test suite for SMM's arduino-base")
 
+include_directories(${CMAKE_SOURCE_DIR}/..)
 set(TEST_SOURCES
   singletons.cpp
   FakeArduino.cpp

@@ -36,6 +36,8 @@ mu_test fwire_basic_tx() {
     pWire->begin(0x70);
     pWire->onReceive(setPeripheralString);
 
+    pString = "";
+
     _Wire Wire;
     Wire.begin();
 
