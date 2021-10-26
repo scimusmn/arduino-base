@@ -4,6 +4,8 @@ int tests_run = 0;
 int tests_failed = 0;
 
 int main() {
+
+    QueueTests();
     FakeSerialTests();
     FakeEEPROMTests();
     FakeWireTests();
@@ -12,7 +14,7 @@ int main() {
     SerialControllerTests();
     RfidTests();
     ButtonTests();
-
+    
     mu_tests_finished();
     return 0;
 }

@@ -4,6 +4,7 @@
 
 #define UNIT_TEST
 
+void QueueTests();
 void FakeSerialTests();
 void FakeEEPROMTests();
 void FakeWireTests();

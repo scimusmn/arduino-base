@@ -16,6 +16,7 @@ set(TEST_SOURCES
   SerialControllerTests.cpp
   RfidTests.cpp
   ButtonTests.cpp
+  QueueTests.cpp
   )
 
 add_executable(tests ${TEST_SOURCES})
