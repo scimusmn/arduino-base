@@ -183,6 +183,18 @@ mu_test fss_append_char_overflow() {
 }
 
 
+mu_test fss_format() {
+	smm::FixedSizeString<4> string;
+	mu_assert_streq(string.c_str(), "");
+	mu_assert_equal(string.length(), 0);
+
+	string.format("n: %d", 1);
+	mu_assert_streq(string.c_str(), "n: 1");
+	mu_assert_equal(string.length(), 4);
+	return 0;
+}
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * equality operator tests
@@ -352,6 +364,8 @@ void FixedSizeStringTests() {
     mu_run_test("append character to string", fss_append_char);
     mu_run_test("append many characters to string", fss_append_char_multi);
     mu_run_test("overflow on append character to string", fss_append_char_overflow);
+
+    mu_run_test("format string", fss_format);
 
     mu_run_test("equality operator", fss_equality);
     mu_run_test("equality operator with C strings", fss_cstring_equality);

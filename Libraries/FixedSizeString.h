@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 namespace smm {
     /** A convenient string-handling class that will not result in memory fragmentation. */
@@ -93,6 +94,15 @@ namespace smm {
 		m_str[m_length+1] = 0; // ensure a trailing null character
 		m_length++;
 	    }
+	}
+
+
+	/** format the string */
+	void format(const char *fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		m_length = vsnprintf(m_str, MAX_LENGTH+1, fmt, args);
+		va_end(args);
 	}
 
 
