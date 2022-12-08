@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../exception"
+#include "../exception.hpp"
 
 TEST_CASE("base exception class has correct what()") {
 	smm::exception e;
@@ -17,9 +17,9 @@ TEST_CASE("base exception works correctly when throwing") {
 }
 
 
-TEST_CASE("out_of_memory_error is caught by runtime_error") {
+TEST_CASE("out_of_memory is caught by runtime_error") {
 	try {
-		throw smm::out_of_memory_error("out of memory!");
+		throw smm::out_of_memory("out of memory!");
 	}
 	catch(smm::runtime_error& e) {
 		CHECK(e.what() == "out of memory!");
