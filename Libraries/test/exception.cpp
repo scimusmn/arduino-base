@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../exception.hpp"
+#include "../smm.h"
 
 TEST_CASE("base exception class has correct what()") {
 	smm::exception e;

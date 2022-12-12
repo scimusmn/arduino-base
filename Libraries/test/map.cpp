@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../map.hpp"
+#include "../smm.h"
 
 
 TEST_CASE("simple map insertion/recall") {

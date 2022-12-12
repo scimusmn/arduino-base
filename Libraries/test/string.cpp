@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "../string.hpp"
+#include "../smm.h"
 
 
 TEST_CASE("basic operator= and c_str()") {
