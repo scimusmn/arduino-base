@@ -207,4 +207,75 @@ class string {
 	}
 };
 
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * smm::SerialController
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+#ifndef SMM_SERIAL_KEY_LEN
+#define SMM_SERIAL_KEY_LEN 128
+#endif
+
+#ifndef SMM_SERIAL_VAL_LEN
+#define SMM_SERIAL_VAL_LEN 128
+#endif
+
+
+typedef void (*voidCallback)();
+typedef void (*stringCallback)(const char *);
+typedef void (*intCallback)(int);
+typedef void (*floatCallback)(float);
+
+
+struct SerialCallback {
+	union {
+		voidCallback v;
+		stringCallback s;
+		intCallback i;
+		floatCallback f;
+	} callback;
+	enum {
+		VOID, STRING, INT, FLOAT,
+	} type;
+
+
+	SerialCallback(voidCallback cb)   { type=VOID;   callback.v=cb; }
+	SerialCallback(stringCallback cb) { type=STRING; callback.s=cb; }
+	SerialCallback(intCallback cb)    { type=INT;    callback.i=cb; }
+	SerialCallback(floatCallback cb)  { type=FLOAT;  callback.f=cb; }
+
+	void operator()(const char *value) {
+		switch(type) {
+		case VOID:
+			callback.v();
+			break;
+
+		case STRING:
+			callback.s(value);
+			break;
+
+		case INT:
+			callback.i(strtol(value, NULL, 0));
+			break;
+
+		case FLOAT:
+			callback.f(strtod(value, NULL));
+			break;
+
+		default:
+			break;
+		}
+	}
+};
+
+
+class SerialController {
+	protected:
+	public:
+};
+
 }
