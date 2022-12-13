@@ -125,6 +125,18 @@ class map {
 	}
 
 
+	bool contains(const Key& key) {
+		int i = get_index(key);
+		if (i < 0) {
+			// no matching key found
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
+
 	size_t erase(const Key& key) {
 		int i = get_index(key);
 		if (i < 0) {
@@ -205,6 +217,13 @@ class string {
 	size_t max_size() {
 		return sz;
 	}
+
+	friend bool operator==(const string& lhs, const char *rhs) {
+		return strcmp(lhs.m_str, rhs) == 0;
+	}
+	friend bool operator!=(const string& lhs, const char *rhs) { return !(lhs == rhs); }
+	friend bool operator==(const string& lhs, const string& rhs) { return lhs == rhs.m_str; }
+	friend bool operator!=(const string& lhs, const string& rhs) { return !(lhs == rhs.m_str); }
 };
 
 
@@ -224,6 +243,10 @@ class string {
 #define SMM_SERIAL_VAL_LEN 128
 #endif
 
+#ifndef SMM_SERIAL_MAX_CALLBACKS
+#define SMM_SERIAL_MAX_CALLBACKS 8
+#endif
+
 
 typedef void (*voidCallback)();
 typedef void (*stringCallback)(const char *);
@@ -239,18 +262,19 @@ struct SerialCallback {
 		floatCallback f;
 	} callback;
 	enum {
-		VOID, STRING, INT, FLOAT,
+		NONE, VOID_T, STRING, INT, FLOAT,
 	} type;
 
 
-	SerialCallback(voidCallback cb)   { type=VOID;   callback.v=cb; }
+	SerialCallback()                  { type=NONE;                  }
+	SerialCallback(voidCallback cb)   { type=VOID_T; callback.v=cb; }
 	SerialCallback(stringCallback cb) { type=STRING; callback.s=cb; }
 	SerialCallback(intCallback cb)    { type=INT;    callback.i=cb; }
 	SerialCallback(floatCallback cb)  { type=FLOAT;  callback.f=cb; }
 
 	void operator()(const char *value) {
 		switch(type) {
-		case VOID:
+		case VOID_T:
 			callback.v();
 			break;
 
@@ -274,8 +298,40 @@ struct SerialCallback {
 
 
 class SerialController {
-	protected:
 	public:
+	typedef string<SMM_SERIAL_KEY_LEN> key_string;
+	typedef string<SMM_SERIAL_VAL_LEN> val_string;
+
+	protected:
+	static map<key_string, SerialCallback, SMM_SERIAL_MAX_CALLBACKS> s_callbacks;
+
+	public:
+	static bool RegisterCallback(const char *name, SerialCallback cb) {
+		key_string name_str(name);
+		if (!s_callbacks.contains(name_str)) {
+			s_callbacks[name_str] = cb;
+			return true;
+		}
+		else {
+			// already have a callback with that name, return false
+			return false;
+		}
+	}
+
+	void ExecuteCallback(const char *key, const char *value) {
+		key_string k(key);
+		SerialCallback cb = s_callbacks.at(k);
+		cb(value);
+	}
 };
 
 }
+
+
+#ifdef SMM_IMPLEMENTATION
+smm::map<
+	smm::string<SMM_SERIAL_KEY_LEN>,
+	smm::SerialCallback,
+	SMM_SERIAL_MAX_CALLBACKS
+> smm::SerialController::s_callbacks;
+#endif

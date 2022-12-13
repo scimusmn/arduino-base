@@ -72,3 +72,11 @@ TEST_CASE("erasing values") {
 	CHECK(m.erase(40) == 0);
 	
 }
+
+
+TEST_CASE("contains()") {
+	smm::map<int, const char *, 4> m;
+	CHECK(m.contains(10) == false);
+	m[10] = "hello!";
+	CHECK(m.contains(10) == true);
+}

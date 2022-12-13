@@ -54,3 +54,16 @@ TEST_CASE("float serial callback") {
 	cb("3.1415");
 	CHECK(k == 314);
 }
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+TEST_CASE("SerialController correctly registers callbacks") {
+	k = 0;
+	smm::SerialCallback cb(f2);
+	CHECK(smm::SerialController::RegisterCallback("serial-callback", cb) == true);
+	
+	smm::SerialController serial;
+	serial.ExecuteCallback("serial-callback", "hello");
+	CHECK(k == -1);
+}

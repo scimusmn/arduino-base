@@ -35,3 +35,17 @@ TEST_CASE("push more characters") {
 	CHECK(strcmp(s.c_str(), "abc") == 0);
 	CHECK_THROWS_AS(s.push_back('d'), smm::out_of_memory);
 }
+
+
+TEST_CASE("equality operators") {
+	smm::string<32> s1 = "hello, world!";
+	smm::string<32> s2 = "hello, world!";
+	smm::string<32> s3 = ":3";
+
+	CHECK(s1 == s1);
+	CHECK(s1 == s2);
+	CHECK(s1 != s3);
+
+	CHECK(s1 == "hello, world!");
+	CHECK(s1 != ":3");
+}
