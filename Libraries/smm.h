@@ -99,7 +99,10 @@ class map {
 			// no matching key, need to create new
 			if (m_size >= sz) {
 				// container is full, cannot return new reference
-				throw smm::out_of_memory("No space remaining in map");
+				// do NOT use this function if the container is full!!
+				// any keys not already in the map will overwrite whatever is in
+				// position 0
+				return m_value[0];
 			}
 
 			i = m_size;
@@ -107,18 +110,6 @@ class map {
 
 			m_key[i] = key;
 			return m_value[i];
-		}
-		else {
-			return m_value[i];
-		}
-	}
-
-
-	T& at(const Key& key) {
-		int i = get_index(key);
-		if (i < 0) {
-			// no matching key found, throw error
-			throw smm::out_of_range("No matching key found");
 		}
 		else {
 			return m_value[i];
@@ -164,6 +155,10 @@ class map {
 
 	size_t max_size() {
 		return sz;
+	}
+
+	bool full() {
+		return m_size == sz;
 	}
 };
 
@@ -487,15 +482,13 @@ class Button {
 
 	template <int pin>
 	static void __change() {
-		Button *b;
-		try {
-			b = s_bindings.at(pin);
-		}
-		catch (const smm::out_of_range& error) {
+		if (!s_bindings.contains(pin)) {
 			// no button bound
 			// not sure how this interrupt was attached but we should ignore
 			return;
 		}
+
+		Button *b = s_bindings[pin];
 
 		if ((millis() - b->m_lastTime) < b->m_debounceTime) {
 			// still debouncing, ignore

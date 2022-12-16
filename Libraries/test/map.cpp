@@ -9,16 +9,13 @@ TEST_CASE("simple map insertion/recall") {
 	CHECK(m.max_size() == 3);
 	CHECK(m.empty());
 
-	CHECK_NOTHROW(m['a'] = 0);
-	CHECK_NOTHROW(m['b'] = 1);
-	CHECK_NOTHROW(m['c'] = 2);
-	CHECK_THROWS_AS(m['d'], smm::out_of_memory);
+	m['a'] = 0;
+	m['b'] = 1;
+	m['c'] = 2;
 
-	CHECK(m.at('a') == 0);
-	CHECK(m.at('b') == 1);
-	CHECK(m.at('c') == 2);
-
-	CHECK_THROWS_AS(m.at('q'), smm::out_of_range);
+	CHECK(m['a'] == 0);
+	CHECK(m['b'] == 1);
+	CHECK(m['c'] == 2);
 }
 
 
@@ -33,37 +30,37 @@ TEST_CASE("erasing values") {
 
 	CHECK(m.size() == 4);
 	CHECK(m.erase(20) == 1);
-	CHECK(m.at(10) == "hello");
-	CHECK(m.at(30) == "sweet");
-	CHECK(m.at(40) == "world");
-	CHECK_THROWS_AS(m.at(20), smm::out_of_range);
+	CHECK(m[10] == "hello");
+	CHECK(m[30] == "sweet");
+	CHECK(m[40] == "world");
+	CHECK(m.contains(20) == false);
 	CHECK(m.size() == 3);
 
 	CHECK(m.erase(20) == 0);
 	CHECK(m.erase(40) == 1);
-	CHECK(m.at(10) == "hello");
-	CHECK(m.at(30) == "sweet");
-	CHECK_THROWS_AS(m.at(20), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(40), smm::out_of_range);
+	CHECK(m[10] == "hello");
+	CHECK(m[30] == "sweet");
+	CHECK(m.contains(20) == false);
+	CHECK(m.contains(40) == false);
 	CHECK(m.size() == 2);
 
 	CHECK(m.erase(10) == 1);
 	CHECK(m.erase(20) == 0);
 	CHECK(m.erase(40) == 0);
-	CHECK(m.at(30) == "sweet");
-	CHECK_THROWS_AS(m.at(10), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(20), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(40), smm::out_of_range);
+	CHECK(m[30] == "sweet");
+	CHECK(m.contains(10) == false);
+	CHECK(m.contains(20) == false);
+	CHECK(m.contains(40) == false);
 	CHECK(m.size() == 1);
 
 	CHECK(m.erase(10) == 0);
 	CHECK(m.erase(20) == 0);
 	CHECK(m.erase(30) == 1);
 	CHECK(m.erase(40) == 0);
-	CHECK_THROWS_AS(m.at(10), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(20), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(30), smm::out_of_range);
-	CHECK_THROWS_AS(m.at(40), smm::out_of_range);
+	CHECK(m.contains(10) == false);
+	CHECK(m.contains(20) == false);
+	CHECK(m.contains(30) == false);
+	CHECK(m.contains(40) == false);
 	CHECK(m.size() == 0);
 	CHECK(m.empty());
 
@@ -71,7 +68,6 @@ TEST_CASE("erasing values") {
 	CHECK(m.erase(20) == 0);
 	CHECK(m.erase(30) == 0);
 	CHECK(m.erase(40) == 0);
-	
 }
 
 
