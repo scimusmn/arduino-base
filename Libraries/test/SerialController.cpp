@@ -61,9 +61,23 @@ TEST_CASE("float serial callback") {
 TEST_CASE("SerialController correctly registers callbacks") {
 	k = 0;
 	smm::SerialCallback cb(f2);
-	CHECK(smm::SerialController::RegisterCallback("serial-callback", cb) == true);
+	CHECK(smm::SerialController::RegisterCallback("serial-callback", &cb) == true);
 	
-	smm::SerialController serial;
-	serial.ExecuteCallback("serial-callback", "hello");
+	smm::SerialController::ExecuteCallback("serial-callback", "hello");
 	CHECK(k == -1);
+}
+
+
+SERIAL_CALLBACK("auto-callback", int n) {
+	k = n;
+}
+
+SERIAL_CALLBACK("auto-callback-2", void) {}
+
+
+TEST_CASE("auto-registered callback") {
+	k = 0;
+	INFO("num callbacks: ", smm::SerialController::num_callbacks());
+	smm::SerialController::ExecuteCallback("auto-callback", "15");
+	CHECK(k == 15);
 }

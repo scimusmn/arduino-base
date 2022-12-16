@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 
 namespace smm
@@ -25,7 +26,7 @@ class exception {
 
 	exception(const char *str) : m_what(str) {}
 
-	virtual const char * what() { 
+	virtual const char * what() const { 
 		if (m_what != nullptr)
 			return m_what;
 		return "Unknown exception"; 
@@ -297,19 +298,35 @@ struct SerialCallback {
 };
 
 
+#ifndef SMM_NO_SERIAL_CONTROLLER
 class SerialController {
 	public:
 	typedef string<SMM_SERIAL_KEY_LEN> key_string;
 	typedef string<SMM_SERIAL_VAL_LEN> val_string;
 
 	protected:
-	static map<key_string, SerialCallback, SMM_SERIAL_MAX_CALLBACKS> s_callbacks;
+	static int s_numCallbacks;
+	static const char * s_key[SMM_SERIAL_MAX_CALLBACKS];
+	static SerialCallback * s_cb[SMM_SERIAL_MAX_CALLBACKS];
+
+	static int FindCallback(const char *k) {
+		for (int i=0; i<s_numCallbacks; i++) {
+			if (strcmp(k, s_key[i]) == 0) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
 
 	public:
-	static bool RegisterCallback(const char *name, SerialCallback cb) {
-		key_string name_str(name);
-		if (!s_callbacks.contains(name_str)) {
-			s_callbacks[name_str] = cb;
+	static bool RegisterCallback(const char *name, SerialCallback *cb) {
+		int index = FindCallback(name);
+		if (index < 0) {
+			index = s_numCallbacks;
+			s_numCallbacks += 1;
+			s_key[index] = name;
+			s_cb[index] = cb;
 			return true;
 		}
 		else {
@@ -318,20 +335,51 @@ class SerialController {
 		}
 	}
 
-	void ExecuteCallback(const char *key, const char *value) {
-		key_string k(key);
-		SerialCallback cb = s_callbacks.at(k);
-		cb(value);
+	static void ExecuteCallback(const char *key, const char *value) {
+		int i = FindCallback(key);
+		if (i < 0) {
+			// do error things
+		}
+		else {
+			(s_cb[i])->operator()(value);
+		}
+	}
+
+	static size_t num_callbacks() {
+		return s_numCallbacks;
 	}
 };
+#endif
 
 }
 
 
+extern smm::SerialController SmmSerial;
+
+
+#define SERIAL_CAT_(x, y) x##y
+#define SERIAL_CAT(x, y) SERIAL_CAT_(x, y)
+#define SERIAL_ANONYMOUS(prefix) SERIAL_CAT(prefix, __LINE__)
+#define SERIAL_CALLBACK_REGISTER(cb, var, f, name) \
+static smm::SerialCallback cb(f); \
+static const bool var = SmmSerial.RegisterCallback(name, &cb);
+
+#define SERIAL_CALLBACK_(f, name, arg) \
+void f(arg); \
+SERIAL_CALLBACK_REGISTER(SERIAL_ANONYMOUS(SERIAL_CALLBACK_CB_), SERIAL_ANONYMOUS(SERIAL_CALLBACK_VAR_), f, name); \
+void f(arg)
+
+#define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
+
+
 #ifdef SMM_IMPLEMENTATION
-smm::map<
-	smm::string<SMM_SERIAL_KEY_LEN>,
-	smm::SerialCallback,
-	SMM_SERIAL_MAX_CALLBACKS
-> smm::SerialController::s_callbacks;
+#ifndef SMM_NO_SERIAL_CONTROLLER
+/* static variable declarations */
+int smm::SerialController::s_numCallbacks = 0;
+const char * smm::SerialController::s_key[SMM_SERIAL_MAX_CALLBACKS];
+smm::SerialCallback * smm::SerialController::s_cb[SMM_SERIAL_MAX_CALLBACKS];
+
+/* extern globals */
+smm::SerialController SmmSerial;
+#endif
 #endif

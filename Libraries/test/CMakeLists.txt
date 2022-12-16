@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.8)
 project(arduino-base-tests)
 
 
@@ -11,4 +11,5 @@ add_executable(
 	string.cpp
 	SerialController.cpp
 )
+set_property(TARGET arduino-base-tests PROPERTY CXX_STANDARD 17)
 # target_include_directories(arduino-base-tests PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
