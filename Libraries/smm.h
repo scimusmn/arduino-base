@@ -191,12 +191,7 @@ class string {
 	}
 
 	void operator=(const char* s) {
-		size_t len = strlen(s)+1;
-		if (len > sz) {
-			// not enough space to store this string
-			throw smm::out_of_memory("not enough space to copy string");
-		}
-		strncpy(m_str, s, sz);
+		strncpy(m_str, s, sz-1);
 	}
 
 	const char *c_str() {
@@ -206,7 +201,7 @@ class string {
 	void push_back(char ch) {
 		if (size() + 1 > sz) {
 			// not enough space to store an additional character
-			throw smm::out_of_memory("not enough space to push character");
+			return;
 		}
 		strncat(m_str, &ch, 1);
 	}
@@ -458,6 +453,13 @@ class SerialController {
 };
 #endif
 
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * smm::Button
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
 
 #ifndef SMM_MAX_BUTTONS
 #define SMM_MAX_BUTTONS 16

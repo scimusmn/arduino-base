@@ -6,10 +6,9 @@ add_executable(
 	arduino-base-tests
 	main.cpp
 
-	exception.cpp
 	map.cpp
 	string.cpp
 	SerialController.cpp
 )
-set_property(TARGET arduino-base-tests PROPERTY CXX_STANDARD 17)
+set_property(TARGET arduino-base-tests PROPERTY CXX_STANDARD 11)
 # target_include_directories(arduino-base-tests PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)

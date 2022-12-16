@@ -21,7 +21,8 @@ TEST_CASE("nice constructor=") {
 
 
 TEST_CASE("constructor overflow") {
-	CHECK_THROWS_AS(smm::string<2> s("hi"), smm::out_of_memory);
+	smm::string<2> s("hi");
+	CHECK(strcmp(s.c_str(), "h") == 0);
 }
 
 
@@ -34,7 +35,8 @@ TEST_CASE("push more characters") {
 	CHECK(strcmp(s.c_str(), "ab") == 0);
 	s.push_back('c');
 	CHECK(strcmp(s.c_str(), "abc") == 0);
-	CHECK_THROWS_AS(s.push_back('d'), smm::out_of_memory);
+	s.push_back('d');
+	CHECK(strcmp(s.c_str(), "abc") == 0);
 }
 
 
