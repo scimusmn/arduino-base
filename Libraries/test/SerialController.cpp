@@ -1,4 +1,5 @@
 #include "doctest.h"
+#include "mock.h"
 #include "../smm.h"
 
 
@@ -80,4 +81,23 @@ TEST_CASE("auto-registered callback") {
 	INFO("num callbacks: ", smm::SerialController::num_callbacks());
 	smm::SerialController::ExecuteCallback("auto-callback", "15");
 	CHECK(k == 15);
+}
+
+
+TEST_CASE("SmmSerial correctly eats characters") {
+	k = 0;
+	
+	// malformed packet
+	const char *str1 = "{auto-callback}";
+	for (char *c = const_cast<char*>(str1); *c != 0; c++) {
+		SmmSerial.eatCharacter(*c);
+	}
+	CHECK(k == 0);
+
+	// correct packet, with malformed garbage around it
+	const char *str2 = "{{{}::}{ {auto-callback:16}::}";
+	for (char *c = const_cast<char*>(str2); *c != 0; c++) {
+		SmmSerial.eatCharacter(*c);
+	}
+	CHECK(k == 16);
 }

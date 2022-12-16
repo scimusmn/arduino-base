@@ -1,4 +1,5 @@
 #include "doctest.h"
+#include "mock.h"
 #include "../smm.h"
 
 TEST_CASE("base exception class has correct what()") {

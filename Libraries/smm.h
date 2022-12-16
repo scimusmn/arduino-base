@@ -319,6 +319,92 @@ class SerialController {
 		return -1;
 	}
 
+	key_string m_key;
+	unsigned int m_keyOverflow;
+	val_string m_val;
+	unsigned int m_valOverflow;
+
+	enum {
+		WAIT_FOR_PACKET,
+		READ_KEY,
+		READ_VAL,
+	} state;
+
+	void eatPacketChar(char c) {
+		switch (c) {
+		case '{':
+			state = READ_KEY;
+			break;
+		default:
+			// ignore
+			break;
+		}
+	}
+
+	void eatKeyChar(char c) {
+		switch(c) {
+		case '{':
+			// start new packet
+			reset();
+			state = READ_KEY;
+			break;
+		case '}':
+			// done too early, wait for new packet
+			reset();
+			break;
+		case ':':
+			// key finished, read value
+			state = READ_VAL;
+			break;
+		default:
+			if (m_key.size() < m_key.max_size()) {
+				m_key.push_back(c);
+			}
+			else {
+				m_keyOverflow += 1;
+			}
+			break;
+		}
+	}
+
+	void eatValChar(char c) {
+		switch(c) {
+		case '{':
+			// start new packet
+			reset();
+			state = READ_KEY;
+			break;
+		case '}':
+			// done! 
+			ExecuteCallback(m_key.c_str(), m_val.c_str());
+			reset();
+			break;
+		case ':':
+			// ??? this should not be here, reset
+			reset();
+			break;
+		default:
+			if (m_val.size() < m_val.max_size()) {
+				m_val.push_back(c);
+			}
+			else {
+				m_valOverflow += 1;
+			}
+			break;
+		}
+	}
+
+
+	void reset() {
+		state = WAIT_FOR_PACKET;
+		m_key = "";
+		m_val = "";
+		m_keyOverflow = 0;
+		m_valOverflow = 0;
+	}
+
+
+
 	public:
 	static bool RegisterCallback(const char *name, SerialCallback *cb) {
 		int index = FindCallback(name);
@@ -345,11 +431,90 @@ class SerialController {
 		}
 	}
 
+	SerialController() {
+		reset();
+	}
+
+	void eatCharacter(char c) {
+		switch (state) {
+		case WAIT_FOR_PACKET:
+			eatPacketChar(c);
+			break;
+		case READ_KEY:
+			eatKeyChar(c);
+			break;
+		case READ_VAL:
+			eatValChar(c);
+			break;
+		default:
+			state = WAIT_FOR_PACKET;
+			break;
+		}
+	}
+
 	static size_t num_callbacks() {
 		return s_numCallbacks;
 	}
 };
 #endif
+
+
+#ifndef SMM_MAX_BUTTONS
+#define SMM_MAX_BUTTONS 16
+#endif 
+
+class Button {
+	protected:
+	static map<int, Button*, SMM_MAX_BUTTONS> s_bindings;
+	bool m_pressed;
+	unsigned long m_lastTime;
+	unsigned long m_debounceTime;
+
+	public:
+	template <int pin>
+	void setup(unsigned long debounceTime=20) {
+		m_debounceTime = debounceTime;
+		s_bindings[pin] = this;
+		m_pressed = false;
+		m_lastTime = 0;
+		attachInterrupt(digitalPinToInterrupt(pin), smm::Button::__change<pin>, CHANGE);
+	}
+
+	virtual void onPress() {}
+	virtual void onRelease() {}
+
+	template <int pin>
+	static void __change() {
+		Button *b;
+		try {
+			b = s_bindings.at(pin);
+		}
+		catch (const smm::out_of_range& error) {
+			// no button bound
+			// not sure how this interrupt was attached but we should ignore
+			return;
+		}
+
+		if ((millis() - b->m_lastTime) < b->m_debounceTime) {
+			// still debouncing, ignore
+			return;
+		}
+
+		bool state = !digitalRead(pin);
+		if (b->m_pressed == state) {
+			// no change in state, ignore
+			return;
+		}
+
+		b->m_pressed = state;
+		b->m_lastTime = millis();
+		if (b->m_pressed)
+			b->onPress();
+		else
+			b->onRelease();
+	}
+};
+
 
 }
 
@@ -382,4 +547,6 @@ smm::SerialCallback * smm::SerialController::s_cb[SMM_SERIAL_MAX_CALLBACKS];
 /* extern globals */
 smm::SerialController SmmSerial;
 #endif
+
+smm::map<int, smm::Button*, SMM_MAX_BUTTONS> smm::Button::s_bindings;
 #endif

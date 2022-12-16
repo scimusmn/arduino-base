@@ -1,4 +1,5 @@
 #include "doctest.h"
+#include "mock.h"
 #include "../smm.h"
 
 
