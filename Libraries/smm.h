@@ -406,63 +406,148 @@ class SerialController {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-#ifndef SMM_MAX_BUTTONS
-#define SMM_MAX_BUTTONS 16
-#endif 
+#ifndef SMM_NO_BUTTON
+
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+/* arduino mega */
+#define SMM_PCINT_MEGA
+
+#elif defined(__AVR_ATmega48A__) || defined(__AVR_ATmega48PA__) || \
+	defined(__AVR_ATmega88A__) || defined(__AVR_ATmega88PA__) || \
+	defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168PA__) || \
+	defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+#define SMM_PCINT_328
+
+#else
+/* other arduinos */
+#define SMM_PCINT_UNKNOWN
+
+#endif
+
+class PcInterruptPort;
+class Button;
+
+class PcInterruptManager {
+	public:
+	#if defined(SMM_PCINT_MEGA)
+	static PcInterruptPort portB;
+	static PcInterruptPort portJ;
+	static PcInterruptPort portK;
+	#elif defined(SMM_PCINT_328)
+	static PcInterruptPort portB;
+	static PcInterruptPort portC;
+	static PcInterruptPort portD;
+	#endif
+
+	static void AddButton(int pin, Button *b);
+};
 
 class Button {
 	protected:
-	static map<int, Button*, SMM_MAX_BUTTONS> s_bindings;
-	bool m_pressed;
-	unsigned long m_lastTime;
-	unsigned long m_debounceTime;
+	volatile Button *m_next;
+	volatile uint8_t m_mask;
+	volatile unsigned long m_debounceTime;
+	volatile unsigned long m_lastTime;
+	volatile bool m_inverted;
+	volatile bool m_pressed;
+	friend class PcInterruptPort;
 
 	public:
-	template <int pin>
-	void setup(unsigned long debounceTime=20) {
+	Button(int pin, unsigned long debounceTime=5, bool inverted=false) {
+		m_next = nullptr;
+		m_mask = digitalPinToBitMask(pin);
 		m_debounceTime = debounceTime;
-		s_bindings[pin] = this;
-		m_pressed = false;
 		m_lastTime = 0;
-		attachInterrupt(digitalPinToInterrupt(pin), smm::Button::__change<pin>, CHANGE);
+		m_inverted = inverted;
+		m_pressed = false;
+		PcInterruptManager::AddButton(pin, this);
 	}
 
-	virtual void onPress() {}
-	virtual void onRelease() {}
-
-	template <int pin>
-	static void __change() {
-		if (!s_bindings.contains(pin)) {
-			// no button bound
-			// not sure how this interrupt was attached but we should ignore
-			return;
+	void addButton(Button *b) {
+		if (m_next != nullptr) {
+			m_next->addButton(b);
 		}
+		else {
+			m_next = b;
+		}
+	}
 
-		Button *b = s_bindings[pin];
-
-		if ((millis() - b->m_lastTime) < b->m_debounceTime) {
+	void onChange(int state) {
+		if ((millis() - m_lastTime) < m_debounceTime) {
 			// still debouncing, ignore
 			return;
 		}
 
-		bool state = !digitalRead(pin);
-		if (b->m_pressed == state) {
+		bool push = state == 0;
+		if (m_pressed == push) {
 			// no change in state, ignore
 			return;
 		}
 
-		b->m_pressed = state;
-		b->m_lastTime = millis();
-		if (b->m_pressed)
-			b->onPress();
+		m_pressed = push;
+		m_lastTime = millis();
+		if (m_pressed)
+			onPress();
 		else
-			b->onRelease();
+			onRelease();
+	}
+
+	virtual void onPress() = 0;
+	virtual void onRelease() = 0;
+};
+
+class PcInterruptPort {
+	protected:
+	volatile Button *m_head;
+	volatile uint8_t m_pinMask;
+	volatile uint8_t m_previousState;
+	volatile uint8_t *m_pcmsk;
+
+	public:
+	PcInterruptPort(int index, uint8_t *pcmsk) {
+		m_pcmsk = pcmsk;
+		cli();
+		PCICR |= (1<<index);
+		sei();
+		m_head = nullptr;
+		m_pinMask = 0;
+		m_previousState = 0xff;
+	}
+
+	void addButton(Button *b) {
+		if (m_head == nullptr) {
+			m_head = b;
+		}
+		else {
+			m_head->addButton(b);
+		}
+		cli();
+		(*m_pcmsk) |= b->m_mask;
+		sei();
+		m_pinMask |= b->m_mask;
+	}
+
+	void onChange(uint8_t state) {
+		uint8_t changed = state ^ m_previousState;
+		m_previousState = state;
+
+		Button *b = m_head;
+		while (b != nullptr) {
+				if (changed & b->m_mask) {
+				b->onChange(state & b->m_mask);
+			}
+			b = b->m_next;
+		}
 	}
 };
+/* ifndef SMM_NO_BUTTON */
+#endif
 
 
 }
 
+
+/* extra macros and extern globals */
 
 extern smm::SerialController SmmSerial;
 
@@ -482,6 +567,13 @@ void f(arg)
 #define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
 
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * implementation details
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
 #ifdef SMM_IMPLEMENTATION
 #ifndef SMM_NO_SERIAL_CONTROLLER
 /* static variable declarations */
@@ -493,5 +585,85 @@ smm::SerialCallback * smm::SerialController::s_cb[SMM_SERIAL_MAX_CALLBACKS];
 smm::SerialController SmmSerial;
 #endif
 
-smm::map<int, smm::Button*, SMM_MAX_BUTTONS> smm::Button::s_bindings;
+
+#ifndef SMM_NO_BUTTON
+/* smm::Button implementation */
+void smm::PcInterruptManager::AddButton(int pin, smm::Button *b) {
+	pinMode(pin, INPUT_PULLUP);
+
+	uint8_t port = digitalPinToPort(pin);
+	uint16_t oport = portOutputRegister(port);
+
+	#if defined(SMM_PCINT_MEGA)
+	if (oport == &PORTB) {
+		portB.addButton(b);
+	}
+	else if (oport == &PORTJ) {
+		portJ.addButton(b);
+	}
+	else if (oport == &PORTK) {
+		portK.addButton(b);
+	}
+	#elif defined(SMM_PCINT_328)
+	if (oport == &PORTB) {
+		portB.addButton(b);
+	}
+	else if (oport == &PORTC) {
+		portC.addButton(b);
+	}
+	else if (oport == &PORTD) {
+		portD.addButton(b);
+	}
+	#endif
+	#ifndef SMM_PCINT_UNKNOWN
+	else {
+		Serial.print("\n\n\n\n\n\n\n\n");
+		Serial.println("!!!!!!!! WARNING !!!!!!!!");
+		Serial.print("No PCINT port for pin ");
+		Serial.print(pin);
+		Serial.println("; it WILL NOT work as a switch!");
+	}
+	#else
+	Serial.println("\n\n\n\n\n\n\n\n\n\n\n\nThis chipset is currently not supported by smm::Button.");
+	#endif
+}
+
+#if defined(SMM_PCINT_MEGA)
+smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
+smm::PcInterruptPort smm::PcInterruptManager::portJ(PCIE1, &PCMSK1);
+smm::PcInterruptPort smm::PcInterruptManager::portK(PCIE2, &PCMSK2);
+ISR(PCINT0_vect) {
+	uint8_t pins = PINB;
+	smm::PcInterruptManager::portB.onChange(pins);
+}
+ISR(PCINT1_vect) {
+	uint8_t pins = PINJ;
+	smm::PcInterruptManager::portJ.onChange(pins);
+}
+ISR(PCINT2_vect) {
+	uint8_t pins = PINK;
+	smm::PcInterruptManager::portK.onChange(pins);
+}
+#elif defined(SMM_PCINT_328)
+smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
+smm::PcInterruptPort smm::PcInterruptManager::portC(PCIE1, &PCMSK1);
+smm::PcInterruptPort smm::PcInterruptManager::portD(PCIE2, &PCMSK2);
+ISR(PCINT0_vect) {
+	uint8_t pins = PINB;
+	smm::PcInterruptManager::portB.onChange(pins);
+}
+ISR(PCINT1_vect) {
+	uint8_t pins = PINC;
+	smm::PcInterruptManager::portC.onChange(pins);
+}
+ISR(PCINT2_vect) {
+	uint8_t pins = PIND;
+	smm::PcInterruptManager::portD.onChange(pins);
+}
+#endif
+/* ifndef SMM_NO_BUTTON */
+#endif
+
+
+/* ifdef SMM_IMPLEMENTATION */
 #endif
