@@ -430,13 +430,25 @@ class Button;
 class PcInterruptManager {
 	public:
 	#if defined(SMM_PCINT_MEGA)
+	#ifndef SMM_PCINT_NO_PORTB
 	static PcInterruptPort portB;
+	#endif
+	#ifndef SMM_PCINT_NO_PORTJ
 	static PcInterruptPort portJ;
+	#endif
+	#ifndef SMM_PCINT_NO_PORTK
 	static PcInterruptPort portK;
+	#endif
 	#elif defined(SMM_PCINT_328)
+	#ifndef SMM_PCINT_NO_PORTB
 	static PcInterruptPort portB;
+	#endif
+	#ifndef SMM_PCINT_NO_PORTC
 	static PcInterruptPort portC;
+	#endif
+	#ifndef SMM_PCINT_NO_PORTD
 	static PcInterruptPort portD;
+	#endif
 	#endif
 
 	static void AddButton(int pin, Button *b);
@@ -548,8 +560,9 @@ class PcInterruptPort {
 
 
 /* extra macros and extern globals */
-
+#ifndef SMM_NO_SERIAL_CONTROLLER
 extern smm::SerialController SmmSerial;
+#endif
 
 
 #define SERIAL_CAT_(x, y) x##y
@@ -596,23 +609,35 @@ void smm::PcInterruptManager::AddButton(int pin, smm::Button *b) {
 
 	#if defined(SMM_PCINT_MEGA)
 	if (oport == &PORTB) {
+		#ifndef SMM_PCINT_NO_PORTB
 		portB.addButton(b);
+		#endif
 	}
 	else if (oport == &PORTJ) {
+		#ifndef SMM_PCINT_NO_PORTJ
 		portJ.addButton(b);
+		#endif
 	}
 	else if (oport == &PORTK) {
+		#ifndef SMM_PCINT_NO_PORTK
 		portK.addButton(b);
+		#endif
 	}
 	#elif defined(SMM_PCINT_328)
 	if (oport == &PORTB) {
+		#ifndef SMM_PCINT_NO_PORTB
 		portB.addButton(b);
+		#endif
 	}
 	else if (oport == &PORTC) {
+		#ifndef SMM_PCINT_NO_PORTC
 		portC.addButton(b);
+		#endif
 	}
 	else if (oport == &PORTD) {
+		#ifndef SMM_PCINT_NO_PORTD
 		portD.addButton(b);
+		#endif
 	}
 	#endif
 	#ifndef SMM_PCINT_UNKNOWN
@@ -629,37 +654,51 @@ void smm::PcInterruptManager::AddButton(int pin, smm::Button *b) {
 }
 
 #if defined(SMM_PCINT_MEGA)
+#ifndef SMM_PCINT_NO_PORTB
 smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
-smm::PcInterruptPort smm::PcInterruptManager::portJ(PCIE1, &PCMSK1);
-smm::PcInterruptPort smm::PcInterruptManager::portK(PCIE2, &PCMSK2);
 ISR(PCINT0_vect) {
 	uint8_t pins = PINB;
 	smm::PcInterruptManager::portB.onChange(pins);
 }
+#endif
+#ifndef SMM_PCINT_NO_PORTJ
+smm::PcInterruptPort smm::PcInterruptManager::portJ(PCIE1, &PCMSK1);
 ISR(PCINT1_vect) {
 	uint8_t pins = PINJ;
 	smm::PcInterruptManager::portJ.onChange(pins);
 }
+#endif
+#ifndef SMM_PCINT_NO_PORTK
+smm::PcInterruptPort smm::PcInterruptManager::portK(PCIE2, &PCMSK2);
 ISR(PCINT2_vect) {
 	uint8_t pins = PINK;
 	smm::PcInterruptManager::portK.onChange(pins);
 }
+#endif
+
 #elif defined(SMM_PCINT_328)
+#ifndef SMM_PCINT_NO_PORTB
 smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
-smm::PcInterruptPort smm::PcInterruptManager::portC(PCIE1, &PCMSK1);
-smm::PcInterruptPort smm::PcInterruptManager::portD(PCIE2, &PCMSK2);
 ISR(PCINT0_vect) {
 	uint8_t pins = PINB;
 	smm::PcInterruptManager::portB.onChange(pins);
 }
+#endif
+#ifndef SMM_PCINT_NO_PORTC
+smm::PcInterruptPort smm::PcInterruptManager::portC(PCIE1, &PCMSK1);
 ISR(PCINT1_vect) {
 	uint8_t pins = PINC;
 	smm::PcInterruptManager::portC.onChange(pins);
 }
+#endif
+#ifndef SMM_PCINT_NO_PORTD
+smm::PcInterruptPort smm::PcInterruptManager::portD(PCIE2, &PCMSK2);
 ISR(PCINT2_vect) {
 	uint8_t pins = PIND;
 	smm::PcInterruptManager::portD.onChange(pins);
 }
+#endif
+
 #endif
 /* ifndef SMM_NO_BUTTON */
 #endif
