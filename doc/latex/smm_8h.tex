@@ -1,0 +1,130 @@
+\hypertarget{smm_8h}{}\doxysection{C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/smm.h File Reference}
+\label{smm_8h}\index{C:/msys64/home/kaswanson/work/code/arduino-\/base/Libraries/smm.h@{C:/msys64/home/kaswanson/work/code/arduino-\/base/Libraries/smm.h}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classsmm_1_1map}{smm\+::map$<$ Key, T, sz $>$}}
+\begin{DoxyCompactList}\small\item\em a stack-\/allocation only map datatype \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classsmm_1_1string}{smm\+::string$<$ sz $>$}}
+\begin{DoxyCompactList}\small\item\em a stack-\/only string class \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structsmm_1_1_serial_callback}{smm\+::\+Serial\+Callback}}
+\begin{DoxyCompactList}\small\item\em Internal helper structure for storing serial callback functions. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classsmm_1_1_serial_controller}{smm\+::\+Serial\+Controller}}
+\begin{DoxyCompactList}\small\item\em human-\/ and machine-\/readable serial communication protocol \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classsmm_1_1_button}{smm\+::\+Button}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{smm_8h_acd5722ea9d951778ae22813abf04ebe9}\label{smm_8h_acd5722ea9d951778ae22813abf04ebe9}} 
+\#define {\bfseries S\+M\+M\+\_\+\+P\+C\+I\+N\+T\+\_\+\+U\+N\+K\+N\+O\+WN}
+\item 
+\mbox{\Hypertarget{smm_8h_a1452218d91633753b7f73137af954918}\label{smm_8h_a1452218d91633753b7f73137af954918}} 
+\#define {\bfseries S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+T\+\_\+}(x,  y)~x\#\#y
+\item 
+\mbox{\Hypertarget{smm_8h_aa5d5c3b37d1670b66f7c6dc662c0f67f}\label{smm_8h_aa5d5c3b37d1670b66f7c6dc662c0f67f}} 
+\#define {\bfseries S\+E\+R\+I\+A\+L\+\_\+\+C\+AT}(x,  y)~S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+T\+\_\+(x, y)
+\item 
+\mbox{\Hypertarget{smm_8h_ae56770d3d38444cede0e55783498ac33}\label{smm_8h_ae56770d3d38444cede0e55783498ac33}} 
+\#define {\bfseries S\+E\+R\+I\+A\+L\+\_\+\+A\+N\+O\+N\+Y\+M\+O\+US}(prefix)~S\+E\+R\+I\+A\+L\+\_\+\+C\+AT(prefix, \+\_\+\+\_\+\+L\+I\+N\+E\+\_\+\+\_\+)
+\item 
+\#define {\bfseries S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+R\+E\+G\+I\+S\+T\+ER}(cb,  var,  f,  name)
+\item 
+\#define {\bfseries S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+}(f,  name,  arg)
+\item 
+\#define \mbox{\hyperlink{smm_8h_affae791253366d30d23021a0aba90e0e}{S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+CK}}(name,  arg)~S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+(S\+E\+R\+I\+A\+L\+\_\+\+A\+N\+O\+N\+Y\+M\+O\+US(S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+), name, arg)
+\begin{DoxyCompactList}\small\item\em Create a new serial callback. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{smm_8h_a223ef8498e3d4e20cdfb3cb142e0ea8f}\label{smm_8h_a223ef8498e3d4e20cdfb3cb142e0ea8f}} 
+typedef void($\ast$ {\bfseries smm\+::void\+Callback}) ()
+\item 
+\mbox{\Hypertarget{smm_8h_a31862ed8a469d588e321a1035a516fbb}\label{smm_8h_a31862ed8a469d588e321a1035a516fbb}} 
+typedef void($\ast$ {\bfseries smm\+::string\+Callback}) (const char $\ast$)
+\item 
+\mbox{\Hypertarget{smm_8h_a9cf0222b4277eef40d66e952048fd05b}\label{smm_8h_a9cf0222b4277eef40d66e952048fd05b}} 
+typedef void($\ast$ {\bfseries smm\+::int\+Callback}) (int)
+\item 
+\mbox{\Hypertarget{smm_8h_a2b7d340fc520c8b2424a0d00d6b735c7}\label{smm_8h_a2b7d340fc520c8b2424a0d00d6b735c7}} 
+typedef void($\ast$ {\bfseries smm\+::float\+Callback}) (float)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{smm_8h_aa64c6dce15e9de9105b4ae9533c9a267}\label{smm_8h_aa64c6dce15e9de9105b4ae9533c9a267}} 
+{\bfseries I\+SR} (P\+C\+I\+N\+T0\+\_\+vect)
+\item 
+\mbox{\Hypertarget{smm_8h_afe6035149a64d5f448fbda08e9d1b67f}\label{smm_8h_afe6035149a64d5f448fbda08e9d1b67f}} 
+{\bfseries I\+SR} (P\+C\+I\+N\+T1\+\_\+vect)
+\item 
+\mbox{\Hypertarget{smm_8h_a9c4665742c6b6eb1f0bb9dde41f7cba3}\label{smm_8h_a9c4665742c6b6eb1f0bb9dde41f7cba3}} 
+{\bfseries I\+SR} (P\+C\+I\+N\+T2\+\_\+vect)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{smm_8h_aa10c1562fc602063b39558c003eafdc0}\label{smm_8h_aa10c1562fc602063b39558c003eafdc0}} 
+\mbox{\hyperlink{classsmm_1_1_serial_controller}{smm\+::\+Serial\+Controller}} {\bfseries Smm\+Serial}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{smm_8h_affae791253366d30d23021a0aba90e0e}\label{smm_8h_affae791253366d30d23021a0aba90e0e}} 
+\index{smm.h@{smm.h}!SERIAL\_CALLBACK@{SERIAL\_CALLBACK}}
+\index{SERIAL\_CALLBACK@{SERIAL\_CALLBACK}!smm.h@{smm.h}}
+\doxysubsubsection{\texorpdfstring{SERIAL\_CALLBACK}{SERIAL\_CALLBACK}}
+{\footnotesize\ttfamily \#define S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+CK(\begin{DoxyParamCaption}\item[{}]{name,  }\item[{}]{arg }\end{DoxyParamCaption})~S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+(S\+E\+R\+I\+A\+L\+\_\+\+A\+N\+O\+N\+Y\+M\+O\+US(S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+), name, arg)}
+
+
+
+Create a new serial callback. 
+
+The basic usage of this macro is like this\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{smm_8h_affae791253366d30d23021a0aba90e0e}{SERIAL\_CALLBACK}}(\textcolor{stringliteral}{"my-\/callback"}, \textcolor{keyword}{const} \textcolor{keywordtype}{char} *str) \{}
+\DoxyCodeLine{    Serial.print(\textcolor{stringliteral}{"received string '"});}
+\DoxyCodeLine{    Serial.print(str);}
+\DoxyCodeLine{    Serial.println(\textcolor{stringliteral}{"'"});}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+There are four kinds of callbacks\+: void, string (shown above), int, and float. To define them, you simply need to provide the appropriate datatype in the {\ttfamily arg} field. Note that for void callbacks, you still need to put a {\ttfamily void} in the arg field, like this\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{smm_8h_affae791253366d30d23021a0aba90e0e}{SERIAL\_CALLBACK}}(\textcolor{stringliteral}{"some-\/void-\/callback"}, \textcolor{keywordtype}{void}) \{}
+\DoxyCodeLine{    \textcolor{comment}{// do something}}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+This macro is {\itshape self-\/registering}. That is, when you create a serial callback this way, it is now completely set up with {\ttfamily Smm\+Serial} and will respond to incoming messages on the name you gave; all you have to do is call {\ttfamily Smm\+Serial.\+begin()} in your setup function and {\ttfamily Smm\+Serial.\+update()} in your loop function. \mbox{\Hypertarget{smm_8h_a5c98dd4584261a1212489a80b9d68baa}\label{smm_8h_a5c98dd4584261a1212489a80b9d68baa}} 
+\index{smm.h@{smm.h}!SERIAL\_CALLBACK\_@{SERIAL\_CALLBACK\_}}
+\index{SERIAL\_CALLBACK\_@{SERIAL\_CALLBACK\_}!smm.h@{smm.h}}
+\doxysubsubsection{\texorpdfstring{SERIAL\_CALLBACK\_}{SERIAL\_CALLBACK\_}}
+{\footnotesize\ttfamily \#define S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+(\begin{DoxyParamCaption}\item[{}]{f,  }\item[{}]{name,  }\item[{}]{arg }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{void} f(arg); \(\backslash\)}
+\DoxyCodeLine{SERIAL\_CALLBACK\_REGISTER(SERIAL\_ANONYMOUS(SERIAL\_CALLBACK\_CB\_), SERIAL\_ANONYMOUS(SERIAL\_CALLBACK\_VAR\_), f, name); \(\backslash\)}
+\DoxyCodeLine{void f(arg)}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{smm_8h_a1eafb09dcb5ac46f706c5ba2f66ea8d8}\label{smm_8h_a1eafb09dcb5ac46f706c5ba2f66ea8d8}} 
+\index{smm.h@{smm.h}!SERIAL\_CALLBACK\_REGISTER@{SERIAL\_CALLBACK\_REGISTER}}
+\index{SERIAL\_CALLBACK\_REGISTER@{SERIAL\_CALLBACK\_REGISTER}!smm.h@{smm.h}}
+\doxysubsubsection{\texorpdfstring{SERIAL\_CALLBACK\_REGISTER}{SERIAL\_CALLBACK\_REGISTER}}
+{\footnotesize\ttfamily \#define S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+C\+K\+\_\+\+R\+E\+G\+I\+S\+T\+ER(\begin{DoxyParamCaption}\item[{}]{cb,  }\item[{}]{var,  }\item[{}]{f,  }\item[{}]{name }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{static} \mbox{\hyperlink{structsmm_1_1_serial_callback}{smm::SerialCallback}} cb(f); \(\backslash\)}
+\DoxyCodeLine{static \textcolor{keyword}{const} \textcolor{keywordtype}{bool} var = SmmSerial.RegisterCallback(name, \&cb);}
+
+\end{DoxyCode}

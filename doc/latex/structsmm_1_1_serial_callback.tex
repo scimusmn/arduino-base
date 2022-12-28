@@ -1,0 +1,88 @@
+\hypertarget{structsmm_1_1_serial_callback}{}\doxysection{smm\+::Serial\+Callback Struct Reference}
+\label{structsmm_1_1_serial_callback}\index{smm::SerialCallback@{smm::SerialCallback}}
+
+
+Internal helper structure for storing serial callback functions.  
+
+
+
+
+{\ttfamily \#include $<$smm.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_a7376c4f82c0b742e39c6729760635e78}\label{structsmm_1_1_serial_callback_a7376c4f82c0b742e39c6729760635e78}} 
+enum \{ \newline
+{\bfseries N\+O\+NE}, 
+{\bfseries V\+O\+I\+D\+\_\+T}, 
+{\bfseries S\+T\+R\+I\+NG}, 
+{\bfseries I\+NT}, 
+\newline
+{\bfseries F\+L\+O\+AT}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_af689d77cea478779c79366db2546af57}\label{structsmm_1_1_serial_callback_af689d77cea478779c79366db2546af57}} 
+{\bfseries Serial\+Callback} (void\+Callback cb)
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_afc5597bd01cbeade6ea9e31ce3224177}\label{structsmm_1_1_serial_callback_afc5597bd01cbeade6ea9e31ce3224177}} 
+{\bfseries Serial\+Callback} (string\+Callback cb)
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_a03b78f044cf52b09297174cc808836b0}\label{structsmm_1_1_serial_callback_a03b78f044cf52b09297174cc808836b0}} 
+{\bfseries Serial\+Callback} (int\+Callback cb)
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_aa031b033846e0fa5dec05b4a71ef91a7}\label{structsmm_1_1_serial_callback_aa031b033846e0fa5dec05b4a71ef91a7}} 
+{\bfseries Serial\+Callback} (float\+Callback cb)
+\item 
+void \mbox{\hyperlink{structsmm_1_1_serial_callback_adbc8fccce5f4ab38aac60744dd0dd61a}{operator()}} (const char $\ast$value)
+\begin{DoxyCompactList}\small\item\em Call the underlying callback. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_a3dd8d19b960a43a626facf280ffd349d}\label{structsmm_1_1_serial_callback_a3dd8d19b960a43a626facf280ffd349d}} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>voidCallback {\bfseries v}\\
+\>stringCallback {\bfseries s}\\
+\>intCallback {\bfseries i}\\
+\>floatCallback {\bfseries f}\\
+\} {\bfseries callback}\\
+
+\end{tabbing}\item 
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_a0658f7b83a182f68a824809aa5a03459}\label{structsmm_1_1_serial_callback_a0658f7b83a182f68a824809aa5a03459}} 
+enum smm\+::\+Serial\+Callback\+:: \{ ... \}  {\bfseries type}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Internal helper structure for storing serial callback functions. 
+
+This structure abstracts the different callbacks so that one interface can call many types of function seamlessly. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structsmm_1_1_serial_callback_adbc8fccce5f4ab38aac60744dd0dd61a}\label{structsmm_1_1_serial_callback_adbc8fccce5f4ab38aac60744dd0dd61a}} 
+\index{smm::SerialCallback@{smm::SerialCallback}!operator()@{operator()}}
+\index{operator()@{operator()}!smm::SerialCallback@{smm::SerialCallback}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Callback\+::operator() (\begin{DoxyParamCaption}\item[{const char $\ast$}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Call the underlying callback. 
+
+The value of {\ttfamily value} will be converted from a string into whatever type is appropriate for the underlying function pointer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Value to pass to the callback function. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/\mbox{\hyperlink{smm_8h}{smm.\+h}}\end{DoxyCompactItemize}

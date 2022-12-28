@@ -1,0 +1,46 @@
+\hypertarget{classsmm_1_1_button}{}\doxysection{smm\+::Button Class Reference}
+\label{classsmm_1_1_button}\index{smm::Button@{smm::Button}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_afdfded0c2b2347703e93888a9e997b1f}\label{classsmm_1_1_button_afdfded0c2b2347703e93888a9e997b1f}} 
+{\bfseries Button} (int pin, unsigned long debounce\+Time=5, bool inverted=false)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a1de08500948f0e2e055845602cd50534}\label{classsmm_1_1_button_a1de08500948f0e2e055845602cd50534}} 
+void {\bfseries add\+Button} (\mbox{\hyperlink{classsmm_1_1_button}{Button}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_af14ecf670314c81c5488abea0127fce4}\label{classsmm_1_1_button_af14ecf670314c81c5488abea0127fce4}} 
+void {\bfseries on\+Change} (int state)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a6c663119bed180cd6fd4342cbf139324}\label{classsmm_1_1_button_a6c663119bed180cd6fd4342cbf139324}} 
+virtual void {\bfseries on\+Press} ()=0
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a5699829059b2e1b63f7ac72576edb44d}\label{classsmm_1_1_button_a5699829059b2e1b63f7ac72576edb44d}} 
+virtual void {\bfseries on\+Release} ()=0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_aa92ad439f935ee3464bda2df53880c9a}\label{classsmm_1_1_button_aa92ad439f935ee3464bda2df53880c9a}} 
+volatile \mbox{\hyperlink{classsmm_1_1_button}{Button}} $\ast$ {\bfseries m\+\_\+next}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a7192a1413ba28c87aa4a965cda475cb4}\label{classsmm_1_1_button_a7192a1413ba28c87aa4a965cda475cb4}} 
+volatile uint8\+\_\+t {\bfseries m\+\_\+mask}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_ae8ef76fffdfbacfc5c6f85726ff2c7c8}\label{classsmm_1_1_button_ae8ef76fffdfbacfc5c6f85726ff2c7c8}} 
+volatile unsigned long {\bfseries m\+\_\+debounce\+Time}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a82128dab385c57c6ea69b2e4b926ad34}\label{classsmm_1_1_button_a82128dab385c57c6ea69b2e4b926ad34}} 
+volatile unsigned long {\bfseries m\+\_\+last\+Time}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_a737183ec5146a6b6a049443a920eb735}\label{classsmm_1_1_button_a737183ec5146a6b6a049443a920eb735}} 
+volatile bool {\bfseries m\+\_\+inverted}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_button_ac53e325bfe09d09813a6549858edfc41}\label{classsmm_1_1_button_ac53e325bfe09d09813a6549858edfc41}} 
+volatile bool {\bfseries m\+\_\+pressed}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/\mbox{\hyperlink{smm_8h}{smm.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,189 @@
+\hypertarget{classsmm_1_1map}{}\doxysection{smm\+::map$<$ Key, T, sz $>$ Class Template Reference}
+\label{classsmm_1_1map}\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+
+
+a stack-\/allocation only map datatype  
+
+
+
+
+{\ttfamily \#include $<$smm.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+T \& \mbox{\hyperlink{classsmm_1_1map_af4125a88f7f69abe7babde16f8d2c1e6}{operator\mbox{[}$\,$\mbox{]}}} (const Key \&key)
+\begin{DoxyCompactList}\small\item\em get a reference to an element via a key \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1map_a3328953acdf04843a13b3d847edde1d1}{contains}} (const Key \&key)
+\begin{DoxyCompactList}\small\item\em check if a key is present in the map \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map_a77b4d219e8fe69ab4ccf5f695a01a136}{erase}} (const Key \&key)
+\begin{DoxyCompactList}\small\item\em remove a key-\/value pair from the map \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1map_ac0f5b41cddafe06fabf61d424ee21385}{empty}} ()
+\begin{DoxyCompactList}\small\item\em check if the map is empty \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map_a6c3f5184e5ec9c598d2f067896ed6091}{size}} ()
+\begin{DoxyCompactList}\small\item\em get the number of key-\/value pairs in the map \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map_a9ed1e54d5043d00949b8d4a56558ffea}{max\+\_\+size}} ()
+\begin{DoxyCompactList}\small\item\em get the maximum size of the map \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1map_a18ff8420481963347af9b9371ff275ad}{full}} ()
+\begin{DoxyCompactList}\small\item\em check if the map is full \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1map_a76d3f4540428805e70b46967151f96e8}\label{classsmm_1_1map_a76d3f4540428805e70b46967151f96e8}} 
+int {\bfseries get\+\_\+index} (const Key \&key)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1map_aec260f618ef02233bd1b86e44aafabe5}\label{classsmm_1_1map_aec260f618ef02233bd1b86e44aafabe5}} 
+size\+\_\+t {\bfseries m\+\_\+size}
+\item 
+\mbox{\Hypertarget{classsmm_1_1map_a58e7fbde3d4f42c3c6eb09a5cc73af83}\label{classsmm_1_1map_a58e7fbde3d4f42c3c6eb09a5cc73af83}} 
+Key {\bfseries m\+\_\+key} \mbox{[}sz\mbox{]}
+\item 
+\mbox{\Hypertarget{classsmm_1_1map_a27ba02891dcf7727418e5d5554897d6d}\label{classsmm_1_1map_a27ba02891dcf7727418e5d5554897d6d}} 
+T {\bfseries m\+\_\+value} \mbox{[}sz\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename Key, typename T, size\+\_\+t sz$>$\newline
+class smm\+::map$<$ Key, T, sz $>$}
+
+a stack-\/allocation only map datatype 
+
+This class is intended for small (n$<$50) collections, and the algorithms in it reflect that. They do nothing fancy and they perform precisely zero heap allocation.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Key} & The datatype to use for keys \\
+\hline
+{\em T} & The datatype to use for values \\
+\hline
+{\em sz} & The maximum number of elements the map can hold \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsmm_1_1map_a3328953acdf04843a13b3d847edde1d1}\label{classsmm_1_1map_a3328953acdf04843a13b3d847edde1d1}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!contains@{contains}}
+\index{contains@{contains}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+bool \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::contains (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+check if a key is present in the map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to check \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if there is an associated value in the map, and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1map_ac0f5b41cddafe06fabf61d424ee21385}\label{classsmm_1_1map_ac0f5b41cddafe06fabf61d424ee21385}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!empty@{empty}}
+\index{empty@{empty}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+bool \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+check if the map is empty 
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if there are no key-\/value pairs in the map and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1map_a77b4d219e8fe69ab4ccf5f695a01a136}\label{classsmm_1_1map_a77b4d219e8fe69ab4ccf5f695a01a136}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!erase@{erase}}
+\index{erase@{erase}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{erase()}{erase()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::erase (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+remove a key-\/value pair from the map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & Key identifying the pair to remove \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if a pair was removed and 0 otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1map_a18ff8420481963347af9b9371ff275ad}\label{classsmm_1_1map_a18ff8420481963347af9b9371ff275ad}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!full@{full}}
+\index{full@{full}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{full()}{full()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+bool \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::full (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+check if the map is full 
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the number of key-\/value pairs is equal to the maximum and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1map_a9ed1e54d5043d00949b8d4a56558ffea}\label{classsmm_1_1map_a9ed1e54d5043d00949b8d4a56558ffea}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!max\_size@{max\_size}}
+\index{max\_size@{max\_size}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{max\_size()}{max\_size()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::max\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the maximum size of the map 
+
+\begin{DoxyReturn}{Returns}
+The maximum allowed numver of key-\/value pairs for this map. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1map_af4125a88f7f69abe7babde16f8d2c1e6}\label{classsmm_1_1map_af4125a88f7f69abe7babde16f8d2c1e6}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+T\& \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const Key \&}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get a reference to an element via a key 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to get an associated value for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If the key is already present, a reference to the existing value is returned. Otherwise, a reference to a new element will be returned.
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+When a map is full, the return value of this function for new keys is undefined! 
+\end{DoxyWarning}
+\mbox{\Hypertarget{classsmm_1_1map_a6c3f5184e5ec9c598d2f067896ed6091}\label{classsmm_1_1map_a6c3f5184e5ec9c598d2f067896ed6091}} 
+\index{smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}!size@{size}}
+\index{size@{size}!smm::map$<$ Key, T, sz $>$@{smm::map$<$ Key, T, sz $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename Key , typename T , size\+\_\+t sz$>$ \\
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1map}{smm\+::map}}$<$ Key, T, sz $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the number of key-\/value pairs in the map 
+
+\begin{DoxyReturn}{Returns}
+The number of key-\/value pairs in the map 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/\mbox{\hyperlink{smm_8h}{smm.\+h}}\end{DoxyCompactItemize}

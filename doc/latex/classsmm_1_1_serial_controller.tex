@@ -1,0 +1,213 @@
+\hypertarget{classsmm_1_1_serial_controller}{}\doxysection{smm\+::Serial\+Controller Class Reference}
+\label{classsmm_1_1_serial_controller}\index{smm::SerialController@{smm::SerialController}}
+
+
+human-\/ and machine-\/readable serial communication protocol  
+
+
+
+
+{\ttfamily \#include $<$smm.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a3105f01c8a5336e2aee76aef386ac911}\label{classsmm_1_1_serial_controller_a3105f01c8a5336e2aee76aef386ac911}} 
+typedef \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ S\+M\+M\+\_\+\+S\+E\+R\+I\+A\+L\+\_\+\+K\+E\+Y\+\_\+\+L\+EN $>$ {\bfseries key\+\_\+string}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a60e6153133b5b6cd649c13bea369b3e7}\label{classsmm_1_1_serial_controller_a60e6153133b5b6cd649c13bea369b3e7}} 
+typedef \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ S\+M\+M\+\_\+\+S\+E\+R\+I\+A\+L\+\_\+\+V\+A\+L\+\_\+\+L\+EN $>$ {\bfseries val\+\_\+string}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a30e76c5a9a2f8c3bb8f70fb498d598b5}\label{classsmm_1_1_serial_controller_a30e76c5a9a2f8c3bb8f70fb498d598b5}} 
+void {\bfseries eat\+Character} (char c)
+\item 
+void \mbox{\hyperlink{classsmm_1_1_serial_controller_af9484219fd13bdf66983681e06e15686}{begin}} (unsigned long baudrate=115200)
+\begin{DoxyCompactList}\small\item\em initialize serial communication \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1_serial_controller_a029ecd4ca8ed234a5033363ceda02f5b}{update}} ()
+\begin{DoxyCompactList}\small\item\em check for and respond to incoming communication \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1_serial_controller_a854eb07ced91f3cb87512fc217f7df5d}{send}} (const char $\ast$key, char $\ast$value)
+\begin{DoxyCompactList}\small\item\em send a string-\/valued pair \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1_serial_controller_a44f049112f1247841f003aada67f5697}{send}} (const char $\ast$key, int value)
+\begin{DoxyCompactList}\small\item\em send an integer-\/valued pair \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1_serial_controller_abdcb0264e7dbecc836bd50965a3b4a6e}{send}} (const char $\ast$key, float value)
+\begin{DoxyCompactList}\small\item\em send an float-\/valued pair \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a15830e7863bbd323682b3195be2db8de}\label{classsmm_1_1_serial_controller_a15830e7863bbd323682b3195be2db8de}} 
+static bool {\bfseries Register\+Callback} (const char $\ast$name, \mbox{\hyperlink{structsmm_1_1_serial_callback}{Serial\+Callback}} $\ast$cb)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a20d358a7310d589a55cdcd100d756c94}\label{classsmm_1_1_serial_controller_a20d358a7310d589a55cdcd100d756c94}} 
+static void {\bfseries Execute\+Callback} (const char $\ast$key, const char $\ast$value)
+\item 
+static size\+\_\+t \mbox{\hyperlink{classsmm_1_1_serial_controller_a6942fc40838ec2a9a53fdea5dd93f2da}{num\+\_\+callbacks}} ()
+\begin{DoxyCompactList}\small\item\em get the number of callbacks currently registered \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_afdcbe4371774fce1e599f7528e27c7fd}\label{classsmm_1_1_serial_controller_afdcbe4371774fce1e599f7528e27c7fd}} 
+enum \{ {\bfseries W\+A\+I\+T\+\_\+\+F\+O\+R\+\_\+\+P\+A\+C\+K\+ET}, 
+{\bfseries R\+E\+A\+D\+\_\+\+K\+EY}, 
+{\bfseries R\+E\+A\+D\+\_\+\+V\+AL}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a9d35826c56711f338eab6557e88dd85a}\label{classsmm_1_1_serial_controller_a9d35826c56711f338eab6557e88dd85a}} 
+void {\bfseries eat\+Packet\+Char} (char c)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_aeb2ed3b8694abf4f5d27461e29e21901}\label{classsmm_1_1_serial_controller_aeb2ed3b8694abf4f5d27461e29e21901}} 
+void {\bfseries eat\+Key\+Char} (char c)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a2d37caf8ae238e52d411c0e9f5e9cd57}\label{classsmm_1_1_serial_controller_a2d37caf8ae238e52d411c0e9f5e9cd57}} 
+void {\bfseries eat\+Val\+Char} (char c)
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a0b2cbaebe55d0c6220091812982b9164}\label{classsmm_1_1_serial_controller_a0b2cbaebe55d0c6220091812982b9164}} 
+void {\bfseries reset} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a635201c50650b2472fa738e834b10660}\label{classsmm_1_1_serial_controller_a635201c50650b2472fa738e834b10660}} 
+static int {\bfseries Find\+Callback} (const char $\ast$k)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a37666a724d9d95e266a8672049686a27}\label{classsmm_1_1_serial_controller_a37666a724d9d95e266a8672049686a27}} 
+\mbox{\hyperlink{classsmm_1_1string}{key\+\_\+string}} {\bfseries m\+\_\+key}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_ad1682d767f99caea6441d547f84e6350}\label{classsmm_1_1_serial_controller_ad1682d767f99caea6441d547f84e6350}} 
+unsigned int {\bfseries m\+\_\+key\+Overflow}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_abc720c92df2549425028b2aac1881a6d}\label{classsmm_1_1_serial_controller_abc720c92df2549425028b2aac1881a6d}} 
+\mbox{\hyperlink{classsmm_1_1string}{val\+\_\+string}} {\bfseries m\+\_\+val}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a5801deda6d58083ff86e8b80a8837c69}\label{classsmm_1_1_serial_controller_a5801deda6d58083ff86e8b80a8837c69}} 
+unsigned int {\bfseries m\+\_\+val\+Overflow}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a1db40ba94d2a65d1d6e5f8d7ed12d97f}\label{classsmm_1_1_serial_controller_a1db40ba94d2a65d1d6e5f8d7ed12d97f}} 
+enum smm\+::\+Serial\+Controller\+:: \{ ... \}  {\bfseries state}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_ab4f727c9166651321518148b4f86d8c3}\label{classsmm_1_1_serial_controller_ab4f727c9166651321518148b4f86d8c3}} 
+static int {\bfseries s\+\_\+num\+Callbacks} = 0
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a65956ea3071c4304a99ecc9f72e256e4}\label{classsmm_1_1_serial_controller_a65956ea3071c4304a99ecc9f72e256e4}} 
+static const char $\ast$ {\bfseries s\+\_\+key} \mbox{[}S\+M\+M\+\_\+\+S\+E\+R\+I\+A\+L\+\_\+\+M\+A\+X\+\_\+\+C\+A\+L\+L\+B\+A\+C\+KS\mbox{]}
+\item 
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a2149ae3c4477f4bcaf028811c39af616}\label{classsmm_1_1_serial_controller_a2149ae3c4477f4bcaf028811c39af616}} 
+static \mbox{\hyperlink{structsmm_1_1_serial_callback}{Serial\+Callback}} $\ast$ {\bfseries s\+\_\+cb} \mbox{[}S\+M\+M\+\_\+\+S\+E\+R\+I\+A\+L\+\_\+\+M\+A\+X\+\_\+\+C\+A\+L\+L\+B\+A\+C\+KS\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+human-\/ and machine-\/readable serial communication protocol 
+
+A global instance of this class named {\ttfamily Smm\+Serial} is included in {\ttfamily S\+M\+M\+\_\+\+I\+M\+P\+L\+E\+M\+E\+N\+T\+A\+T\+I\+ON}, so in most circumstances you should not need to create your own.
+
+You should create and register callbacks for your \mbox{\hyperlink{classsmm_1_1_serial_controller}{Serial\+Controller}} with the \mbox{\hyperlink{smm_8h_affae791253366d30d23021a0aba90e0e}{S\+E\+R\+I\+A\+L\+\_\+\+C\+A\+L\+L\+B\+A\+CK }} macro.
+
+If you don\textquotesingle{}t need this class, you can disable it by defining the macro {\ttfamily S\+M\+M\+\_\+\+N\+O\+\_\+\+S\+E\+R\+I\+A\+L\+\_\+\+C\+O\+N\+T\+R\+O\+L\+L\+ER} before including {\ttfamily \mbox{\hyperlink{smm_8h}{smm.\+h}}}. This may save you memory because it uses static variables. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_af9484219fd13bdf66983681e06e15686}\label{classsmm_1_1_serial_controller_af9484219fd13bdf66983681e06e15686}} 
+\index{smm::SerialController@{smm::SerialController}!begin@{begin}}
+\index{begin@{begin}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Controller\+::begin (\begin{DoxyParamCaption}\item[{unsigned long}]{baudrate = {\ttfamily 115200} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+initialize serial communication 
+
+
+\begin{DoxyParams}{Parameters}
+{\em baudrate} & The baudrate to use when communicating. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a6942fc40838ec2a9a53fdea5dd93f2da}\label{classsmm_1_1_serial_controller_a6942fc40838ec2a9a53fdea5dd93f2da}} 
+\index{smm::SerialController@{smm::SerialController}!num\_callbacks@{num\_callbacks}}
+\index{num\_callbacks@{num\_callbacks}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{num\_callbacks()}{num\_callbacks()}}
+{\footnotesize\ttfamily static size\+\_\+t smm\+::\+Serial\+Controller\+::num\+\_\+callbacks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+get the number of callbacks currently registered 
+
+\begin{DoxyReturn}{Returns}
+The number of callbacks currently registered 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a854eb07ced91f3cb87512fc217f7df5d}\label{classsmm_1_1_serial_controller_a854eb07ced91f3cb87512fc217f7df5d}} 
+\index{smm::SerialController@{smm::SerialController}!send@{send}}
+\index{send@{send}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Controller\+::send (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{char $\ast$}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+send a string-\/valued pair 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The string key for the message \\
+\hline
+{\em value} & The string value for the message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_abdcb0264e7dbecc836bd50965a3b4a6e}\label{classsmm_1_1_serial_controller_abdcb0264e7dbecc836bd50965a3b4a6e}} 
+\index{smm::SerialController@{smm::SerialController}!send@{send}}
+\index{send@{send}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Controller\+::send (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{float}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+send an float-\/valued pair 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The string key for the message \\
+\hline
+{\em value} & The float value for the message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a44f049112f1247841f003aada67f5697}\label{classsmm_1_1_serial_controller_a44f049112f1247841f003aada67f5697}} 
+\index{smm::SerialController@{smm::SerialController}!send@{send}}
+\index{send@{send}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Controller\+::send (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{int}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+send an integer-\/valued pair 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The string key for the message \\
+\hline
+{\em value} & The integer value for the message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1_serial_controller_a029ecd4ca8ed234a5033363ceda02f5b}\label{classsmm_1_1_serial_controller_a029ecd4ca8ed234a5033363ceda02f5b}} 
+\index{smm::SerialController@{smm::SerialController}!update@{update}}
+\index{update@{update}!smm::SerialController@{smm::SerialController}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void smm\+::\+Serial\+Controller\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+check for and respond to incoming communication 
+
+This function should be called fairly frequently. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/\mbox{\hyperlink{smm_8h}{smm.\+h}}\end{DoxyCompactItemize}

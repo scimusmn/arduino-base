@@ -1,3 +1,4 @@
+/** @file smm.h */
 #pragma once
 
 
@@ -17,6 +18,15 @@ namespace smm
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
+/** @brief a stack-allocation only map datatype
+ *
+ * This class is intended for small (n<50) collections, and the algorithms in it
+ * reflect that. They do nothing fancy and they perform precisely zero heap allocation.
+ *
+ * @tparam Key  The datatype to use for keys
+ * @tparam T    The datatype to use for values
+ * @tparam sz   The maximum number of elements the map can hold
+ */
 template <typename Key, typename T, size_t sz>
 class map {
 	protected:
@@ -42,7 +52,14 @@ class map {
 		m_size = 0;
 	}
 
-
+	/** @brief get a reference to an element via a key
+	 *
+	 * @param key  The key to get an associated value for
+	 * @returns  If the key is already present, a reference to the existing value is returned.
+	 *           Otherwise, a reference to a new element will be returned.
+	 *
+	 * @warning  When a map is full, the return value of this function for new keys is undefined!
+	 */
 	T& operator[](const Key& key) {
 		int i = get_index(key);
 		if (i < 0) {
@@ -66,7 +83,11 @@ class map {
 		}
 	}
 
-
+	/** @brief check if a key is present in the map
+	 *
+	 * @param key  The key to check
+	 * @returns  `true` if there is an associated value in the map, and `false` otherwise.
+	 */
 	bool contains(const Key& key) {
 		int i = get_index(key);
 		if (i < 0) {
@@ -78,7 +99,11 @@ class map {
 		}
 	}
 
-
+	/** @brief remove a key-value pair from the map
+	 *
+	 * @param key  Key identifying the pair to remove
+	 * @returns  1 if a pair was removed and 0 otherwise.
+	 */
 	size_t erase(const Key& key) {
 		int i = get_index(key);
 		if (i < 0) {
@@ -94,19 +119,34 @@ class map {
 		}
 	}
 
-
+	/** @brief check if the map is empty
+	 *
+	 * @returns  `true` if there are no key-value pairs in the map and `false` otherwise.
+	 */
 	bool empty() {
 		return m_size == 0;
 	}
 
+	/** @brief get the number of key-value pairs in the map
+	 *
+	 * @returns  The number of key-value pairs in the map
+	 */
 	size_t size() {
 		return m_size;
 	}
 
+	/** @brief get the maximum size of the map
+	 *
+	 * @returns  The maximum allowed numver of key-value pairs for this map.
+	 */
 	size_t max_size() {
 		return sz;
 	}
 
+	/** @brief check if the map is full
+	 *
+	 * @returns  `true` if the number of key-value pairs is equal to the maximum and `false` otherwise.
+	 */
 	bool full() {
 		return m_size == sz;
 	}
@@ -120,29 +160,61 @@ class map {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
+/** @brief a stack-only string class
+ *
+ * @tparam sz  The maximum size, including terminating null character, of the string
+ */
 template <size_t sz>
 class string {
 	protected:
 	char m_str[sz];
 
 	public:
+	/** @brief (constructor)
+	 *
+	 * Create an empty string. Guaranteed to be null-terminated.
+	 */
 	string() {
 		memset(m_str, 0, sz);
 	}
 
+	/** @brief (constructor)
+	 *
+	 * Set the string to an initial value. If the value is too long, it will be truncated
+	 * and null-terminated.
+	 *
+	 * @param s  The data to copy into the new string object.
+	 */
 	string(const char *s) {
 		memset(m_str, 0, sz);
 		operator=(s);
 	}
 
+	/** @brief set the string value
+	 *
+	 * If the value is too long, it will be truncated and null-terminated.
+	 *
+	 * @param s  The value to set the string to.
+	 */
 	void operator=(const char* s) {
 		strncpy(m_str, s, sz-1);
 	}
 
+	/** @brief get a C-style representation of the string
+	 *
+	 * @returns  A `const char *` pointer to the internal buffer of the string.
+	 */
 	const char *c_str() {
 		return reinterpret_cast<const char*>(m_str);
 	}
 
+	/** @brief append a character to the string
+	 *
+	 * If this would cause the string to become too long to be null-terminated within
+	 * the space available, this function will do nothing.
+	 *
+	 * @param ch  The character to append
+	 */
 	void push_back(char ch) {
 		if (size() + 1 > sz) {
 			// not enough space to store an additional character
@@ -151,19 +223,54 @@ class string {
 		strncat(m_str, &ch, 1);
 	}
 
+	/** @brief get the length of the string
+	 *
+	 * @returns  The total length of the string, including null terminator.
+	 */
 	size_t size() {
 		return strlen(m_str) + 1;
 	}
 
+	/** @brief get the maximum size of the string
+	 *
+	 * @returns  The maximum possible size of the string, including null terminator.
+	 */
 	size_t max_size() {
 		return sz;
 	}
 
+	/** @brief compare string equality
+	 *
+	 * @param lhs  An `smm::string` object
+	 * @param rhs  A C-style string
+	 * @returns  `true` if the two strings are exactly equal, and `false` otherwise.
+	 */
 	friend bool operator==(const string& lhs, const char *rhs) {
 		return strcmp(lhs.m_str, rhs) == 0;
 	}
+
+	/** @brief compare string inequality
+	 *
+	 * @param lhs  An `smm::string` object
+	 * @param rhs  A C-style string
+	 * @returns  `true` if the two strings are not equal, and `false` otherwise.
+	 */
 	friend bool operator!=(const string& lhs, const char *rhs) { return !(lhs == rhs); }
+
+	/** @brief compare string equality
+	 *
+	 * @param lhs  An `smm::string` object
+	 * @param rhs  Another `smm::string` object
+	 * @returns  `true` if the two strings contain identical data, and `false` otherwise.
+	 */
 	friend bool operator==(const string& lhs, const string& rhs) { return lhs == rhs.m_str; }
+
+	/** @brief compare string inequality
+	 *
+	 * @param lhs  An `smm::string` object
+	 * @param rhs  Another `smm::string` object
+	 * @returns  `true` if the two strings do not contain identical data, and `false` otherwise.
+	 */
 	friend bool operator!=(const string& lhs, const string& rhs) { return !(lhs == rhs.m_str); }
 };
 
@@ -195,6 +302,11 @@ typedef void (*intCallback)(int);
 typedef void (*floatCallback)(float);
 
 
+/** @brief Internal helper structure for storing serial callback functions
+ *
+ * This structure abstracts the different callbacks so that one interface
+ * can call many types of function seamlessly.
+ */
 struct SerialCallback {
 	union {
 		voidCallback v;
@@ -213,6 +325,13 @@ struct SerialCallback {
 	SerialCallback(intCallback cb)    { type=INT;    callback.i=cb; }
 	SerialCallback(floatCallback cb)  { type=FLOAT;  callback.f=cb; }
 
+	/** @brief Call the underlying callback
+	 *
+	 * The value of `value` will be converted from a string into whatever
+	 * type is appropriate for the underlying function pointer.
+	 *
+	 * @param value  Value to pass to the callback function.
+	 */
 	void operator()(const char *value) {
 		switch(type) {
 		case VOID_T:
@@ -239,6 +358,16 @@ struct SerialCallback {
 
 
 #ifndef SMM_NO_SERIAL_CONTROLLER
+/** @brief human- and machine-readable serial communication protocol
+ *
+ * A global instance of this class named `SmmSerial` is included in `SMM_IMPLEMENTATION`,
+ * so in most circumstances you should not need to create your own.
+ *
+ * You should create and register callbacks for your SerialController with the @link SERIAL_CALLBACK SERIAL_CALLBACK @endlink macro.
+ *
+ * If you don't need this class, you can disable it by defining the macro `SMM_NO_SERIAL_CONTROLLER`
+ * before including `smm.h`. This may save you memory because it uses static variables.
+ */
 class SerialController {
 	public:
 	typedef string<SMM_SERIAL_KEY_LEN> key_string;
@@ -392,21 +521,36 @@ class SerialController {
 		}
 	}
 
+	/** @brief get the number of callbacks currently registered
+	 * @returns  The number of callbacks currently registered
+	 */
 	static size_t num_callbacks() {
 		return s_numCallbacks;
 	}
 
-
+	/** @brief initialize serial communication
+	 *
+	 * @param baudrate  The baudrate to use when communicating.
+	 */
 	void begin(unsigned long baudrate=115200) {
 		Serial.begin(115200);
 	}
 
+	/** @brief check for and respond to incoming communication 
+	 *
+	 * This function should be called fairly frequently.
+	 */
 	void update() {
 		while (Serial.available()) {
 			eatCharacter(Serial.read());
 		}
 	}
 
+	/** @brief send a string-valued pair
+	 *
+	 * @param key  The string key for the message
+	 * @param value  The string value for the message
+	 */
 	void send(const char *key, char *value) {
 		Serial.print("{");
 		Serial.print(key);
@@ -415,12 +559,22 @@ class SerialController {
 		Serial.println("}");
 	}
 
+	/** @brief send an integer-valued pair
+	 *
+	 * @param key  The string key for the message
+	 * @param value  The integer value for the message
+	 */
 	void send(const char *key, int value) {
 		char v[SMM_SERIAL_VAL_LEN];
 		snprintf(v, SMM_SERIAL_VAL_LEN, "%d", value);
 		send(key, v);
 	}
 
+	/** @brief send an float-valued pair
+	 *
+	 * @param key  The string key for the message
+	 * @param value  The float value for the message
+	 */
 	void send(const char *key, float value) {
 		char v[SMM_SERIAL_VAL_LEN];
 		snprintf(v, SMM_SERIAL_VAL_LEN, "%f", value);
@@ -608,6 +762,32 @@ void f(arg); \
 SERIAL_CALLBACK_REGISTER(SERIAL_ANONYMOUS(SERIAL_CALLBACK_CB_), SERIAL_ANONYMOUS(SERIAL_CALLBACK_VAR_), f, name); \
 void f(arg)
 
+/** @brief Create a new serial callback
+ *
+ * The basic usage of this macro is like this:
+ * ```
+ * SERIAL_CALLBACK("my-callback", const char *str) {
+ *     Serial.print("received string '");
+ *     Serial.print(str);
+ *     Serial.println("'");
+ * }
+ * ```
+ *
+ * There are four kinds of callbacks: void, string (shown above), int, and float. To define them,
+ * you simply need to provide the appropriate datatype in the `arg` field. Note that for void
+ * callbacks, you still need to put a `void` in the arg field, like this:
+ *
+ * ```
+ * SERIAL_CALLBACK("some-void-callback", void) {
+ *     // do something
+ * }
+ * ```
+ *
+ * This macro is *self-registering*. That is, when you create a serial callback this way, it is now
+ * completely set up with `SmmSerial` and will respond to incoming messages on the name you gave; 
+ * all you have to do is call `SmmSerial.begin()` in your setup function and `SmmSerial.update()` in 
+ * your loop function.
+ */
 #define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
 
 

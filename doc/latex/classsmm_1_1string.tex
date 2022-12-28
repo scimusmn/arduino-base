@@ -1,0 +1,263 @@
+\hypertarget{classsmm_1_1string}{}\doxysection{smm\+::string$<$ sz $>$ Class Template Reference}
+\label{classsmm_1_1string}\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+
+
+a stack-\/only string class  
+
+
+
+
+{\ttfamily \#include $<$smm.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsmm_1_1string_a3c496253ecd276dabba14a895d9a6fa2}{string}} ()
+\begin{DoxyCompactList}\small\item\em (constructor) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsmm_1_1string_a1df1dd50575c67dd7c4128d9ec1d0a8d}{string}} (const char $\ast$s)
+\begin{DoxyCompactList}\small\item\em (constructor) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1string_a06190e66742f3d107f5c6419116244c8}{operator=}} (const char $\ast$s)
+\begin{DoxyCompactList}\small\item\em set the string value \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{classsmm_1_1string_a5e2aa4b2a16e2016defb14c8f3bbdbfd}{c\+\_\+str}} ()
+\begin{DoxyCompactList}\small\item\em get a C-\/style representation of the string \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsmm_1_1string_aec4d932b10c8030360d9f6371429262a}{push\+\_\+back}} (char ch)
+\begin{DoxyCompactList}\small\item\em append a character to the string \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1string_acb0c0ee04a99fb9c3f337b9b44591a22}{size}} ()
+\begin{DoxyCompactList}\small\item\em get the length of the string \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1string_af9e57c0f9488d4441eccb38ebbaf637e}{max\+\_\+size}} ()
+\begin{DoxyCompactList}\small\item\em get the maximum size of the string \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsmm_1_1string_aade40e1c80d5ef0f058f3a588795b9f6}\label{classsmm_1_1string_aade40e1c80d5ef0f058f3a588795b9f6}} 
+char {\bfseries m\+\_\+str} \mbox{[}sz\mbox{]}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classsmm_1_1string_a6d649e6a816a58dd8a7845bde5d6dee8}{operator==}} (const \mbox{\hyperlink{classsmm_1_1string}{string}} \&lhs, const char $\ast$rhs)
+\begin{DoxyCompactList}\small\item\em compare string equality \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1string_ac7b3a644481eef0b52ad1a7331fe4f3d}{operator!=}} (const \mbox{\hyperlink{classsmm_1_1string}{string}} \&lhs, const char $\ast$rhs)
+\begin{DoxyCompactList}\small\item\em compare string inequality \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1string_a747feeacef8c26d89dafe7a9e32e2439}{operator==}} (const \mbox{\hyperlink{classsmm_1_1string}{string}} \&lhs, const \mbox{\hyperlink{classsmm_1_1string}{string}} \&rhs)
+\begin{DoxyCompactList}\small\item\em compare string equality \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsmm_1_1string_ab8b27a889dc5ffef4a9cc7a1d1905b9c}{operator!=}} (const \mbox{\hyperlink{classsmm_1_1string}{string}} \&lhs, const \mbox{\hyperlink{classsmm_1_1string}{string}} \&rhs)
+\begin{DoxyCompactList}\small\item\em compare string inequality \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$size\+\_\+t sz$>$\newline
+class smm\+::string$<$ sz $>$}
+
+a stack-\/only string class 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em sz} & The maximum size, including terminating null character, of the string \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsmm_1_1string_a3c496253ecd276dabba14a895d9a6fa2}\label{classsmm_1_1string_a3c496253ecd276dabba14a895d9a6fa2}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!string@{string}}
+\index{string@{string}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{string()}{string()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+\mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::\mbox{\hyperlink{classsmm_1_1string}{string}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+(constructor) 
+
+Create an empty string. Guaranteed to be null-\/terminated. \mbox{\Hypertarget{classsmm_1_1string_a1df1dd50575c67dd7c4128d9ec1d0a8d}\label{classsmm_1_1string_a1df1dd50575c67dd7c4128d9ec1d0a8d}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!string@{string}}
+\index{string@{string}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{string()}{string()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+\mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::\mbox{\hyperlink{classsmm_1_1string}{string}} (\begin{DoxyParamCaption}\item[{const char $\ast$}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+(constructor) 
+
+Set the string to an initial value. If the value is too long, it will be truncated and null-\/terminated.
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & The data to copy into the new string object. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsmm_1_1string_a5e2aa4b2a16e2016defb14c8f3bbdbfd}\label{classsmm_1_1string_a5e2aa4b2a16e2016defb14c8f3bbdbfd}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!c\_str@{c\_str}}
+\index{c\_str@{c\_str}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{c\_str()}{c\_str()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+const char$\ast$ \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::c\+\_\+str (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get a C-\/style representation of the string 
+
+\begin{DoxyReturn}{Returns}
+A {\ttfamily const char $\ast$} pointer to the internal buffer of the string. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1string_af9e57c0f9488d4441eccb38ebbaf637e}\label{classsmm_1_1string_af9e57c0f9488d4441eccb38ebbaf637e}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!max\_size@{max\_size}}
+\index{max\_size@{max\_size}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{max\_size()}{max\_size()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::max\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the maximum size of the string 
+
+\begin{DoxyReturn}{Returns}
+The maximum possible size of the string, including null terminator. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1string_a06190e66742f3d107f5c6419116244c8}\label{classsmm_1_1string_a06190e66742f3d107f5c6419116244c8}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+void \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::operator= (\begin{DoxyParamCaption}\item[{const char $\ast$}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set the string value 
+
+If the value is too long, it will be truncated and null-\/terminated.
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & The value to set the string to. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1string_aec4d932b10c8030360d9f6371429262a}\label{classsmm_1_1string_aec4d932b10c8030360d9f6371429262a}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!push\_back@{push\_back}}
+\index{push\_back@{push\_back}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{push\_back()}{push\_back()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+void \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::push\+\_\+back (\begin{DoxyParamCaption}\item[{char}]{ch }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+append a character to the string 
+
+If this would cause the string to become too long to be null-\/terminated within the space available, this function will do nothing.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ch} & The character to append \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsmm_1_1string_acb0c0ee04a99fb9c3f337b9b44591a22}\label{classsmm_1_1string_acb0c0ee04a99fb9c3f337b9b44591a22}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!size@{size}}
+\index{size@{size}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+size\+\_\+t \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}$<$ sz $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the length of the string 
+
+\begin{DoxyReturn}{Returns}
+The total length of the string, including null terminator. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classsmm_1_1string_ac7b3a644481eef0b52ad1a7331fe4f3d}\label{classsmm_1_1string_ac7b3a644481eef0b52ad1a7331fe4f3d}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator"!=}{operator!=}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+bool operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{lhs,  }\item[{const char $\ast$}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+compare string inequality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & An {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+{\em rhs} & A C-\/style string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the two strings are not equal, and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1string_ab8b27a889dc5ffef4a9cc7a1d1905b9c}\label{classsmm_1_1string_ab8b27a889dc5ffef4a9cc7a1d1905b9c}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator"!=}{operator!=}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+bool operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{lhs,  }\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+compare string inequality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & An {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+{\em rhs} & Another {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the two strings do not contain identical data, and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1string_a6d649e6a816a58dd8a7845bde5d6dee8}\label{classsmm_1_1string_a6d649e6a816a58dd8a7845bde5d6dee8}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!operator==@{operator==}}
+\index{operator==@{operator==}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator==}{operator==}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+bool operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{lhs,  }\item[{const char $\ast$}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+compare string equality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & An {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+{\em rhs} & A C-\/style string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the two strings are exactly equal, and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsmm_1_1string_a747feeacef8c26d89dafe7a9e32e2439}\label{classsmm_1_1string_a747feeacef8c26d89dafe7a9e32e2439}} 
+\index{smm::string$<$ sz $>$@{smm::string$<$ sz $>$}!operator==@{operator==}}
+\index{operator==@{operator==}!smm::string$<$ sz $>$@{smm::string$<$ sz $>$}}
+\doxysubsubsection{\texorpdfstring{operator==}{operator==}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t sz$>$ \\
+bool operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{lhs,  }\item[{const \mbox{\hyperlink{classsmm_1_1string}{string}}$<$ sz $>$ \&}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+compare string equality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & An {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+{\em rhs} & Another {\ttfamily \mbox{\hyperlink{classsmm_1_1string}{smm\+::string}}} object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the two strings contain identical data, and {\ttfamily false} otherwise. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/msys64/home/kaswanson/work/code/arduino-\/base/\+Libraries/\mbox{\hyperlink{smm_8h}{smm.\+h}}\end{DoxyCompactItemize}
