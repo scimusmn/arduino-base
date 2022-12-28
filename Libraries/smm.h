@@ -395,6 +395,37 @@ class SerialController {
 	static size_t num_callbacks() {
 		return s_numCallbacks;
 	}
+
+
+	void begin(unsigned long baudrate=115200) {
+		Serial.begin(115200);
+	}
+
+	void update() {
+		while (Serial.available()) {
+			eatCharacter(Serial.read());
+		}
+	}
+
+	void send(const char *key, char *value) {
+		Serial.print("{");
+		Serial.print(key);
+		Serial.print(":");
+		Serial.print(value);
+		Serial.println("}");
+	}
+
+	void send(const char *key, int value) {
+		char v[SMM_SERIAL_VAL_LEN];
+		snprintf(v, SMM_SERIAL_VAL_LEN, "%d", value);
+		send(key, v);
+	}
+
+	void send(const char *key, float value) {
+		char v[SMM_SERIAL_VAL_LEN];
+		snprintf(v, SMM_SERIAL_VAL_LEN, "%f", value);
+		send(key, v);
+	}
 };
 #endif
 
