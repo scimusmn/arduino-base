@@ -58,3 +58,5 @@ unsigned long millis() {
 int digitalRead(int pin) {
 	return arduino.digitalRead(pin);
 }
+
+Serial_ Serial;

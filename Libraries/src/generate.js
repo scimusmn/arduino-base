@@ -1,4 +1,4 @@
-const { opendirSync, readFileSync } = require('fs');
+const { opendirSync, readFileSync, writeFileSync } = require('fs');
 
 
 function DetermineSourceFiles() {
@@ -19,53 +19,51 @@ function LoadFile(filename) {
 }
 
 
-function GetIncludeSection(source) {
-	const regex = /\/\*\s@INCLUDE\s\*\/([\s\S]*)\/\*\s@HEADER\s\*\//m
+function GetSection(source, section) {
+	const string = `\\/\\*\\s@${section}\\s\\*\\/([\\s\\S]*?)\\/\\*\\s@[A-Z]+\\s\\*\\/`;
+	const regex = new RegExp(string, 'm');
 	const matches = source.match(regex);
 	if (matches) {
-		// first group
+		// return first group
 		return matches[1];
+	} else {
+		return '';
 	}
 }
 
 
 function GetIncludeSet(source) {
-	const section = GetIncludeSection(source);
-	const lines = 
-}
-
-
-function GetHeaderSection(source) {
-	const regex = /\/\*\s@HEADER\s\*\/([\s\S]*)\/\*\s@IMPLEMENTATION\s\*\//m
-	const matches = source.match(regex);
-	if (matches) {
-		// first group
-		return matches[1];
-	}
-}
-
-
-function GetImplementationSection(source) {
-	const regex = /\/\*\s@IMPLEMENTATION\s\*\/([\s\S]*)/m
-	const matches = source.match(regex);
-	if (matches) {
-		// first group
-		return matches[1];
-	}
+	const section = GetSection(source, 'INCLUDE');
+	const lines = section.split('\n');
+	return new Set(lines.filter(line => /\S+/.test(line)));
 }
 
 
 function BuildFile(sourceFiles) {
+	const includeSet = new Set();
 	let headers = [];
+	let externs = [];
 	let implementations = [];
 
 	for (let filename of sourceFiles) {
 		const source = LoadFile(filename);
-		headers.push(GetHeaderSection(source));
-		implementations.push(GetImplementationSection(source));
+		GetIncludeSet(source).forEach(include => includeSet.add(include));
+		headers.push(GetSection(source, 'HEADER'));
+		externs.push(GetSection(source, 'EXTERN'));
+		implementations.push(GetSection(source, 'IMPLEMENTATION'));
 	}
 
-	const file = `#pragma once
+	// create array of includes
+	const includes = [];
+	includeSet.forEach(i => includes.push(i));
+	includes.sort();
+
+	// clean header, extern, and implementation arrays
+	headers = headers.filter(h => /\S+/.test(h));
+	externs = externs.filter(e => /\S+/.test(e));
+	implementations = implementations.filter(i => /\S+/.test(i));
+
+	const data = `#pragma once
 
 /*******************************************************************************
  *
@@ -76,15 +74,29 @@ function BuildFile(sourceFiles) {
  *******************************************************************************
  */
 
-${headers.join('\n\n')}
+${includes.join('\n')}
 
+namespace smm {
+
+${headers.join('\n\n')}
+/* end namespace smm */
+}
+
+/* externs */
+${externs.join('\n')}
+
+/*#############################################################################*
+ #                                                                             #
+ #                               IMPLEMENTATION                                #
+ #                                                                             #
+ *#############################################################################*/
 #if defined(SMM_IMPLEMENTATION)
 ${implementations.join('\n\n')}
 #endif
 `;
-	return file;
+	writeFileSync('../smm.h', data);
 }
 
 
 const sources = DetermineSourceFiles();
-console.log(BuildFile(sources));
+BuildFile(sources);

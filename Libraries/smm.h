@@ -1,14 +1,43 @@
-/** @file smm.h */
 #pragma once
 
+/*******************************************************************************
+ *
+ * smm.h
+ *
+ * This is an automatically generated file - please do not edit it directly!
+ *
+ *******************************************************************************
+ */
 
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+
+namespace smm {
 
 
-namespace smm
-{
+/* determine current architecture */
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+	/* arduino mega */
+#	define SMM_ARCH_MEGA
+
+#elif defined(__AVR_ATmega48A__) || defined(__AVR_ATmega48PA__) || \
+	defined(__AVR_ATmega88A__) || defined(__AVR_ATmega88PA__) || \
+	defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168PA__) || \
+	defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+	/* arduino uno (and other things too?) */
+#	define SMM_ARCH_UNO
+
+#else
+	/* other arduinos */
+#	define SMM_ARCH_UNKNOWN
+
+#endif
+
+
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,6 +182,9 @@ class map {
 };
 
 
+
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * smm::string
@@ -273,6 +305,7 @@ class string {
 	 */
 	friend bool operator!=(const string& lhs, const string& rhs) { return !(lhs == rhs.m_str); }
 };
+
 
 
 
@@ -581,35 +614,54 @@ class SerialController {
 		send(key, v);
 	}
 };
+
+#define SERIAL_CAT_(x, y) x##y
+#define SERIAL_CAT(x, y) SERIAL_CAT_(x, y)
+#define SERIAL_ANONYMOUS(prefix) SERIAL_CAT(prefix, __LINE__)
+#define SERIAL_CALLBACK_REGISTER(cb, var, f, name) \
+static smm::SerialCallback cb(f); \
+static const bool var = SmmSerial.RegisterCallback(name, &cb);
+
+#define SERIAL_CALLBACK_(f, name, arg) \
+void f(arg); \
+SERIAL_CALLBACK_REGISTER(SERIAL_ANONYMOUS(SERIAL_CALLBACK_CB_), SERIAL_ANONYMOUS(SERIAL_CALLBACK_VAR_), f, name); \
+void f(arg)
+
+/** @brief Create a new serial callback
+ *
+ * The basic usage of this macro is like this:
+ * ```
+ * SERIAL_CALLBACK("my-callback", const char *str) {
+ *     Serial.print("received string '");
+ *     Serial.print(str);
+ *     Serial.println("'");
+ * }
+ * ```
+ *
+ * There are four kinds of callbacks: void, string (shown above), int, and float. To define them,
+ * you simply need to provide the appropriate datatype in the `arg` field. Note that for void
+ * callbacks, you still need to put a `void` in the arg field, like this:
+ *
+ * ```
+ * SERIAL_CALLBACK("some-void-callback", void) {
+ *     // do something
+ * }
+ * ```
+ *
+ * This macro is *self-registering*. That is, when you create a serial callback this way, it is now
+ * completely set up with `SmmSerial` and will respond to incoming messages on the name you gave; 
+ * all you have to do is call `SmmSerial.begin()` in your setup function and `SmmSerial.update()` in 
+ * your loop function.
+ */
+#define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
+
+/* end ifndef SMM_NO_SERIAL_CONTROLLER */
 #endif
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * smm::Switch
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
 
 #ifndef SMM_NO_SWITCH
-
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
-/* arduino mega */
-#define SMM_PCINT_MEGA
-
-#elif defined(__AVR_ATmega48A__) || defined(__AVR_ATmega48PA__) || \
-	defined(__AVR_ATmega88A__) || defined(__AVR_ATmega88PA__) || \
-	defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168PA__) || \
-	defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
-/* arduino uno (and other things too?) */
-#define SMM_PCINT_328
-
-#else
-/* other arduinos */
-#define SMM_PCINT_UNKNOWN
-
-#endif
-
 class PcInterruptPort;
 class Switch;
 
@@ -791,73 +843,32 @@ class PcInterruptPort {
 #endif
 
 
+/* end namespace smm */
 }
 
+/* externs */
 
-/* extra macros and extern globals */
-#ifndef SMM_NO_SERIAL_CONTROLLER
 extern smm::SerialController SmmSerial;
-#endif
 
 
-#define SERIAL_CAT_(x, y) x##y
-#define SERIAL_CAT(x, y) SERIAL_CAT_(x, y)
-#define SERIAL_ANONYMOUS(prefix) SERIAL_CAT(prefix, __LINE__)
-#define SERIAL_CALLBACK_REGISTER(cb, var, f, name) \
-static smm::SerialCallback cb(f); \
-static const bool var = SmmSerial.RegisterCallback(name, &cb);
 
-#define SERIAL_CALLBACK_(f, name, arg) \
-void f(arg); \
-SERIAL_CALLBACK_REGISTER(SERIAL_ANONYMOUS(SERIAL_CALLBACK_CB_), SERIAL_ANONYMOUS(SERIAL_CALLBACK_VAR_), f, name); \
-void f(arg)
+/*#############################################################################*
+ #                                                                             #
+ #                               IMPLEMENTATION                                #
+ #                                                                             #
+ *#############################################################################*/
+#if defined(SMM_IMPLEMENTATION)
 
-/** @brief Create a new serial callback
- *
- * The basic usage of this macro is like this:
- * ```
- * SERIAL_CALLBACK("my-callback", const char *str) {
- *     Serial.print("received string '");
- *     Serial.print(str);
- *     Serial.println("'");
- * }
- * ```
- *
- * There are four kinds of callbacks: void, string (shown above), int, and float. To define them,
- * you simply need to provide the appropriate datatype in the `arg` field. Note that for void
- * callbacks, you still need to put a `void` in the arg field, like this:
- *
- * ```
- * SERIAL_CALLBACK("some-void-callback", void) {
- *     // do something
- * }
- * ```
- *
- * This macro is *self-registering*. That is, when you create a serial callback this way, it is now
- * completely set up with `SmmSerial` and will respond to incoming messages on the name you gave; 
- * all you have to do is call `SmmSerial.begin()` in your setup function and `SmmSerial.update()` in 
- * your loop function.
- */
-#define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * implementation details
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-#ifdef SMM_IMPLEMENTATION
 #ifndef SMM_NO_SERIAL_CONTROLLER
 /* static variable declarations */
 int smm::SerialController::s_numCallbacks = 0;
 const char * smm::SerialController::s_key[SMM_SERIAL_MAX_CALLBACKS];
 smm::SerialCallback * smm::SerialController::s_cb[SMM_SERIAL_MAX_CALLBACKS];
 
-/* extern globals */
+/* extern global */
 smm::SerialController SmmSerial;
 #endif
+
 
 
 #ifndef SMM_NO_SWITCH
@@ -866,7 +877,7 @@ void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
 	uint8_t port = digitalPinToPort(pin);
 	uint16_t oport = portOutputRegister(port);
 
-	#if defined(SMM_PCINT_MEGA)
+	#if defined(SMM_ARCH_MEGA)
 	if (oport == &PORTB) {
 		#ifndef SMM_PCINT_NO_PORTB
 		portB.addSwitch(b);
@@ -882,7 +893,7 @@ void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
 		portK.addSwitch(b);
 		#endif
 	}
-	#elif defined(SMM_PCINT_328)
+	#elif defined(SMM_ARCH_328)
 	if (oport == &PORTB) {
 		#ifndef SMM_PCINT_NO_PORTB
 		portB.addSwitch(b);
@@ -899,7 +910,7 @@ void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
 		#endif
 	}
 	#endif
-	#ifndef SMM_PCINT_UNKNOWN
+	#ifndef SMM_ARCH_UNKNOWN
 	else {
 		Serial.print("\n\n\n\n\n\n\n\n");
 		Serial.println("!!!!!!!! WARNING !!!!!!!!");
@@ -912,7 +923,7 @@ void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
 	#endif
 }
 
-#if defined(SMM_PCINT_MEGA)
+#if defined(SMM_ARCH_MEGA)
 #ifndef SMM_PCINT_NO_PORTB
 smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
 ISR(PCINT0_vect) {
@@ -935,7 +946,7 @@ ISR(PCINT2_vect) {
 }
 #endif
 
-#elif defined(SMM_PCINT_328)
+#elif defined(SMM_ARCH_328)
 #ifndef SMM_PCINT_NO_PORTB
 smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
 ISR(PCINT0_vect) {
@@ -963,5 +974,4 @@ ISR(PCINT2_vect) {
 #endif
 
 
-/* ifdef SMM_IMPLEMENTATION */
 #endif
