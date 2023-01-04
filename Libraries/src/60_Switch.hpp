@@ -9,7 +9,7 @@ class Switch;
 
 class PcInterruptManager {
 	public:
-	#if defined(SMM_PCINT_MEGA)
+	#if defined(SMM_ARCH_MEGA)
 	#ifndef SMM_PCINT_NO_PORTB
 	static PcInterruptPort portB;
 	#endif
@@ -19,7 +19,7 @@ class PcInterruptManager {
 	#ifndef SMM_PCINT_NO_PORTK
 	static PcInterruptPort portK;
 	#endif
-	#elif defined(SMM_PCINT_328)
+	#elif defined(SMM_ARCH_UNO)
 	#ifndef SMM_PCINT_NO_PORTB
 	static PcInterruptPort portB;
 	#endif
@@ -101,7 +101,7 @@ class Switch {
 			return;
 		}
 
-		m_isLow = isLow
+		m_isLow = isLow;
 		m_lastTime = millis();
 		if (m_isLow)
 			onLow();
@@ -207,7 +207,7 @@ void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
 		portK.addSwitch(b);
 		#endif
 	}
-	#elif defined(SMM_ARCH_328)
+	#elif defined(SMM_ARCH_UNO)
 	if (oport == &PORTB) {
 		#ifndef SMM_PCINT_NO_PORTB
 		portB.addSwitch(b);
@@ -260,7 +260,7 @@ ISR(PCINT2_vect) {
 }
 #endif
 
-#elif defined(SMM_ARCH_328)
+#elif defined(SMM_ARCH_UNO)
 #ifndef SMM_PCINT_NO_PORTB
 smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
 ISR(PCINT0_vect) {

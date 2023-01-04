@@ -63,7 +63,8 @@ function BuildFile(sourceFiles) {
 	externs = externs.filter(e => /\S+/.test(e));
 	implementations = implementations.filter(i => /\S+/.test(i));
 
-	const data = `#pragma once
+	const data = `/** @file smm.h */
+#pragma once
 
 /*******************************************************************************
  *
