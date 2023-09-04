@@ -1,14 +1,4 @@
-/* eslint no-console: 0 */
-/* eslint react/prop-types: 0 */
-/* eslint no-return-assign: 0 */
-/* eslint import/no-named-as-default: 0 */
-/* eslint import/no-named-as-default-member: 0 */
-
 import React, { Component } from 'react';
-import {
-  InputGroup, InputGroupAddon, Button, Input,
-} from 'reactstrap';
-import ReactScrollableList from 'react-scrollable-list';
 import withSerialCommunication from '../SerialHOC';
 import { WAKE_ARDUINO } from '../ArduinoConstants';
 import IPC from '../IPCMessages';
@@ -17,7 +7,7 @@ class ArduinoTestPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      lastMessage: '...waiting on first message',
+      lastMessage: '...waiting on the first message',
       log: [],
       logCount: 0,
     };
@@ -27,6 +17,8 @@ class ArduinoTestPage extends Component {
 
     this.logLimit = 150;
     this.logArray = [];
+    this.sendTextInput = React.createRef();
+    this.logContainer = React.createRef();
   }
 
   componentDidMount() {
@@ -34,12 +26,16 @@ class ArduinoTestPage extends Component {
     setOnDataCallback(this.onData);
   }
 
+  componentDidUpdate() {
+    // Scroll to the bottom of the log container when new logs are added.
+    this.logContainer.current.scrollTop = this.logContainer.current.scrollHeight;
+  }
+
   onData(data) {
     console.log('onData:', data);
     const { logCount } = this.state;
     const timestamp = Date.now();
     const logData = {
-      // Generate unique ID
       id: `${logCount}-${timestamp}`,
       content: `${logCount} - ${timestamp} - ${JSON.stringify(data)}`,
     };
@@ -57,10 +53,6 @@ class ArduinoTestPage extends Component {
 
   sendClick(msg) {
     console.log('sendClick:', msg);
-
-    // This is where we pass it through
-    // our HOC method to Stele, which passes
-    // to Serial device.
     const { sendData } = this.props;
     sendData(msg);
   }
@@ -69,99 +61,91 @@ class ArduinoTestPage extends Component {
     const { lastMessage, log, logCount } = this.state;
     const { ipcAvailable } = this.props;
     return (
-      <div style={{ padding: '5%' }}>
+      <div style={{ padding: '3%' }}>
         <h1>Arduino Test Page</h1>
-        <span>
-          Don&apos;t know what this is?
-          {' '}
+        <p>
+          Don&apos;t know what this is?{' '}
           <a href="https://github.com/scimusmn/arduino-base">Read docs here.</a>
-        </span>
-        <hr />
+        </p>
         <br />
         <h3>
-          <strong>IPC available:</strong>
-          {' '}
-          <span style={{ color: ipcAvailable.toString() === 'false' ? 'red' : 'green' }}>{ipcAvailable.toString()}</span>
+          <strong>IPC available:</strong>{' '}
+          <span style={{ color: ipcAvailable.toString() === 'false' ? 'red' : 'green' }}>
+            {ipcAvailable.toString()}
+          </span>
         </h3>
-        <br />
         <h3>
-          <strong>Last message recieved:</strong>
-          {' '}
-          <span style={{ color: lastMessage === '...waiting on first message' ? 'gray' : 'green' }}>{lastMessage}</span>
+          <strong>Last message received:</strong>{' '}
+          <span style={{ color: lastMessage === '...waiting on first message' ? 'gray' : 'green' }}>
+            {lastMessage}
+          </span>
         </h3>
-        <br />
         <h3>
-          <strong>Incoming message count:</strong>
-          {' '}
+          <strong>Incoming message count:</strong>{' '}
           <span style={{ color: logCount === 0 ? 'gray' : 'green' }}>{logCount}</span>
         </h3>
         <br />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            color="primary"
+          <button
+            style={{ backgroundColor: 'teal', color: 'white', border: 'none', padding: '10px' }}
             onClick={() => this.sendClick(WAKE_ARDUINO)}
           >
             Wake Arduino
-          </Button>
+          </button>
         </div>
         <br />
         <div>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <Button
-                color="primary"
-                onClick={() => this.sendClick(this.sendTextInput.value)}
-              >
-                Send:
-              </Button>
-              <Input
-                innerRef={(input) => (this.sendTextInput = input)}
-                placeholder="{wake-arduino:1}"
-              />
-            </InputGroupAddon>
-          </InputGroup>
+          <div>
+            <button
+              style={{ backgroundColor: 'teal', color: 'white', border: 'none', padding: '10px' }}
+              onClick={() => this.sendClick(this.sendTextInput.current.value)}
+            >
+              Send:
+            </button>
+            {` `}
+            <input
+              ref={this.sendTextInput}
+              placeholder="{wake-arduino:1}"
+              style={{ padding: '10px' }}
+            />
+          </div>
         </div>
         <br />
         <div>
-          <Button
-            color="warning"
+          <button
+            style={{ backgroundColor: 'orange', color: 'white', border: 'none', padding: '10px' }}
             onClick={() => this.sendClick(IPC.FLUSH_COMMAND)}
           >
             Flush
-          </Button>
+          </button>
           {' '}
-          {' '}
-          <Button
-            color="warning"
+          <button
+            style={{ backgroundColor: 'orange', color: 'white', border: 'none', padding: '10px' }}
             onClick={() => this.sendClick(IPC.RESET_PORTS_COMMAND)}
           >
             Reset Ports
-          </Button>
+          </button>
         </div>
         <br />
         <hr />
-        <h4>
-          Log
-        </h4>
-        <ReactScrollableList
-          listItems={this.logArray}
-          heightOfItem={30}
-          maxItemsToRender={this.logLimit}
+        <h4>Log</h4>
+        <div
+          ref={this.logContainer}
           style={{
             height: '278px',
             boxSizing: 'border-box',
             overflowY: 'scroll',
-            overflowAnchor: 'none',
             border: '#ddd solid 1px',
             backgroundColor: '#efefef',
+            padding: '10px',
           }}
-        />
+        >
+          {log.map((logItem) => (
+            <div key={logItem.id}>{logItem.content}</div>
+          ))}
+        </div>
         <span style={{ fontSize: '12px', color: logCount < this.logLimit ? 'gray' : 'red' }}>
-          History limit:
-          {' '}
-          {log.length}
-          /
-          {this.logLimit}
+          History limit: {log.length}/{this.logLimit}
         </span>
       </div>
     );
