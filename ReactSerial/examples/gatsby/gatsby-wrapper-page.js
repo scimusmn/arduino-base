@@ -1,9 +1,4 @@
-import React from 'react';
+// eslint-disable-next-line import/no-relative-packages
+import ArduinoTestPageWithSerialCommunication from '../Arduino/arduino-base/ReactSerial/examples/arduino-test-page';
 
-import ArduinoTestPage from '../Arduino/arduino-base/ReactSerial/examples/arduino-test-page';
-
-const ArduinoWrapperPage = () => (
-  <ArduinoTestPage />
-);
-
-export default ArduinoWrapperPage;
+export default ArduinoTestPageWithSerialCommunication;
