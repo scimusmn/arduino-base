@@ -105,7 +105,7 @@ ${setups.join('\n')}
 }
 #endif
 `;
-	writeFileSync('../smm.h', data);
+	writeFileSync('smm.h', data);
 }
 
 

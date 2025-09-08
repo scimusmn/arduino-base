@@ -26,9 +26,7 @@ class SwitchInterruptManager {
   static void Poll();
   private:
   static Switch * list;
-  #ifdef SMM_ARCH_TEENSY4
   static IntervalTimer timer;
-  #endif
 };
 
 
@@ -101,21 +99,17 @@ class Switch {
 // SwitchInterruptManager static members
 bool smm::SwitchInterruptManager::SetupDone = false;
 smm::Switch * smm::SwitchInterruptManager::list = nullptr;
-#ifdef SMM_ARCH_TEENSY4
+#if defined(SMM_ARCH_TEENSY4) 
 static IntervalTimer smm::SwitchInterruptManager::timer;
+#elif defined(SMM_ARCH_MEGA)
+static smm::IntervalTimer smm::SwitchInterruptManager::timer;
 #endif
-
-
-#define DEBUG(msg) Serial.println(msg); for(int i=0; i<100; i++) {}
 
 
 void smm::SwitchInterruptManager::Setup() {
   if (SetupDone) { return; }
-  Serial.begin(9600);
-  delay(200);
-  DEBUG("a");
   SetupDone = true;
-  #ifdef SMM_ARCH_TEENSY4
+  #if defined(SMM_ARCH_TEENSY4) || defined(SMM_ARCH_MEGA)
     timer.begin(Poll, SMM_SWITCHES_POLL_RATE);
   #else
     // TODO: other architectures
@@ -124,11 +118,12 @@ void smm::SwitchInterruptManager::Setup() {
       "This architecture is not currently supported by smm::Switch!"
     );
   #endif
-  DEBUG("b");
 }
 void smm::SwitchInterruptManager::SetPollRate(unsigned long us) {
-  #ifdef SMM_ARCH_TEENSY4
+  #if defined(SMM_ARCH_TEENSY4)
     timer.update(us);
+  #elif defined(SMM_ARCH_MEGA)
+    timer.begin(Poll, us);
   #else
     // TODO: other architectures
     Serial.println(

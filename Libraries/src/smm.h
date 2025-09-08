@@ -1,14 +1,56 @@
 /** @file smm.h */
 #pragma once
 
+/*******************************************************************************
+ *
+ * smm.h
+ *
+ * This is an automatically generated file - please do not edit it directly!
+ *
+ *******************************************************************************
+ */
 
+#include <avr/interrupt.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+
+namespace smm {
+
+  void setup();
 
 
-namespace smm
-{
+/* determine current architecture */
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+	/* arduino mega */
+  #define SMM_ARCH_MEGA
+  #ifndef SMM_SYSTEM_CLOCK_FREQ
+    #define SMM_SYSTEM_CLOCK_FREQ 16.0
+  #endif
+
+#elif defined(__AVR_ATmega48A__) || defined(__AVR_ATmega48PA__) || \
+	defined(__AVR_ATmega88A__) || defined(__AVR_ATmega88PA__) || \
+	defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168PA__) || \
+	defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+	/* arduino uno (and other things too?) */
+  #define SMM_ARCH_UNO
+  #ifndef SMM_SYSTEM_CLOCK_FREQ
+    #define SMM_SYSTEM_CLOCK_FREQ 16.0
+  #endif
+
+#elif defined(__IMXRT1062__)
+  #define SMM_ARCH_TEENSY4
+
+#else
+	/* other arduinos */
+#	define SMM_ARCH_UNKNOWN
+
+#endif
+
+
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,6 +195,9 @@ class map {
 };
 
 
+
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  * smm::string
@@ -273,6 +318,42 @@ class string {
 	 */
 	friend bool operator!=(const string& lhs, const string& rhs) { return !(lhs == rhs.m_str); }
 };
+
+
+
+
+
+#ifdef SMM_ARCH_MEGA
+struct TimerInterrupt {
+  void (*fn)(void*);
+  void *ptr;
+  uint8_t *tccra, *tccrb, *timsk;
+  uint16_t *ocra, *tcnt;
+
+  unsigned long ocrSize(unsigned long us, unsigned int prescaler);
+  bool trySetRegisters(unsigned long us, int prescaler, int mask);
+  bool setInterval(unsigned long us);
+  bool beginInterval(void (*fn)(void*), unsigned long us, void *ptr = nullptr);
+  void clearInterval();
+};
+
+
+struct TimerInterruptManager {
+  void setup();
+  TimerInterrupt * beginInterval(void (*fn)(void*), unsigned long us, void *ptr = nullptr);
+
+  TimerInterrupt timer1, timer3, timer4, timer5;
+};
+
+class IntervalTimer {
+  public:
+  bool begin(void (*fn)(void*), unsigned long us, void *ptr = nullptr);
+  void end();
+  private:
+  TimerInterrupt *interrupt = nullptr;
+};
+#endif
+
 
 
 
@@ -581,224 +662,6 @@ class SerialController {
 		send(key, v);
 	}
 };
-#endif
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * smm::Switch
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-#ifndef SMM_NO_SWITCH
-
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
-/* arduino mega */
-#define SMM_PCINT_MEGA
-
-#elif defined(__AVR_ATmega48A__) || defined(__AVR_ATmega48PA__) || \
-	defined(__AVR_ATmega88A__) || defined(__AVR_ATmega88PA__) || \
-	defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168PA__) || \
-	defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
-/* arduino uno (and other things too?) */
-#define SMM_PCINT_328
-
-#else
-/* other arduinos */
-#define SMM_PCINT_UNKNOWN
-
-#endif
-
-class PcInterruptPort;
-class Switch;
-
-class PcInterruptManager {
-	public:
-	#if defined(SMM_PCINT_MEGA)
-	#ifndef SMM_PCINT_NO_PORTB
-	static PcInterruptPort portB;
-	#endif
-	#ifndef SMM_PCINT_NO_PORTJ
-	static PcInterruptPort portJ;
-	#endif
-	#ifndef SMM_PCINT_NO_PORTK
-	static PcInterruptPort portK;
-	#endif
-	#elif defined(SMM_PCINT_328)
-	#ifndef SMM_PCINT_NO_PORTB
-	static PcInterruptPort portB;
-	#endif
-	#ifndef SMM_PCINT_NO_PORTC
-	static PcInterruptPort portC;
-	#endif
-	#ifndef SMM_PCINT_NO_PORTD
-	static PcInterruptPort portD;
-	#endif
-	#endif
-
-	static void AddSwitch(int pin, Switch *b);
-};
-
-
-/** @brief base switch class
- *
- * This is a pure virtual class, so you *must* implement a child class before using it. Typical usage
- * looks like this:
- *
- * ```
- * class CounterButton : public smm::Switch {
- *     public:
- *     int count;
- *     CounterButton() : smm::Switch(10), count(0) {}
- *     void onLow() {
- *         // press
- *         count += 1;
- *     }
- *     void onHigh() {
- *         // release, ignore
- *     }
- * } counter;
- * ```
- *
- * Thanks to the auto-registration of the base class's constructor, the `counter` object now is bound
- * to a PCINT interrupt and will immediately respond to changes on Arduino pin 10, with no need
- * to poll.
- *
- * Note that it is good practice to keep your `onLow` and `onHigh` functions as short and simple as possible,
- * as they may interrupt *any* part of your code. If you have performace- or timing-critical sections of code,
- * you can disable interrupts with the `cli()` function and re-enable them with the `sei()` function,
- * but your switches will not be able to respond during these sections of code. (Of course, a polled switch
- * wouldn't be able to respond during said sections either...)
- *
- * As with the SerialController class, the auto-registration system for smm::Switch uses static member variables.
- * This means that simply including this code will result in increased memory usage.
- * If you are not using it and wish to conserve RAM, you can disable it by defining `SMM_NO_SWITCH`
- * before including `smm.h`.
- */
-class Switch {
-	protected:
-	volatile Switch *m_next;
-	volatile uint8_t m_mask;
-	volatile unsigned long m_debounceTime;
-	volatile unsigned long m_lastTime;
-	volatile bool m_inverted;
-	volatile bool m_isLow;
-	friend class PcInterruptPort;
-
-	void addSwitch(Switch *b) {
-		if (m_next != nullptr) {
-			m_next->addSwitch(b);
-		}
-		else {
-			m_next = b;
-		}
-	}
-
-	void onChange(int state) {
-		if ((millis() - m_lastTime) < m_debounceTime) {
-			// still debouncing, ignore
-			return;
-		}
-
-		bool isLow = state == 0;
-		if (m_isLow == isLow) {
-			// no change in state, ignore
-			return;
-		}
-
-		m_isLow = isLow
-		m_lastTime = millis();
-		if (m_isLow)
-			onLow();
-		else
-			onHigh();
-	}
-
-	public:
-	/** @brief (constructor)
-	 *
-	 * @param pin  The Arduino pin to monitor
-	 * @param debounceTime  The time in milliseconds to debounce after a state change
-	 */
-	Switch(int pin, bool pullUp=true, unsigned long debounceTime=5) {
-		m_next = nullptr;
-		m_mask = digitalPinToBitMask(pin);
-		m_debounceTime = debounceTime;
-		m_lastTime = 0;
-		m_isLow = false;
-
-		if (pullUp) {
-			pinMode(pin, INPUT_PULLUP);
-		}
-		else {
-			pinMode(pin, INPUT);
-		}
-		PcInterruptManager::AddSwitch(pin, this);
-	}
-
-	/** @brief pure virtual function, called when going LOW */
-	virtual void onLow() = 0;
-	/** @brief pure virtual function, called when going HIGH */
-	virtual void onHigh() = 0;
-};
-
-class PcInterruptPort {
-	protected:
-	volatile Switch *m_head;
-	volatile uint8_t m_pinMask;
-	volatile uint8_t m_previousState;
-	volatile uint8_t *m_pcmsk;
-
-	public:
-	PcInterruptPort(int index, uint8_t *pcmsk) {
-		m_pcmsk = pcmsk;
-		cli();
-		PCICR |= (1<<index);
-		sei();
-		m_head = nullptr;
-		m_pinMask = 0;
-		m_previousState = 0xff;
-	}
-
-	void addSwitch(Switch *b) {
-		if (m_head == nullptr) {
-			m_head = b;
-		}
-		else {
-			m_head->addSwitch(b);
-		}
-		cli();
-		(*m_pcmsk) |= b->m_mask;
-		sei();
-		m_pinMask |= b->m_mask;
-	}
-
-	void onChange(uint8_t state) {
-		uint8_t changed = state ^ m_previousState;
-		m_previousState = state;
-
-		Switch *b = m_head;
-		while (b != nullptr) {
-				if (changed & b->m_mask) {
-				b->onChange(state & b->m_mask);
-			}
-			b = b->m_next;
-		}
-	}
-};
-/* ifndef SMM_NO_SWITCH */
-#endif
-
-
-}
-
-
-/* extra macros and extern globals */
-#ifndef SMM_NO_SERIAL_CONTROLLER
-extern smm::SerialController SmmSerial;
-#endif
-
 
 #define SERIAL_CAT_(x, y) x##y
 #define SERIAL_CAT(x, y) SERIAL_CAT_(x, y)
@@ -840,128 +703,399 @@ void f(arg)
  */
 #define SERIAL_CALLBACK(name, arg) SERIAL_CALLBACK_(SERIAL_ANONYMOUS(SERIAL_CALLBACK_), name, arg)
 
+/* end ifndef SMM_NO_SERIAL_CONTROLLER */
+#endif
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+#ifndef SMM_NO_SWITCH
+class Switch;
+
+#ifdef SMM_ARCH_TEENSY4
+#define READ_PIN digitalReadFast
+#else
+#define READ_PIN digitalRead
+#endif
+
+#ifndef SMM_SWITCHES_POLL_RATE
+// default: poll every 1ms
+#define SMM_SWITCHES_POLL_RATE 1000
+#endif
+
+class SwitchInterruptManager {
+  public:
+  static void Setup();
+  static bool SetupDone;
+  static void SetPollRate(unsigned long us);
+  static void AddSwitch(Switch *b);
+  static void Poll();
+  private:
+  static Switch * list;
+  static IntervalTimer timer;
+};
+
+
+/** @brief base switch class
  *
- * implementation details
+ * This is a pure virtual class, so you *must* implement a child class before using it. Typical usage
+ * looks like this:
  *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * ```
+ * class CounterButton : public smm::Switch {
+ *     public:
+ *     int count;
+ *     CounterButton() : smm::Switch(10), count(0) {}
+ *     void onLow() {
+ *         // press
+ *         count += 1;
+ *     }
+ *     void onHigh() {
+ *         // release, ignore
+ *     }
+ * } counter;
+ * ```
+ *
+ * Thanks to the auto-registration of the base class's constructor, the `counter` object now is bound
+ * to a PCINT interrupt and will immediately respond to changes on Arduino pin 10, with no need
+ * to poll.
+ *
+ * Note that it is good practice to keep your `onLow` and `onHigh` functions as short and simple as possible,
+ * as they may interrupt *any* part of your code. If you have performace- or timing-critical sections of code,
+ * you can disable interrupts with the `cli()` function and re-enable them with the `sei()` function,
+ * but your switches will not be able to respond during these sections of code. (Of course, a polled switch
+ * wouldn't be able to respond during said sections either...)
+ *
+ * As with the SerialController class, the auto-registration system for smm::Switch uses static member variables.
+ * This means that simply including this code will result in increased memory usage.
+ * If you are not using it and wish to conserve RAM, you can disable it by defining `SMM_NO_SWITCH`
+ * before including `smm.h`.
  */
+class Switch {
+  protected:
+  friend class SwitchInterruptManager;
+  volatile uint8_t pin;
+  volatile uint16_t state;
+  volatile Switch *next;
 
-#ifdef SMM_IMPLEMENTATION
+  void addSwitch(Switch *b);
+  void update();
+
+  public:
+  /** @brief (constructor)
+   *
+   * @param pin  The Arduino pin to monitor
+   * @param debounceTime  The time in milliseconds to debounce after a state change
+   */
+  Switch(int pin, bool pullUp, bool defaultState);
+
+  /** @brief pure virtual function, called when going LOW */
+  virtual void onLow() = 0;
+  /** @brief pure virtual function, called when going HIGH */
+  virtual void onHigh() = 0;
+};
+#endif
+
+
+
+
+
+/* end namespace smm */
+}
+
+/* externs */
+
+
+#ifdef SMM_ARCH_MEGA
+extern smm::TimerInterruptManager SmmTimers;
+#endif
+
+
+
+extern smm::SerialController SmmSerial;
+
+
+
+/*#############################################################################*
+ #                                                                             #
+ #                               IMPLEMENTATION                                #
+ #                                                                             #
+ *#############################################################################*/
+#if defined(SMM_IMPLEMENTATION)
+
+
+#ifdef SMM_ARCH_MEGA
+
+smm::TimerInterruptManager SmmTimers;
+
+unsigned long smm::TimerInterrupt::ocrSize(unsigned long us, unsigned int prescaler) {
+  // this calculation is 2x that of the one from section 17.9.2 because the datasheet
+  // equation is for a frequency (which requires two interrupts to complete one cycle)
+  double ocr = us;
+  ocr *= SMM_SYSTEM_CLOCK_FREQ;
+  ocr /= prescaler;
+  return ocr-1;
+}
+
+
+bool smm::TimerInterrupt::trySetRegisters(unsigned long us, int prescaler, int mask) {
+  unsigned long ocr = ocrSize(us, prescaler);
+  if (ocr <= 0xffff) {
+    cli();
+    // see the ATMEGA2560 datasheet section 17.11 for details
+    *tcnt = 0;
+    *tccra = 0;           // clear a-control register;
+    *tccrb = (1<<WGM12);  // enable CTC mode (this is the same bit on all four registers)
+    *tccrb |= mask;       // set the prescaler
+    *timsk = (1<<OCIE1A); // enable the interrupt (this is also the same bit on all four registers)
+    *ocra = ocr;          // set proper timing
+    sei();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+
+bool smm::TimerInterrupt::setInterval(unsigned long us) {
+  if (trySetRegisters(us, 1, 0b001)) { return true; }
+  if (trySetRegisters(us, 8, 0b010)) { return true; }
+  if (trySetRegisters(us, 64, 0b011)) { return true; }
+  if (trySetRegisters(us, 256, 0b100)) { return true; }
+  if (trySetRegisters(us, 1024, 0b101)) { return true; }
+  return false;
+}
+
+
+
+bool smm::TimerInterrupt::beginInterval(void (*fn)(void*), unsigned long us, void *ptr) {
+  if (this->fn != nullptr) {
+    return false;
+  }
+  this->fn = fn;
+  this->ptr = ptr;
+  return setInterval(us);
+}
+
+
+void smm::TimerInterrupt::clearInterval() {
+  // disable the interrupt
+  cli();
+  *timsk = 0;
+  sei();
+
+  // clear the function
+  fn = nullptr;
+  ptr = nullptr;
+}
+
+
+void smm::TimerInterruptManager::setup() {
+  timer1.fn = nullptr;
+  timer1.ptr = nullptr;
+  timer1.tccra = &(TCCR1A);
+  timer1.tccrb = &(TCCR1B);
+  timer1.timsk = &(TIMSK1);
+  timer1.ocra = &(OCR1A);
+  timer1.tcnt = &(TCNT1);
+
+  timer3.fn = nullptr;
+  timer3.ptr = nullptr;
+  timer3.tccra = &TCCR3A;
+  timer3.tccrb = &TCCR3B;
+  timer3.timsk = &TIMSK3;
+  timer3.ocra = &OCR3A;
+  timer3.tcnt = &TCNT3;
+
+  timer4.fn = nullptr;
+  timer4.ptr = nullptr;
+  timer4.tccra = &TCCR4A;
+  timer4.tccrb = &TCCR4B;
+  timer4.timsk = &TIMSK4;
+  timer4.ocra = &OCR4A;
+  timer4.tcnt = &TCNT4;
+
+  timer5.fn = nullptr;
+  timer5.ptr = nullptr;
+  timer5.tccra = &TCCR5A;
+  timer5.tccrb = &TCCR5B;
+  timer5.timsk = &TIMSK5;
+  timer5.ocra = &OCR5A;
+  timer5.tcnt = &TCNT5;
+}
+
+
+smm::TimerInterrupt * smm::TimerInterruptManager::beginInterval(void (*fn)(void*), unsigned long us, void *ptr) {
+  if (timer1.beginInterval(fn, us, ptr)) { return &timer1; }
+  if (timer3.beginInterval(fn, us, ptr)) { return &timer3; }
+  if (timer4.beginInterval(fn, us, ptr)) { return &timer4; }
+  if (timer5.beginInterval(fn, us, ptr)) { return &timer5; }
+  return nullptr;
+}
+
+
+bool smm::IntervalTimer::begin(void (*fn)(void*), unsigned long us, void *ptr = nullptr) {
+  if (this->interrupt == nullptr) {
+    smm::TimerInterrupt *interrupt = SmmTimers.beginInterval(fn, us, ptr);
+    if (interrupt != nullptr) {
+      this->interrupt = interrupt;
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return this->interrupt->beginInterval(fn, us, ptr);
+  }
+}
+
+
+void smm::IntervalTimer::end() {
+  if (interrupt != nullptr) {
+    interrupt->clearInterval();
+  }
+}
+
+
+ISR(TIMER1_COMPA_vect) {
+  SmmTimers.timer1.fn(SmmTimers.timer1.ptr);
+}
+
+ISR(TIMER3_COMPA_vect) {
+  SmmTimers.timer3.fn(SmmTimers.timer3.ptr);
+}
+
+ISR(TIMER4_COMPA_vect) {
+  SmmTimers.timer4.fn(SmmTimers.timer4.ptr);
+}
+
+ISR(TIMER5_COMPA_vect) {
+  SmmTimers.timer5.fn(SmmTimers.timer5.ptr);
+}
+#endif
+
+
+
+
 #ifndef SMM_NO_SERIAL_CONTROLLER
 /* static variable declarations */
 int smm::SerialController::s_numCallbacks = 0;
 const char * smm::SerialController::s_key[SMM_SERIAL_MAX_CALLBACKS];
 smm::SerialCallback * smm::SerialController::s_cb[SMM_SERIAL_MAX_CALLBACKS];
 
-/* extern globals */
+/* extern global */
 smm::SerialController SmmSerial;
 #endif
 
 
+
 #ifndef SMM_NO_SWITCH
 /* smm::Switch implementation */
-void smm::PcInterruptManager::AddSwitch(int pin, smm::Switch *b) {
-	uint8_t port = digitalPinToPort(pin);
-	uint16_t oport = portOutputRegister(port);
 
-	#if defined(SMM_PCINT_MEGA)
-	if (oport == &PORTB) {
-		#ifndef SMM_PCINT_NO_PORTB
-		portB.addSwitch(b);
-		#endif
-	}
-	else if (oport == &PORTJ) {
-		#ifndef SMM_PCINT_NO_PORTJ
-		portJ.addSwitch(b);
-		#endif
-	}
-	else if (oport == &PORTK) {
-		#ifndef SMM_PCINT_NO_PORTK
-		portK.addSwitch(b);
-		#endif
-	}
-	#elif defined(SMM_PCINT_328)
-	if (oport == &PORTB) {
-		#ifndef SMM_PCINT_NO_PORTB
-		portB.addSwitch(b);
-		#endif
-	}
-	else if (oport == &PORTC) {
-		#ifndef SMM_PCINT_NO_PORTC
-		portC.addSwitch(b);
-		#endif
-	}
-	else if (oport == &PORTD) {
-		#ifndef SMM_PCINT_NO_PORTD
-		portD.addSwitch(b);
-		#endif
-	}
-	#endif
-	#ifndef SMM_PCINT_UNKNOWN
-	else {
-		Serial.print("\n\n\n\n\n\n\n\n");
-		Serial.println("!!!!!!!! WARNING !!!!!!!!");
-		Serial.print("No PCINT port for pin ");
-		Serial.print(pin);
-		Serial.println("; it WILL NOT work as a switch!");
-	}
-	#else
-	Serial.println("\n\n\n\n\n\n\n\n\n\n\n\nThis chipset is currently not supported by smm::Switch.");
-	#endif
-}
-
-#if defined(SMM_PCINT_MEGA)
-#ifndef SMM_PCINT_NO_PORTB
-smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
-ISR(PCINT0_vect) {
-	uint8_t pins = PINB;
-	smm::PcInterruptManager::portB.onChange(pins);
-}
-#endif
-#ifndef SMM_PCINT_NO_PORTJ
-smm::PcInterruptPort smm::PcInterruptManager::portJ(PCIE1, &PCMSK1);
-ISR(PCINT1_vect) {
-	uint8_t pins = PINJ;
-	smm::PcInterruptManager::portJ.onChange(pins);
-}
-#endif
-#ifndef SMM_PCINT_NO_PORTK
-smm::PcInterruptPort smm::PcInterruptManager::portK(PCIE2, &PCMSK2);
-ISR(PCINT2_vect) {
-	uint8_t pins = PINK;
-	smm::PcInterruptManager::portK.onChange(pins);
-}
-#endif
-
-#elif defined(SMM_PCINT_328)
-#ifndef SMM_PCINT_NO_PORTB
-smm::PcInterruptPort smm::PcInterruptManager::portB(PCIE0, &PCMSK0);
-ISR(PCINT0_vect) {
-	uint8_t pins = PINB;
-	smm::PcInterruptManager::portB.onChange(pins);
-}
-#endif
-#ifndef SMM_PCINT_NO_PORTC
-smm::PcInterruptPort smm::PcInterruptManager::portC(PCIE1, &PCMSK1);
-ISR(PCINT1_vect) {
-	uint8_t pins = PINC;
-	smm::PcInterruptManager::portC.onChange(pins);
-}
-#endif
-#ifndef SMM_PCINT_NO_PORTD
-smm::PcInterruptPort smm::PcInterruptManager::portD(PCIE2, &PCMSK2);
-ISR(PCINT2_vect) {
-	uint8_t pins = PIND;
-	smm::PcInterruptManager::portD.onChange(pins);
-}
-#endif
-
-#endif
-/* ifndef SMM_NO_SWITCH */
+// SwitchInterruptManager static members
+bool smm::SwitchInterruptManager::SetupDone = false;
+smm::Switch * smm::SwitchInterruptManager::list = nullptr;
+#if defined(SMM_ARCH_TEENSY4) 
+static IntervalTimer smm::SwitchInterruptManager::timer;
+#elif defined(SMM_ARCH_MEGA)
+static smm::IntervalTimer smm::SwitchInterruptManager::timer;
 #endif
 
 
-/* ifdef SMM_IMPLEMENTATION */
+void smm::SwitchInterruptManager::Setup() {
+  if (SetupDone) { return; }
+  SetupDone = true;
+  #if defined(SMM_ARCH_TEENSY4) || defined(SMM_ARCH_MEGA)
+    timer.begin(Poll, SMM_SWITCHES_POLL_RATE);
+  #else
+    // TODO: other architectures
+    Serial.println(
+      "\n\n\n\n\n\n\n\n\n\n!! WARNING !!\n"
+      "This architecture is not currently supported by smm::Switch!"
+    );
+  #endif
+}
+void smm::SwitchInterruptManager::SetPollRate(unsigned long us) {
+  #if defined(SMM_ARCH_TEENSY4)
+    timer.update(us);
+  #elif defined(SMM_ARCH_MEGA)
+    timer.begin(Poll, us);
+  #else
+    // TODO: other architectures
+    Serial.println(
+      "\n\n\n\n\n\n\n\n\n\n!! WARNING !!\n"
+      "This architecture is not currently supported by smm::Switch!"
+    );
+  #endif
+}
+void smm::SwitchInterruptManager::AddSwitch(Switch *b) {
+  // Setup();
+  if (list == nullptr) {
+    list = b;
+  } else {
+    list->addSwitch(b);
+  }
+}
+void smm::SwitchInterruptManager::Poll() {
+  if (list != nullptr) {
+    list->update();
+  }
+}
+
+
+void smm::Switch::addSwitch(Switch *b) {
+  if (next != nullptr) {
+    next->addSwitch(b);
+  }
+  else {
+    next = b;
+  }
+}
+void smm::Switch::update() {
+  state = (state << 1) | READ_PIN(pin) | 0xe000;
+  if (state == 0xf000) {
+    // going low
+    onLow();
+  } else if (state == 0xefff) {
+    // going high
+    onHigh();
+  }
+  if (next != nullptr) {
+    next->update();
+  }
+}
+smm::Switch::Switch(int pin, bool pullUp=true, bool defaultState=false) : pin(pin) {
+  next = nullptr;
+  if (defaultState) {
+    state = 0xffff;
+  } else {
+    state = 0;
+  }
+  if (pullUp) {
+    pinMode(pin, INPUT_PULLUP);
+  }
+  else {
+    pinMode(pin, INPUT);
+  }
+  SwitchInterruptManager::AddSwitch(this);
+}
+#endif
+
+
+
+
+void smm::setup() {
+
+
+  #ifdef SMM_ARCH_MEGA
+  SmmTimers.setup();
+  #endif
+
+
+
+  #ifndef SMM_NO_SWITCH
+  smm::SwitchInterruptManager::Setup();
+  #endif
+
+}
 #endif
